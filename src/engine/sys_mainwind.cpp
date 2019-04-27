@@ -38,15 +38,9 @@
 #include "sys_dll.h"
 #include "inputsystem/iinputsystem.h"
 #include "inputsystem/ButtonCode.h"
-#include "unicode/unicode.h"
 #include "gameui/igameui.h"
 #include "matchmaking.h"
 #include "sv_main.h"
-
-#if defined( _X360 )
-#include "xbox/xbox_win32stubs.h"
-#include "hl2orange.spa.h"
-#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -65,9 +59,6 @@ enum GameInputEventType_t
 	IE_AppActivated,
 };
 
-
-
-static 	IUnicodeWindows *unicode = NULL;
 
 //-----------------------------------------------------------------------------
 // Purpose: Main game interface, including message pump and window creation
@@ -107,9 +98,6 @@ public:
 	void			SetActiveApp( bool active );
 	int				WindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
-	bool			LoadUnicode();
-	void			UnloadUnicode();
-
 // Message handlers.
 public:
 	void	HandleMsg_WindowMove( const InputEvent_t &event );
@@ -148,7 +136,6 @@ private:
 	int				m_width;
 	int				m_height;
 	bool			m_bActiveApp;
-	CSysModule		*m_hUnicodeModule;
 
 	int				m_iDesktopWidth, m_iDesktopHeight, m_iDesktopRefreshRate;
 	void			UpdateDesktopInformation( HWND hWnd );
@@ -423,63 +410,10 @@ void VCR_HandlePlaybackMessages(
 
 //-----------------------------------------------------------------------------
 // Calls the default window procedure
-// FIXME: It would be nice to remove the need for this, which we can do
-// if we can make unicode work when running inside hammer.
 //-----------------------------------------------------------------------------
 static LONG WINAPI CallDefaultWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
-	if ( unicode )
-		return unicode->DefWindowProcW( hWnd, uMsg, wParam, lParam );
 	return DefWindowProc( hWnd, uMsg, wParam, lParam );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: The user has accepted an invitation to a game, we need to detect if 
-//			it's TF2 and restart properly if it is
-//-----------------------------------------------------------------------------
-void XBX_HandleInvite( DWORD nUserId )
-{
-#ifdef _X360
-	// Grab our invite info
-	XINVITE_INFO inviteInfo;
-	DWORD dwError = XInviteGetAcceptedInfo( nUserId, &inviteInfo );
-	if ( dwError != ERROR_SUCCESS )
-		return;
-
-	// We only care if we're asked to join an Orange Box session
-	if ( inviteInfo.dwTitleID != TITLEID_THE_ORANGE_BOX )
-	{
-		// Do the normal "we've been invited to a game" behavior
-		return;
-	}
-
-	// Otherwise, launch depending on our current MOD
-	if ( !Q_stricmp( GetCurrentMod(), "tf" ) )
-	{
-		// We're already running TF2, so just join the session
-		if ( nUserId != XBX_GetPrimaryUserId() )
-		{
-			// Switch users, the other had the invite
-			XBX_SetPrimaryUserId( nUserId );
-		}
-
-		// Kick off our join
-		g_pMatchmaking->JoinInviteSession( &(inviteInfo.hostInfo) );
-	}
-	else
-	{
-		// Save off our session ID for later retrieval
-		// NOTE: We may need to actually save off the inviter's XID and search for them later on if we took too long or the
-		//		 session they were a part of went away
-		
-		XBX_SetInviteSessionId( inviteInfo.hostInfo.sessionID );
-		XBX_SetInvitedUserId( nUserId );
-
-		// Quit via the menu path "QuitNoConfirm"
-		EngineVGui()->SystemNotification( SYSTEMNOTIFY_INVITE_SHUTDOWN );
-
-	}
-#endif //_X360
 }
 
 //-----------------------------------------------------------------------------
@@ -796,14 +730,6 @@ static void DoSomeSocketStuffInOrderToGetZoneAlarmToNoticeUs( void )
 bool CGame::CreateGameWindow( void )
 {
 #ifndef SWDS
-	if ( IsPC() )
-	{
-		if ( !LoadUnicode() )
-		{
-			return false;
-		}
-	}
-
 	WNDCLASSW wc;
 	memset( &wc, 0, sizeof( wc ) );
 
@@ -857,9 +783,9 @@ bool CGame::CreateGameWindow( void )
 
 	// Oops, we didn't clean up the class registration from last cycle which
 	// might mean that the wndproc pointer is bogus
-	unicode->UnregisterClassW( CLASSNAME, m_hInstance );
+	UnregisterClassW( CLASSNAME, m_hInstance );
 	// Register it again
-    unicode->RegisterClassW( &wc );
+    RegisterClassW( &wc );
 
 	// Note, it's hidden
 	DWORD style = WS_POPUP | WS_CLIPSIBLINGS;
@@ -888,7 +814,7 @@ bool CGame::CreateGameWindow( void )
 		exFlags |= WS_EX_TOOLWINDOW; // So it doesn't show up in the taskbar.
 	}
 
-	HWND hwnd = unicode->CreateWindowExW( exFlags, CLASSNAME, uc, style, 
+	HWND hwnd = CreateWindowExW( exFlags, CLASSNAME, uc, style, 
 		0, 0, w, h, NULL, NULL, m_hInstance, NULL );
 	// NOTE: On some cards, CreateWindowExW slams the FPU control word
 	SetupFPUControlWord();
@@ -926,8 +852,7 @@ void CGame::DestroyGameWindow()
 			m_hWindow = (HWND)0;
 		}
 
-		unicode->UnregisterClassW( CLASSNAME, m_hInstance );
-		UnloadUnicode();
+		UnregisterClassW( CLASSNAME, m_hInstance );
 	}
 	else
 	{
@@ -1263,8 +1188,6 @@ void CGame::PlayVideoAndWait( const char *filename )
 //-----------------------------------------------------------------------------
 CGame::CGame()
 {
-	unicode = NULL;
-	m_hUnicodeModule = NULL;
 	m_hWindow = 0;
 	m_x = m_y = 0;
 	m_width = m_height = 0;
@@ -1312,43 +1235,6 @@ bool CGame::Shutdown( void )
 {
 	m_hInstance = 0;
 	return true;
-}
-
-bool CGame::LoadUnicode( void )
-{
-	m_hUnicodeModule = Sys_LoadModule( "unicode" );
-	if ( !m_hUnicodeModule )
-	{
-		Error( "Unable to load unicode.dll" );
-		return false;
-	}
-
-	CreateInterfaceFn factory = Sys_GetFactory( m_hUnicodeModule );
-	if ( !factory )
-	{
-		Error( "Unable to get factory from unicode.dll" );
-		return false;
-	}
-
-	unicode = ( IUnicodeWindows * )factory( VENGINE_UNICODEINTERFACE_VERSION, NULL );
-	if ( !unicode )
-	{
-		Error( "Unable to load interface '%s' from unicode.dll", VENGINE_UNICODEINTERFACE_VERSION );
-		return false;
-	}
-
-	return true;
-}
-
-void CGame::UnloadUnicode()
-{
-	unicode = NULL;
-
-	if ( m_hUnicodeModule )
-	{
-		Sys_UnloadModule( m_hUnicodeModule );
-		m_hUnicodeModule = NULL;
-	}
 }
 
 void *CGame::GetMainWindow( void )
