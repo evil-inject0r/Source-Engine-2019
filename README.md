@@ -1,5 +1,5 @@
 # Source Engine 2019
-Custom Source Engine branch based on Source Engine 2007, currently available on Windows in x86.
+Custom Source Engine branch based on Source Engine 2007 currently available on Windows in x86.
 
 **Pull this repository with recursive submodules (`git clone --recursive`) to clone hl2r**
 
