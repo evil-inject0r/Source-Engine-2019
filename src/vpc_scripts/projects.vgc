@@ -722,9 +722,9 @@ $Project "valvelib"
 	"utils\valvelib\valvelib.vpc" [$WINDOWS]
 }
 
-$Project "qvideo"
+$Project "valve_avi"
 {
-	"video\qvideo.vpc" [$WINDOWS]
+	"avi\valve_avi.vpc" [$WINDOWS]
 }
 
 $Project "vaudio_miles"

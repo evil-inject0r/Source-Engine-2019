@@ -1,13 +1,13 @@
 //-----------------------------------------------------------------------------
-//	QVIDEO.VPC
+//	VALVE_AVI.VPC
 //
 //	Project Script
 //-----------------------------------------------------------------------------
 
 $Macro SRCDIR		".."
-$Macro OUTBINDIR	"$BINDEFAULT"
-
-$Include "$SRCDIR\vpc_scripts\source_dll_base.vpc"
+$Macro OUTBINDIR	"$SRCDIR\..\game\bin"
+$Macro OUTDLLEXT    "dll"
+$Include "$SRCDIR\vpc_scripts\win32\dll_base.vpc"
 
 $Configuration
 {
@@ -18,27 +18,31 @@ $Configuration
 	}
 }
 
-$Project "qvideo"
+$Project "Valve_avi"
 {
 	$Folder	"Source Files"
 	{
 		$File	"avi.cpp"
+		$File	"bink.cpp"
 	}
 
 	$Folder	"Header Files"
 	{
 		$File	"avi.h"
+		$File	"$SRCDIR\thirdparty\BinkSDK\bink.h"
 		$File	"$SRCDIR\public\pixelwriter.h"
 	}
 
 	$Folder	"Interface"
 	{
-		$File	"$SRCDIR\public\video\iavi.h"
+		$File	"$SRCDIR\public\avi\iavi.h"
+		$File	"$SRCDIR\public\avi\ibik.h"
 	}
-	
 	$Folder	"Link Libraries"
 	{
-		$Lib	"$LIBPUBLIC\tier2"
-		$Lib	"$LIBPUBLIC\tier3"
-	}
+        $Lib	"$LIBPUBLIC\binkw32" [$WIN32]
+        $Lib	"$LIBPUBLIC\binkw64" [$WIN64]
+        $Lib	"$LIBPUBLIC\tier2"
+        $Lib	"$LIBPUBLIC\tier3"
+    }
 }
