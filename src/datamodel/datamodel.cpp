@@ -753,7 +753,7 @@ bool CDataModel::Serialize( CUtlBuffer &outBuf, const char *pEncodingName, const
 		{
 			if ( !outBuf.ContainsCRLF() )
 			{
-				Warning( "Serialize: Format %s expects to be written to a binary format, but the buffer is a text-format buffer\n" );
+				Warning( "Serialize: Format %s expects to be written to a binary format, but the buffer is a text-format buffer\n", pFormatName );
 				return false;
 			}
 			outBuf.SetBufferType( false, false );
@@ -864,10 +864,6 @@ const char *CDataModel::GetEncodingFromLegacyFormat( const char *pLegacyFormatNa
 		return "keyvalues2";
 	if ( StringHasPrefixCaseSensitive( pLegacyFormatName, "keyvalues2_flat_v" ) )
 		return "keyvalues2_flat";
-	if ( !V_strcmp( pLegacyFormatName, "xml" ) )
-		return "xml";
-	if ( !V_strcmp( pLegacyFormatName, "xml_flat" ) )
-		return "xml_flat";
 	return NULL;
 }
 
@@ -989,7 +985,7 @@ bool CDataModel::Unserialize( CUtlBuffer &inBuf, const char *pEncodingName, cons
 			CUtlStreamBuffer strbuf( tempFileName, NULL, CUtlBuffer::READ_ONLY );
 			if ( !strbuf.IsValid() )
 			{
-				Warning( "Unerialize: Unable to open temp file \"%s\"\n", tempFileName );
+				Warning( "Unserialize: Unable to open temp file \"%s\"\n", tempFileName );
 				return false;
 			}
 

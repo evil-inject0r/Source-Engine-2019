@@ -328,7 +328,7 @@ void CDmSerializerKeyValues::UnserializeAttribute( CDmElement *pElement, KeyValu
 	CDmAttribute *pAttribute = pElement->AddAttribute( pLowerName, type );
 	if ( !pAttribute )
 	{
-		Warning("Dm Unserialize: Attempted to read an attribute (\"%s\") of an inappropriate type!\n", pLowerName.Get());
+		Warning("Dm Unserialize: Attempted to read an attribute (\"%s\") of an inappropriate type!\n", pLowerName.Get() );
 		return;
 	}
 
