@@ -41,7 +41,7 @@
 #include "gameui/igameui.h"
 #include "matchmaking.h"
 #include "sv_main.h"
-#include "bink/bink.h"
+#include "../thirdparty/BinkSDK/bink.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -972,9 +972,6 @@ void CGame::InputDetachFromGameWindow()
 
 void CGame::PlayStartupVideos( void )
 {
-	if ( IsX360() )
-		return;
-
 #ifndef SWDS
 	
 	// Wait for the mode to change and stabilized
@@ -1049,8 +1046,7 @@ void CGame::PlayStartupVideos( void )
 //-----------------------------------------------------------------------------
 void CGame::PlayVideoAndWait( const char *filename )
 {
-#pragma message("src/engine/sys_mainwnd.cpp, LN 1143: Replace Bink startup videos!")
-/*#if !defined(_X360) && defined(_WIN32)
+#if defined(_WIN32) || defined(WIN64)
 
 	if ( !filename || !filename[0] )
 		return;
@@ -1180,7 +1176,7 @@ void CGame::PlayVideoAndWait( const char *filename )
 	// Free this as well
 	FreeLibrary( hInst );
 
-#endif // _X360*/
+#endif // WIN32 || WIN64
 }
 
 

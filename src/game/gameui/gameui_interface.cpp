@@ -60,7 +60,6 @@
 #include "steam/steam_api.h"
 //#include "protocol.h"
 #include "game/server/iplayerinfo.h"
-#include "video/iavi.h"
 
 #include "basemodpanel.h"
 #include "basemodui.h"
@@ -69,10 +68,6 @@
 typedef BaseModUI::CBaseModPanel UI_BASEMOD_PANEL_CLASS;
 inline UI_BASEMOD_PANEL_CLASS & GetUiBaseModPanelClass() { return UI_BASEMOD_PANEL_CLASS::GetSingleton(); }
 inline UI_BASEMOD_PANEL_CLASS & ConstructUiBaseModPanelClass() { return * new UI_BASEMOD_PANEL_CLASS(); }
-
-#ifdef _X360
-#include "xbox/xbox_win32stubs.h"
-#endif // _X360
 
 #include "tier0/dbg.h"
 #include "engine/IEngineSound.h"
@@ -96,9 +91,6 @@ CSteamAPIContext *steamapicontext = &g_SteamAPIContext;
 #endif
 
 IEngineVGui *enginevguifuncs = NULL;
-#ifdef _X360
-IXOnline  *xonline = NULL;			// 360 only
-#endif
 vgui::ISurface *enginesurfacefuncs = NULL;
 IAchievementMgr *achievementmgr = NULL;
 
@@ -235,9 +227,7 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	enginesurfacefuncs = (vgui::ISurface *)factory(VGUI_SURFACE_INTERFACE_VERSION, NULL);
 	gameuifuncs = (IGameUIFuncs *)factory( VENGINE_GAMEUIFUNCS_VERSION, NULL );
 	xboxsystem = (IXboxSystem *)factory( XBOXSYSTEM_INTERFACE_VERSION, NULL );
-#ifdef _X360
-	xonline = (IXOnline *)factory( XONLINE_INTERFACE_VERSION, NULL );
-#endif
+
 	if (!enginesurfacefuncs || !gameuifuncs || !enginevguifuncs || !xboxsystem)
 	{
 		Warning( "CGameUI::Initialize() failed to get necessary interfaces\n" );
@@ -262,20 +252,6 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 
 void CGameUI::PostInit()
 {
-	if ( IsX360() )
-	{
-		enginesound->PrecacheSound( "UI/buttonrollover.wav", true, true );
-		enginesound->PrecacheSound( "UI/buttonclick.wav", true, true );
-		enginesound->PrecacheSound( "UI/buttonclickrelease.wav", true, true );
-		enginesound->PrecacheSound( "player/suit_denydevice.wav", true, true );
-
-		enginesound->PrecacheSound( "UI/menu_accept.wav", true, true );
-		enginesound->PrecacheSound( "UI/menu_focus.wav", true, true );
-		enginesound->PrecacheSound( "UI/menu_invalid.wav", true, true );
-		enginesound->PrecacheSound( "UI/menu_back.wav", true, true );
-		enginesound->PrecacheSound( "UI/menu_countdown.wav", true, true );
-	}
-
 	// to know once client dlls have been loaded
 	BaseModUI::CUIGameData::Get()->OnGameUIPostInit();
 }
@@ -325,9 +301,6 @@ void CGameUI::PlayGameStartupSound()
 	// L4D not using this path, L4D UI now handling with background menu movies
 	return;
 #endif
-
-	if ( IsX360() )
-		return;
 
 	if ( CommandLine()->FindParm( "-nostartupsound" ) )
 		return;
@@ -494,19 +467,7 @@ bool CGameUI::FindPlatformDirectory(char *platformDir, int bufferSize)
 				}
 			}
 		}
-		else
-		{
-			// xbox fetches the platform path from exisiting platform search path
-			// path to executeable is not correct for xbox remote configuration
-			if ( g_pFullFileSystem->GetSearchPath( "PLATFORM", false, platformDir, bufferSize ) )
-			{
-				char *pSeperator = strchr( platformDir, ';' );
-				if ( pSeperator )
-					*pSeperator = '\0';
-				return true;
-			}
-		}
-
+		
 		Warning( "Unable to determine platform directory\n" );
 		return false;
 	}
@@ -539,10 +500,7 @@ void CGameUI::Shutdown()
 	}
 
 	steamapicontext->Clear();
-#ifndef _X360
-	// SteamAPI_Shutdown(); << Steam shutdown is controlled by engine
-#endif
-	
+
 	ConVar_Unregister();
 	DisconnectTier3Libraries();
 	DisconnectTier2Libraries();

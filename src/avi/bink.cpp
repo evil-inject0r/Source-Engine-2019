@@ -5,11 +5,7 @@
 //=============================================================================
 
 #include "avi/ibik.h"
-#if !defined( _X360 )
-#	include "bink/bink.h"
-#else
-#	include "bink_x360/bink.h"
-#endif
+#include "../thirdparty/BinkSDK/bink.h"
 #include "filesystem.h"
 #include "tier1/strtools.h"
 #include "tier1/utllinkedlist.h"
@@ -29,7 +25,7 @@
 #pragma warning( default : 4201 )
 
 // We don't support the alpha channel in bink files due to dx8.  Can make it work if necessary.
-//#define SUPPORT_BINK_ALPHA
+#define SUPPORT_BINK_ALPHA
 
 class CBIKMaterial;
 

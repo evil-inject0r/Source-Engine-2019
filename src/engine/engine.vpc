@@ -1198,11 +1198,10 @@ $Project "engine"
 		$Lib	"$LIBPUBLIC\steam_api"
 		
 		$Lib	"$LIBCOMMON\bzip2"
+        $Lib    "$LIBCOMMON\binkw32" [$WIN32]
+        $Lib    "$LIBCOMMON\binkw64" [$WIN64]
 		$Lib	"$LIBCOMMON\jpeglib"
-		
-		// TODO: remove this
-		
-		
+				
 		$File	"$SRCDIR\dx9sdk\lib\dsound.lib"	[$WINDOWS]
 		$File	"$SRCDIR\dx9sdk\lib\dxguid.lib"	[$WINDOWS]
 	}
