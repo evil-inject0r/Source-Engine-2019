@@ -13,19 +13,9 @@ $Project "actbusy"
 	"tools\actbusy\actbusy.vpc" [$WINDOWS]
 }
 
-$Project "AdminServer"
-{
-	//"Tracker\AdminServer\AdminServer.vpc" [$WINDOWS]
-}
-
 $Project "appframework"
 {
 	"appframework\appframework.vpc" 	[$WINDOWS||$POSIX]
-}
-
-$Project "autorun"
-{
-	"shell\autorun\autorun.vpc" [$WINDOWS]
 }
 
 $Project "avitest"
@@ -36,11 +26,6 @@ $Project "avitest"
 $Project "bitmap"
 {
 	"bitmap\bitmap.vpc" [$WINDOWS||$POSIX]
-}
-
-$Project "Browser"
-{
-	"Tracker\Browser\Browser.vpc" [$WINDOWS]
 }
 
 $Project "bsppack"
@@ -88,11 +73,6 @@ $Project "choreoobjects"
 	"choreoobjects\choreoobjects.vpc" [$WINDOWS||$POSIX]
 }
 
-$Project "classcheck"
-{
-	"utils\classcheck\classcheck.vpc" [$WINDOWS]
-}
-
 $Project "client"
 {
 	"game\client\client_hl2.vpc"		[($WINDOWS||$POSIX) && $HL2]
@@ -111,11 +91,6 @@ $Project "commedit"
 	"tools\commedit\commedit.vpc" [$WINDOWS]
 }
 
-$Project "cubelight"
-{
-	"utils\cubelight\cubelight.vpc" [$WINDOWS]
-}
-
 $Project "datacache"
 {
 	"datacache\datacache.vpc" [$WINDOWS||$POSIX]
@@ -124,11 +99,6 @@ $Project "datacache"
 $Project "datamodel"
 {
 	"datamodel\datamodel.vpc" [$WINDOWS]
-}
-
-$Project "dbmon"
-{
-	"devtools\dbmon\dbmon.vpc" [$WINDOWS]
 }
 
 $Project "dedicated"
@@ -144,11 +114,6 @@ $Project "dedicated_main"
 $Project "demoinfo"
 {
 	"utils\demoinfo\demoinfo.vpc" [$WINDOWS]
-}
-
-$Project "depcheck"
-{
-	"utils\depcheck\depcheck.vpc" [$WINDOWS]
 }
 
 $Project "dist2alpha"
@@ -191,11 +156,6 @@ $Project "dumpmatsyshelp"
 	"utils\dumpmatsyshelp\dumpmatsyshelp.vpc" [$WINDOWS]
 }
 
-$Project "dumpobj"
-{
-	"utils\xbox\dumpobj\dumpobj.vpc" [$WINDOWS]
-}
-
 $Project "dx_proxy_dx9_v00_pc"
 {
 	"utils\dx_proxy\dx_proxy_dx9_v00_pc.vpc"
@@ -204,12 +164,6 @@ $Project "dx_proxy_dx9_v00_pc"
 $Project "dx_proxy_dx9_v30_pc"
 {
 	"utils\dx_proxy\dx_proxy_dx9_v30_pc.vpc"
-}
-
-// has no use
-$Project "dx_proxy_dx10_v00_pc"
-{
-//	"utils\dx_proxy\dx_proxy_dx10_v00_pc.vpc"
 }
 
 $Project "elementviewer"
@@ -222,16 +176,10 @@ $Project "engine"
 	"engine\engine.vpc" [$WINDOWS||$POSIX]
 }
 
-$Project "entcount"
-{
-	"utils\entcount\entcount.vpc" [$WINDOWS]
-}
-
 $Project "ep2_deathmap"
 {
 	"devtools\ep2_deathmap\ep2_deathmap.vpc" [$WINDOWS]
 }
-
 
 $Project "fgdlib"
 {
@@ -263,11 +211,6 @@ $Project "floatbm"
 	"floatbm\floatbm.vpc" [$WINDOWS]
 }
 
-$Project "fontmaker"
-{
-	"utils\xbox\FontMaker\fontmaker.vpc" [$WINDOWS]
-}
-
 $Project "foundry"
 {
 	"tools\foundry\foundry.vpc" [$WINDOWS]
@@ -289,36 +232,6 @@ $Project "gameui_client"
 	"game\gameui\gameui_episodic.vpc"	[($WINDOWS||$POSIX) && $EPISODIC]
 	"game\gameui\gameui_hl2mp.vpc"		[($WINDOWS||$POSIX) && $HL2MP]
 	"game\gameui\gameui_hl2r.vpc"		[($WINDOWS||$POSIX) && $HL2R]
-}
-
-$Project "game_shader_generic_advanced"
-{
-	"sdkshaders\advanced\game_shader_generic_advanced.vpc" [$WINDOWS]
-}
-
-$Project "game_shader_generic_sample"
-{
-	"sdkshaders\game_shader_generic_sample.vpc" [$WINDOWS]
-}
-
-$Project "genrandomvectors"
-{
-	"utils\genrandomvectors\genrandomvectors.vpc" [$WINDOWS]
-}
-
-$Project "getbugs"
-{
-	"utils\getbugs\getbugs.vpc" [$WINDOWS]
-}
-
-$Project "getmirror"
-{
-	"devtools\getmirror\getmirror.vpc" [$WINDOWS]
-}
-
-$Project "glview"
-{
-	"utils\glview\glview.vpc" [$WINDOWS]
 }
 
 $Project "hammer_dll"
@@ -354,11 +267,6 @@ $Project "server"
 	"game\server\server_hl2r.vpc"		[($WINDOWS||$POSIX) && $HL2R]
 }
 
-$Project "simdtest"
-{
-	"utils\simdtest\simdtest.vpc" [$WINDOWS]
-}
-
 $Project "hlfaceposer"
 {
 	"utils\hlfaceposer\hlfaceposer.vpc" [$WINDOWS]
@@ -367,16 +275,6 @@ $Project "hlfaceposer"
 $Project "hlmv"
 {
 	"utils\hlmv\hlmv.vpc" [$WINDOWS]
-}
-
-$Project "hl_res_us"
-{
-	"shell\hl_res\hl_res_us\hl_res_us.vpc" [$WINDOWS]
-}
-
-$Project "ihvtest1"
-{
-	"unittests\ihvtest1\ihvtest1.vpc" [$WINDOWS]
 }
 
 $Project "inputsystem"
@@ -409,19 +307,9 @@ $Project "launcher_main"
 	"launcher_main\launcher_main.vpc" [$WINDOWS||$POSIX]
 }
 
-$Project "LicenseViewed"
-{
-	"devtools\WiseInstallerHelpers\LicenseViewed.vpc" [$WINDOWS]
-}
-
 $Project "localization_check"
 {
 	"utils\localization_check\localization_check.vpc" [$WINDOWS]
-}
-
-$Project "localresource"
-{
-	"shell\localresource\localresource.vpc" [$WINDOWS]
 }
 
 $Project "lua"
@@ -469,11 +357,6 @@ $Project "mdmpRipper"
 	"utils\mdmpRipper\mdmpRipper.vpc" [$WINDOWS]
 }
 
-$Project "mksheet"
-{
-	"utils\mksheet\mksheet.vpc" [$WINDOWS]
-}
-
 $Project "modelbrowser"
 {
 	"utils\modelbrowser\modelbrowser.vpc" [$WINDOWS]
@@ -482,11 +365,6 @@ $Project "modelbrowser"
 $Project "modelcheckin"
 {
 	"utils\modelcheckin\modelcheckin.vpc" [$WINDOWS]
-}
-
-$Project "motionmapper"
-{
-	"utils\motionmapper\motionmapper.vpc" [$WINDOWS]
 }
 
 $Project "movieobjects"
@@ -534,19 +412,9 @@ $Project "mdllib"
 	"mdllib\mdllib.vpc" [$WINDOWS]
 }
 
-$Project "paginate"
-{
-	"utils\paginate\paginate.vpc" [$WINDOWS]
-}
-
 $Project "panel_zoo"
 {
 	"utils\vgui_panel_zoo\panel_zoo.vpc" [$WINDOWS]
-}
-
-$Project "parsifal"
-{
-	"libparsifal\win32\vc6\parsifal.vpc" [$WINDOWS]
 }
 
 $Project "pcffix"
@@ -609,19 +477,9 @@ $Project "raytrace"
 	"raytrace\raytrace.vpc" [$WINDOWS||$POSIX]
 }
 
-$Project "res2c"
-{
-	"utils\tfstats\res2c\res2c.vpc" [$WINDOWS]
-}
-
 $Project "rpt"
 {
 	"utils\rpt\rpt.vpc" [$WINDOWS]
-}
-
-$Project "rt_test"
-{
-	"unittests\rt_test\rt_test.vpc" [$WINDOWS]
 }
 
 $Project "runme"
@@ -657,11 +515,6 @@ $Project "SDKLauncher"
 $Project "ServerBrowser"
 {
 	"ServerBrowser\ServerBrowser.vpc" [$WINDOWS||$X360]
-}
-
-$Project "ServerMonitor"
-{
-	"Tracker\ServerMonitor\ServerMonitor.vpc" [$WINDOWS]
 }
 
 $Project "serverplugin_empty"
@@ -709,49 +562,14 @@ $Project "shaderapitest"
 	"unittests\shaderapitest\shaderapitest.vpc" [$WINDOWS]
 }
 
-$Project "shaderinfo"
-{
-	"utils\shaderinfo\shaderinfo.vpc" [$WINDOWS]
-}
-
 $Project "shaderlib"
 {
 	"materialsystem\shaderlib\shaderlib.vpc" [$WINDOWS||$POSIX]
 }
 
-$Project "shader_nvfx"
-{
-	"materialsystem\stdshaders\shader_nvfx.vpc" [$WINDOWS]
-}
-
-$Project "shader_test"
-{
-	"materialsystem\stdshaders\shader_test.vpc" [$WINDOWS]
-}
-
-$Project "SMDExportMP"
-{
-	"utils\xsi\SMDExportMP\SMDExportMP.vpc" [$WINDOWS]
-}
-
-$Project "smdlexp"
-{
-	"utils\smdlexp\smdlexp.vpc" [$WINDOWS]
-}
-
 $Project "smp"
 {
 	"utils\smp\smp.vpc" [$WINDOWS]
-}
-
-$Project "smtpmail"
-{
-	"devtools\smtpmail\smtpmail.vpc" [$WINDOWS]
-}
-
-$Project "socket_tests"
-{
-	"utils\socket_tests\socket_tests.vpc" [$WINDOWS]
 }
 
 $Project "soundemittersystem"
@@ -789,11 +607,6 @@ $Project "standalonedatatabletest"
 	"utils\standalonedatatabletest\standalonedatatabletest.vpc" [$WINDOWS]
 }
 
-$Project "Status"
-{
-	"status\Status.vpc" [$WINDOWS]
-}
-
 $project "stdshader_dbg"
 {
 	"materialsystem\stdshaders\stdshader_dbg.vpc" [$WINDOWS||$POSIX]
@@ -819,36 +632,6 @@ $Project "studiorender"
 	"studiorender\studiorender.vpc" [$WINDOWS||$POSIX]
 }
 
-$Project "syncfrommirror"
-{
-	"devtools\syncfrommirror\syncfrommirror.vpc" [$WINDOWS]
-}
-
-$Project "tagbuild"
-{
-	"devtools\tagbuild\tagbuild.vpc" [$WINDOWS]
-}
-
-$Project "tagxzppreload"
-{
-	"utils\xbox\tagxzppreload\tagxzppreload.vpc" [$WINDOWS]
-}
-
-$Project "test"
-{
-	"shell\uninstall\uninstalltester\test.vpc" [$WINDOWS]
-}
-
-$Project "test_binaries"
-{
-	"devtools\test_binaries\test_binaries.vpc" [$WINDOWS]
-}
-
-$Project "testprocess"
-{
-	"unittests\testprocess\testprocess.vpc" [$WINDOWS]
-}
-
 $Project "texturecompile_dll"
 {
 	"utils\texturecompile\texturecompile_dll.vpc" [$WINDOWS]
@@ -862,11 +645,6 @@ $Project "texturecompile_launcher"
 $Project "texturesynth"
 {
 	"utils\Texturesynth\texturesynth.vpc" [$WINDOWS]
-}
-
-$Project "tfstats"
-{
-	"utils\tfstats\tfstats.vpc" [$WINDOWS]
 }
 
 $Project "tgadiff"
@@ -924,51 +702,6 @@ $Project "toolutils"
 	"tools\toolutils\toolutils.vpc" [$WINDOWS]
 }
 
-$Project "TrackerDBG"
-{
-	"Tracker\TrackerDBG\TrackerDBG.vpc" [$WINDOWS]
-}
-
-$Project "TrackerNET"
-{
-	"Tracker\TrackerNET\TrackerNET.vpc" [$WINDOWS]
-}
-
-$Project "TrackerServer"
-{
-	"Tracker\TrackerServer\TrackerServer.vpc" [$WINDOWS]
-}
-
-$Project "TrackerSRV"
-{
-	"Tracker\TrackerSRV\TrackerSRV.vpc" [$WINDOWS]
-}
-
-$Project "TrackerTest"
-{
-	"Tracker\TrackerTest\TrackerTest.vpc" [$WINDOWS]
-}
-
-$Project "TrackerUI"
-{
-	"Tracker\TrackerUI\TrackerUI.vpc" [$WINDOWS]
-}
-
-$Project "ui"
-{
-	"utils\tfstats\ui\ui.vpc" [$WINDOWS]
-}
-
-$Project "unicode"
-{
-	"unicode\unicode.vpc" [$WINDOWS]
-}
-
-$Project "uninstall"
-{
-	"shell\uninstall\uninstall.vpc" [$WINDOWS]
-}
-
 $Project "unitlib"
 {
 	"unitlib\unitlib.vpc" [$WINDOWS]
@@ -982,11 +715,6 @@ $Project "unittest"
 $Project "unusedcontent"
 {
 	"utils\unusedcontent\unusedcontent.vpc" [$WINDOWS]
-}
-
-$Project "UpdateProgress"
-{
-	"devtools\WiseInstallerHelpers\UpdateProgress\UpdateProgress.vpc" [$WINDOWS]
 }
 
 $Project "valvelib"
@@ -1072,11 +800,6 @@ $Project "vgui_surfacelib"
 $Project "vice"
 {
 	"utils\vice\vice.vpc" [$WINDOWS]
-}
-
-$Project "vkeyedit"
-{
-	"utils\vkeyedit\vkeyedit.vpc" [$WINDOWS]
 }
 
 $Project "vlocalize"
@@ -1179,11 +902,6 @@ $Project "vstdlib"
 	"vstdlib\vstdlib.vpc"		[$WINDOWS||$POSIX]
 }
 
-$Project "vtaexp"
-{
-	"utils\vtaexp\vtaexp.vpc" [$WINDOWS]
-}
-
 $Project "vtex_dll"
 {
 	"utils\vtex\vtex_dll.vpc" [$WINDOWS]
@@ -1234,11 +952,6 @@ $Project "WaitAndRestart"
 	"utils\vmpi\WaitAndRestart\WaitAndRestart.vpc" [$WINDOWS]
 }
 
-$Project "xwad"
-{
-	"utils\xwad\xwad.vpc" [$WINDOWS]
-}
-
 $Project "ZipAlign"
 {
 	"utils\zipalign\ZipAlign.vpc" [$WINDOWS]
@@ -1267,9 +980,4 @@ $Project "Tier2UnitTest"
 $Project "VStdlibUnitTest"
 {
 	"unittests\VStdlibTest\vstdlibtest.vpc"
-}
-
-$Project "appidlink"
-{
-	"utils\appidlink\appidlink.vpc"
 }
