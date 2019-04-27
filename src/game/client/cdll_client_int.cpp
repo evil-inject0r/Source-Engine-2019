@@ -82,7 +82,7 @@
 #include "appframework/IAppSystemGroup.h"
 #include "scenefilecache/ISceneFileCache.h"
 #include "tier3/tier3.h"
-#include "video/iavi.h"
+#include "avi/iavi.h"
 #include "toolframework_client.h"
 #include "hltvcamera.h"
 #include "ixboxsystem.h"
@@ -690,7 +690,9 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		return false;
 	if ( (inputsystem = (IInputSystem *)appSystemFactory(INPUTSYSTEM_INTERFACE_VERSION, NULL)) == NULL )
 		return false;
-	if ( (avi = (IAvi *)appSystemFactory(AVI_INTERFACE_VERSION, NULL)) == NULL )
+	if ( IsPC() && (avi = (IAvi *)appSystemFactory(AVI_INTERFACE_VERSION, NULL)) == NULL )
+		return false;
+	if ( (bik = (IBik *)appSystemFactory(BIK_INTERFACE_VERSION, NULL)) == NULL )
 		return false;
 	if ( (scenefilecache = (ISceneFileCache *)appSystemFactory( SCENE_FILE_CACHE_INTERFACE_VERSION, NULL )) == NULL )
 		return false;

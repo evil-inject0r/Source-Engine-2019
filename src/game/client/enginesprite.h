@@ -12,7 +12,8 @@
 #endif
 
 #include "mathlib/vector.h"
-#include "video/iavi.h"
+#include "avi/iavi.h"
+#include "avi/ibik.h"
 
 
 //-----------------------------------------------------------------------------
@@ -51,10 +52,12 @@ public:
 	void DrawFrame( int frame, int x, int y, const wrect_t *prcSubRect );
 	void DrawFrameOfSize( int frame, int x, int y, int iWidth, int iHeight, const wrect_t *prcSubRect);
 	bool IsAVI();
+	bool IsBIK();
 	void GetTexCoordRange( float *pMinU, float *pMinV, float *pMaxU, float *pMaxV );
 
 private:
 	AVIMaterial_t m_hAVIMaterial;
+	BIKMaterial_t m_hBIKMaterial;
 	int m_width;
 	int m_height;
 	int m_numFrames;

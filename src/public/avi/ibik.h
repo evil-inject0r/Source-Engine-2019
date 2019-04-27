@@ -7,8 +7,8 @@
 //
 //=============================================================================
 
-#ifndef IAVI_H
-#define IAVI_H
+#ifndef IBIK_H
+#define IBIK_H
 
 #ifdef _WIN32
 #pragma once
@@ -22,13 +22,12 @@
 struct BGR888_t;
 class IMaterial;
 
-
 //-----------------------------------------------------------------------------
-// Parameters for creating a new AVI
+// Parameters for creating a new BINK
 //-----------------------------------------------------------------------------
-struct AVIParams_t
+struct BIKParams_t
 {
-	AVIParams_t() :
+	BIKParams_t() :
 		m_nFrameRate( 0 ), m_nFrameScale( 1 ), m_nWidth( 0 ), m_nHeight( 0 ),
 		m_nSampleRate( 0 ), m_nSampleBits( 0 ), m_nNumChannels( 0 )
 	{
@@ -55,72 +54,68 @@ struct AVIParams_t
 	int			m_nNumChannels;
 };
 
-
 //-----------------------------------------------------------------------------
-// Handle to an AVI
+// Handle to an BINK
 //-----------------------------------------------------------------------------
-typedef unsigned short AVIHandle_t;
+typedef unsigned short BIKHandle_t;
 enum
 {
-	AVIHANDLE_INVALID = (AVIHandle_t)~0
+	BIKHANDLE_INVALID = (BIKHandle_t)~0
 };
 
 
 //-----------------------------------------------------------------------------
-// Handle to an AVI material
+// Handle to an BINK material
 //-----------------------------------------------------------------------------
-typedef unsigned short AVIMaterial_t;
+typedef unsigned short BIKMaterial_t;
 enum
 {
-	AVIMATERIAL_INVALID = (AVIMaterial_t)~0
+	BIKMATERIAL_INVALID = (BIKMaterial_t)~0
 };
 
 
 //-----------------------------------------------------------------------------
 // Main AVI interface
 //-----------------------------------------------------------------------------
-#define AVI_INTERFACE_VERSION "VAvi001"
+#define BIK_INTERFACE_VERSION "VBik001"
 
-class IAvi : public IAppSystem
+class IBik : public IAppSystem
 {
 public:
-	// Necessary to call this before any other AVI interface methods 
-	virtual void	SetMainWindow( void* hWnd ) = 0;
+	// Create/destroy a BINK material (a materialsystem IMaterial)
+	virtual BIKMaterial_t CreateMaterial( const char *pMaterialName, const char *pFileName, const char *pPathID ) = 0;
+	virtual void DestroyMaterial( BIKMaterial_t hMaterial ) = 0;
+	
+	// Update the frame (if necessary)
+	virtual bool Update( BIKMaterial_t hMaterial ) = 0;
 
-	// Start/stop recording an AVI
-	virtual AVIHandle_t	StartAVI( const AVIParams_t& params ) = 0;
-	virtual void	FinishAVI( AVIHandle_t handle ) = 0;
+	// Gets the IMaterial associated with an BINK material
+	virtual IMaterial* GetMaterial( BIKMaterial_t hMaterial ) = 0;
 
-	// Add frames to an AVI
-	virtual void	AppendMovieSound( AVIHandle_t h, short *buf, size_t bufsize ) = 0;
-	virtual void	AppendMovieFrame( AVIHandle_t h, const BGR888_t *pRGBData ) = 0;
+	// Returns the max texture coordinate of the BINK
+	virtual void GetTexCoordRange( BIKMaterial_t hMaterial, float *pMaxU, float *pMaxV ) = 0;
 
-	// Create/destroy an AVI material (a materialsystem IMaterial)
-	virtual AVIMaterial_t CreateAVIMaterial( const char *pMaterialName, const char *pFileName, const char *pPathID ) = 0;
-	virtual void DestroyAVIMaterial( AVIMaterial_t hMaterial ) = 0;
+	// Returns the frame size of the BINK (stored in a subrect of the material itself)
+	virtual void GetFrameSize( BIKMaterial_t hMaterial, int *pWidth, int *pHeight ) = 0;
 
-	// Sets the time for an AVI material
-	virtual void SetTime( AVIMaterial_t hMaterial, float flTime ) = 0;
+	// Returns the frame rate of the BINK
+	virtual int GetFrameRate( BIKMaterial_t hMaterial ) = 0;
 
-	// Gets the IMaterial associated with an AVI material
-	virtual IMaterial* GetMaterial( AVIMaterial_t hMaterial ) = 0;
+	// Returns the total frame count of the BINK
+	virtual int GetFrameCount( BIKMaterial_t hMaterial ) = 0;
 
-	// Returns the max texture coordinate of the AVI
-	virtual void GetTexCoordRange( AVIMaterial_t hMaterial, float *pMaxU, float *pMaxV ) = 0;
+	// Sets the frame for an BINK material (use instead of SetTime)
+	virtual void SetFrame( BIKMaterial_t hMaterial, float flFrame ) = 0;
 
-	// Returns the frame size of the AVI (stored in a subrect of the material itself)
-	virtual void GetFrameSize( AVIMaterial_t hMaterial, int *pWidth, int *pHeight ) = 0;
-
-	// Returns the frame rate of the AVI
-	virtual int GetFrameRate( AVIMaterial_t hMaterial ) = 0;
-
-	// Returns the total frame count of the AVI
-	virtual int GetFrameCount( AVIMaterial_t hMaterial ) = 0;
-
-	// Sets the frame for an AVI material (use instead of SetTime)
-	virtual void SetFrame( AVIMaterial_t hMaterial, float flFrame ) = 0;
+#if !defined( _X360 )
+	// Sets the direct sound device that Bink will decode to
+	virtual bool SetDirectSoundDevice( void	*pDevice ) = 0;
+#else
+	//needs to be called after xaudio is initialized
+	virtual bool HookXAudio( void ) = 0;
+#endif
 };
 
 
 
-#endif // IAVI_H
+#endif // IBIK_H

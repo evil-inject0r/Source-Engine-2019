@@ -11,7 +11,7 @@
 #include "icliententitylist.h"
 #include "icliententity.h"
 #include "../../sys_dll.h"
-#include "video/iavi.h"
+#include "avi/iavi.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

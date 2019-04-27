@@ -19,7 +19,7 @@
 
 VideoPanel::VideoPanel( unsigned int nXPos, unsigned int nYPos, unsigned int nHeight, unsigned int nWidth ) : 
 	BaseClass( NULL, "VideoPanel" ),
-	m_AVIHandle( AVIHANDLE_INVALID ),
+	m_BIKHandle( BIKHANDLE_INVALID ),
 	m_nPlaybackWidth( 0 ),
 	m_nPlaybackHeight( 0 )
 {
@@ -57,10 +57,10 @@ VideoPanel::~VideoPanel( void )
 	SetParent( (vgui::Panel *) NULL );
 
 	// Shut down this video
-	if ( m_AVIHandle != AVIHANDLE_INVALID )
+	if ( m_BIKHandle != BIKHANDLE_INVALID )
 	{
-		avi->DestroyAVIMaterial( m_AVIHandle );
-		m_AVIHandle = AVIHANDLE_INVALID;
+		bik->DestroyMaterial( m_BIKHandle );
+		m_BIKHandle = BIKHANDLE_INVALID;
 	}
 }
 
@@ -71,15 +71,15 @@ VideoPanel::~VideoPanel( void )
 bool VideoPanel::BeginPlayback( const char *pFilename )
 {
 	// Destroy any previously allocated video
-	if ( m_AVIHandle != AVIHANDLE_INVALID )
+	if ( m_BIKHandle != BIKHANDLE_INVALID )
 	{
-		avi->DestroyAVIMaterial( m_AVIHandle );
-		m_AVIHandle = AVIHANDLE_INVALID;
+		bik->DestroyMaterial( m_BIKHandle );
+		m_BIKHandle = BIKHANDLE_INVALID;
 	}
 
 	// Load and create our BINK video
-	m_AVIHandle = avi->CreateAVIMaterial( "VideoAVIMaterial", pFilename, "GAME" );
-	if ( m_AVIHandle == AVIHANDLE_INVALID )
+	m_BIKHandle = bik->CreateMaterial( "VideoBIKMaterial", pFilename, "GAME" );
+	if ( m_BIKHandle == BIKHANDLE_INVALID )
 		return false;
 
 	// We want to be the sole audio source
@@ -87,9 +87,9 @@ bool VideoPanel::BeginPlayback( const char *pFilename )
 	enginesound->NotifyBeginMoviePlayback();
 
 	int nWidth, nHeight;
-	avi->GetFrameSize( m_AVIHandle, &nWidth, &nHeight );
-	avi->GetTexCoordRange( m_AVIHandle, &m_flU, &m_flV );
-	m_pMaterial = avi->GetMaterial( m_AVIHandle );
+	bik->GetFrameSize( m_BIKHandle, &nWidth, &nHeight );
+	bik->GetTexCoordRange( m_BIKHandle, &m_flU, &m_flV );
+	m_pMaterial = bik->GetMaterial( m_BIKHandle );
 
 	float flFrameRatio = ( (float) GetWide() / (float) GetTall() );
 	float flVideoRatio = ( (float) nWidth / (float) nHeight );
@@ -220,16 +220,16 @@ void VideoPanel::Paint( void )
 	BaseClass::Paint();
 
 	// No video to play, so do nothing
-	if ( m_AVIHandle == AVIHANDLE_INVALID )
+	if ( m_BIKHandle == BIKHANDLE_INVALID )
 		return;
 
 	// Update our frame
-	/*if ( bik->Update( m_AVIHandle ) == false )
+	if ( bik->Update( m_BIKHandle ) == false )
 	{
 		// Issue a close command
 		OnVideoOver();
 		OnClose();
-	}*/
+	}
 
 	// Sit in the "center"
 	int xpos, ypos;
@@ -357,7 +357,7 @@ CON_COMMAND( playvideo, "Plays a video: <filename> [width height]" )
 	char strFilename[MAX_PATH];
 	Q_StripExtension( args[1], strFilename, MAX_PATH );
 	Q_strncat( strFullpath, args[1], MAX_PATH );
-	Q_strncat( strFullpath, ".avi", MAX_PATH );		// Assume we're a .avi extension type
+	Q_strncat( strFullpath, ".bik", MAX_PATH );		// Assume we're a .bik extension type
 
 	if ( nScreenWidth == 0 )
 	{
@@ -393,7 +393,7 @@ CON_COMMAND( playvideo_exitcommand, "Plays a video and fires and exit command wh
 	char strFilename[MAX_PATH];
 	Q_StripExtension( args[1], strFilename, MAX_PATH );
 	Q_strncat( strFullpath, args[1], MAX_PATH );
-	Q_strncat( strFullpath, ".avi", MAX_PATH );		// Assume we're a .avi extension type
+	Q_strncat( strFullpath, ".bik", MAX_PATH );		// Assume we're a .bik extension type
 
 	char *pExitCommand = Q_strstr( args.GetCommandString(), args[2] );
 

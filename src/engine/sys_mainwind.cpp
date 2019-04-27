@@ -28,7 +28,7 @@
 #include "cdll_engine_int.h"
 #include "vgui_baseui_interface.h"
 #include "iengine.h"
-#include "video/iavi.h"
+#include "avi/iavi.h"
 #include "keys.h"
 #include "vguimatsurface/imatsystemsurface.h"
 #include "tier3/tier3.h"
@@ -41,6 +41,7 @@
 #include "gameui/igameui.h"
 #include "matchmaking.h"
 #include "sv_main.h"
+#include "bink/bink.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
