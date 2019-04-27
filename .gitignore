@@ -149,3 +149,4 @@ modeswitchsave.tga
 \.vscode/
 /game/bin/win32/*.vdf
 GameConfig.txt
+*.vdf
