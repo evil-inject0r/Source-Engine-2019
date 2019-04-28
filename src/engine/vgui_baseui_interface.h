@@ -15,10 +15,6 @@
 #include "ienginevgui.h"
 #include "inputsystem/ButtonCode.h"
 
-#if !defined( _X360 )
-#include "xbox/xboxstubs.h"
-#endif
-
 //-----------------------------------------------------------------------------
 // Foward declarations
 //-----------------------------------------------------------------------------
@@ -124,7 +120,6 @@ public:
 	virtual void SystemNotification( const int notification ) = 0;
 	virtual void ShowMessageDialog( const uint nType, vgui::Panel *pOwner = NULL ) = 0;
 	virtual void UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost ) = 0;
-	virtual void SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping ) = 0;
 	virtual void OnCreditsFinished( void ) = 0;
 
 	// Storage device validation:

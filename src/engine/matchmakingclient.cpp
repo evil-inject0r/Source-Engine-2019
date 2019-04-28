@@ -53,9 +53,6 @@ void CMatchmaking::StartClient( bool bSystemLink )
 bool CMatchmaking::StartSystemLinkSearch()
 {
 	// Create an random identifier and reset the send timer
-#if defined( _X360 )
-	XNetRandom( (byte*)&m_Nonce, sizeof( m_Nonce ) );
-#endif
 	m_fSendTimer = GetTime();
 	m_nSendCount = 0;
 
@@ -213,31 +210,7 @@ void CMatchmaking::UpdateSearch()
 			{
 				// A list of matching sessions was found.
 				Msg( "Found %d matching games\n", m_pSearchResults->dwSearchResults );
-#if defined( _X360 )
-				for ( unsigned int i = 0; i < m_pSearchResults->dwSearchResults; ++i )
-				{
-					m_QoSxnaddr[i] = &(m_pSearchResults->pResults[i].info.hostAddress);
-					m_QoSxnkid[i] = &(m_pSearchResults->pResults[i].info.sessionID);
-					m_QoSxnkey[i] = &(m_pSearchResults->pResults[i].info.keyExchangeKey);
-				}
 
-				//
-				// Note: XNetQosLookup requires only 2 successful probes to be received from the host.
-				// This is much less than the recommended 8 probes because on a 10% data loss profile
-				// it is impossible to find the host when requiring 8 probes to be received.
-				XNetQosLookup(  m_pSearchResults->dwSearchResults, 
-								m_QoSxnaddr,
-								m_QoSxnkid, 
-								m_QoSxnkey, 
-								0,				// number of security gateways to probe
-								NULL,			// gateway ip addresses
-								NULL,			// gateway service ids
-								2,				// number of probes
-								0,				// upstream bandwith to use (0 = default)
-								0,				// flags - not supported
-								NULL,			// signal event
-								&m_pQoSResult );// results
-#endif
 				SwitchToState( MMSTATE_WAITING_QOS );
 			}
 			else
@@ -288,8 +261,6 @@ void CMatchmaking::UpdateSearch()
 					hostData.xuid = pSearchInfo->xuid;
 					Q_strncpy( hostData.hostName, pSearchInfo->szHostName, sizeof( hostData.hostName ) );
 					Q_strncpy( hostData.scenario, pSearchInfo->szScenario, sizeof( hostData.scenario ) );
-
-					EngineVGui()->SessionSearchResult( i, &hostData, pResult, -1 );
 				}
 			}
 			else
@@ -306,95 +277,6 @@ void CMatchmaking::UpdateSearch()
 //-----------------------------------------------------------------------------
 void CMatchmaking::UpdateQosLookup()
 {
-#if defined( _X360 )
-	// Keep checking for results until the wait time expires
-	if ( GetTime() - m_fWaitTimer < QOSLOOKUP_WAITTIME )
-	{
-		for ( uint i = 0; i < m_pSearchResults->dwSearchResults; ++i )
-		{
-			if ( (m_pQoSResult->axnqosinfo[0].bFlags & XNET_XNQOSINFO_COMPLETE) == 0 )
-				return;
-		}
-	}
-
-	bool bNotifiedGameUI = false;
-	for ( unsigned int i = 0; i < m_pSearchResults->dwSearchResults; ++i )
-	{
-		// Make sure the host is available
-		if ( !(m_pQoSResult->axnqosinfo[i].bFlags & XNET_XNQOSINFO_TARGET_CONTACTED) )
-		{
-			DevMsg( "Result #%d: Host unreachable (!XNET_XNQOSINFO_TARGET_CONTACTED)\n", i );
-			continue;
-		}
-		else if ( (m_pQoSResult->axnqosinfo[i].bFlags & XNET_XNQOSINFO_TARGET_DISABLED) )
-		{
-			DevMsg( "Result #%d: Host disabled (XNET_XNQOSINFO_TARGET_DISABLED)\n", i );
-			continue;
-		}
-		else if ( !(m_pQoSResult->axnqosinfo[i].bFlags & XNET_XNQOSINFO_DATA_RECEIVED) ||
-				  !m_pQoSResult->axnqosinfo[i].cbData ||
-				  !m_pQoSResult->axnqosinfo[i].pbData )
-		{
-			DevMsg( "Result #%d: No data received (!XNET_XNQOSINFO_DATA_RECEIVED)\n", i );
-			continue;
-		}
-
-
-		// Check the ping before we accept this host
-		// unsigned short ping = m_pQoSResult->axnqosinfo[i].wRttMedInMsecs;
-		unsigned short ping = m_pQoSResult->axnqosinfo[i].wRttMinInMsecs;	// Use min ping to suit better for traffic bursts and lossy connections
-		DevMsg( "Result #%d: ping min %d ms, med %d ms\n", i, m_pQoSResult->axnqosinfo[i].wRttMinInMsecs, m_pQoSResult->axnqosinfo[i].wRttMedInMsecs );
-		
-		// On X360 ping calculations are reported between 4 and 5 times bigger
-		// than the actual upstream/downstream latency of the connection to Xbox LIVE
-		const int pingFactor = 5;
-		ping /= pingFactor;
-
-		if ( ping > PING_MAX_RED )
-		{
-			DevMsg( "Result #%d: Host connection too slow, ignoring\n", i );
-			continue;
-		}
-
-		// Determine the QOS quality to show to user
-		int pingDisplayedToUserIcon = -1;
-		if ( ping <= PING_MAX_GREEN )
-		{
-			pingDisplayedToUserIcon = 0;
-		}
-		else if ( ping <= PING_MAX_YELLOW )
-		{
-			pingDisplayedToUserIcon = 1;
-		}
-		else if ( ping <= PING_MAX_RED )
-		{
-			pingDisplayedToUserIcon = 2;
-		}
-
-		// Retrieve the search result
-		XSESSION_SEARCHRESULT &searchResult = m_pSearchResults->pResults[i];
-
-		// The host should have given us some game data
-		hostData_s hostData;
-		Q_memcpy( &hostData, m_pQoSResult->axnqosinfo[i].pbData, sizeof( hostData ) );
-
-		// This host is acceptable.  Get the info and notify gameUI
-		if ( !bNotifiedGameUI )
-		{
-			SessionNotification( SESSION_NOTIFY_SEARCH_COMPLETED );
-			bNotifiedGameUI = true;
-		}
-
-		// Send the host info to GameUI
-		EngineVGui()->SessionSearchResult( i, &hostData, &searchResult, pingDisplayedToUserIcon );
-		DevMsg( "Result #%d: %d open public slots, %d open private slots\n", i, searchResult.dwOpenPublicSlots, searchResult.dwOpenPrivateSlots );
-	}
-
-	if ( !bNotifiedGameUI )
-	{
-		SessionNotification( SESSION_NOTIFY_FAIL_SEARCH );
-	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -410,9 +292,6 @@ void CMatchmaking::CancelSearch()
 //-----------------------------------------------------------------------------
 void CMatchmaking::CancelQosLookup()
 {
-#if defined( _X360 )
-	XNetQosRelease( m_pQoSResult );
-#endif
 	SwitchToState( MMSTATE_INITIAL );
 }
 

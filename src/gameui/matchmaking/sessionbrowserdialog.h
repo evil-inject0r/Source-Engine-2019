@@ -30,7 +30,6 @@ public:
 	virtual void	SwapMenuItems( int iOne, int iTwo );
 
 	void			UpdateScenarioDisplay( void );
-	void			SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping );
 
 	KeyValues	*m_pDialogKeys;
 

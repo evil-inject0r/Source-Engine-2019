@@ -39,7 +39,6 @@ public:
 	void			SessionNotification( const int notification, const int param = 0 );
 	void			SystemNotification( const int notification );
 	void			UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost );
-	void			SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping );
 
 	void			OnLevelLoadingStarted();
 	void			OnLevelLoadingFinished();

@@ -3189,18 +3189,6 @@ void CBasePanel::UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTea
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Matchmaking notification to add a session to the browser
-//-----------------------------------------------------------------------------
-void CBasePanel::SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping )
-{
-	CMatchmakingBasePanel *pBase = GetMatchmakingBasePanel();
-	if ( pBase )
-	{
-		pBase->SessionSearchResult( searchIdx, pHostData, pResult, ping );
-	}
-}
-
-//-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CBasePanel::OnChangeStorageDevice( void )

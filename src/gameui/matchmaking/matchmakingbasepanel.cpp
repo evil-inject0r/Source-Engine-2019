@@ -616,18 +616,6 @@ void CMatchmakingBasePanel::UpdatePlayerInfo( uint64 nPlayerId, const char *pNam
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a search result to the browser dialog
-//-----------------------------------------------------------------------------
-void CMatchmakingBasePanel::SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping )
-{
-	CSessionBrowserDialog *pBrowser = dynamic_cast< CSessionBrowserDialog* >( m_hSessionBrowserDialog.Get() );
-	if ( pBrowser )
-	{
-		pBrowser->SessionSearchResult( searchIdx, pHostData, pResult, ping );
-	}
-}
-
-//-----------------------------------------------------------------------------
 // Purpose: Pre level load ops
 //-----------------------------------------------------------------------------
 void CMatchmakingBasePanel::OnLevelLoadingStarted()

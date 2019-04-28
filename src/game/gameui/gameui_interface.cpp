@@ -1122,7 +1122,6 @@ STUB_GAMEUI_FUNC(SessionNotification, void, , const int notification, const int 
 STUB_GAMEUI_FUNC(SystemNotification, void, , const int notification);
 STUB_GAMEUI_FUNC(ShowMessageDialog, void, , const uint nType, vgui::Panel *pOwner);
 STUB_GAMEUI_FUNC(UpdatePlayerInfo, void, , uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost);
-STUB_GAMEUI_FUNC(SessionSearchResult, void, , int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping);
 STUB_GAMEUI_FUNC(OnCreditsFinished, void, , );
 STUB_GAMEUI_FUNC(BonusMapUnlock, void, , const char *pchFileName, const char *pchMapName);
 STUB_GAMEUI_FUNC(BonusMapComplete, void, , const char *pchFileName, const char *pchMapName);

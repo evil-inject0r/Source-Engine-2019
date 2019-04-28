@@ -241,7 +241,6 @@ public:
 	void ShowMessageDialog( const uint nType, vgui::Panel *pParent = NULL );
 	void CloseMessageDialog( const uint nType );
 	void UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost );
-	void SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping );
 	void OnChangeStorageDevice();
 	bool ValidateStorageDevice();
 	bool ValidateStorageDevice( int *pStorageDeviceValidated );

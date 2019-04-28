@@ -344,7 +344,6 @@ public:
 	virtual void SystemNotification( const int notification );
 	virtual void ShowMessageDialog( const uint nType, vgui::Panel *pOwner = NULL );
 	virtual void UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost );
-	virtual void SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping );
 	virtual void OnCreditsFinished( void );
 
 	// Storage device validation:
@@ -1838,11 +1837,6 @@ void CEngineVGui::ShowMessageDialog( const uint nType, vgui::Panel *pOwner )
 void CEngineVGui::UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost )
 {
 	staticGameUIFuncs->UpdatePlayerInfo( nPlayerId, pName, nTeam, cVoiceState, nPlayersNeeded, bHost );
-}
-
-void CEngineVGui::SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping )
-{
-	staticGameUIFuncs->SessionSearchResult( searchIdx, pHostData, pResult, ping );
 }
 
 //-----------------------------------------------------------------------------
