@@ -81,7 +81,6 @@ public:
 	virtual void ShowMessageDialog( const uint nType, vgui::Panel *pOwner = NULL );
 	virtual void CloseMessageDialog( const uint nType = 0 );
 	virtual void UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost );
-	virtual void SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping );
 	virtual void OnCreditsFinished( void );
 
 	// X360 Storage device validation:

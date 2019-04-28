@@ -14,10 +14,6 @@
 #include "interface.h"
 #include "vgui/IPanel.h"
 
-#if !defined( _X360 )
-#include "xbox/xboxstubs.h"
-#endif
-
 // reasons why the user can't connect to a game server
 enum ESteamLoginFailure
 {
@@ -79,7 +75,6 @@ public:
 	virtual void SystemNotification( const int notification ) = 0;
 	virtual void ShowMessageDialog( const uint nType, vgui::Panel *pOwner ) = 0;
 	virtual void UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost ) = 0;
-	virtual void SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping ) = 0;
 	virtual void OnCreditsFinished( void ) = 0;
 
 	// inserts specified panel as background for level load dialog

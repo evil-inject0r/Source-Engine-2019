@@ -137,29 +137,6 @@ static UserFormatToRGBA8888Func_t GetUserFormatToRGBA8888Func_t( ImageFormat src
 	case IMAGE_FORMAT_RGBA16161616F:
 		return NULL;
 
-#if defined( _X360 )
-	case IMAGE_FORMAT_LINEAR_RGBA8888:
-		return RGBA8888ToRGBA8888;
-	case IMAGE_FORMAT_LINEAR_ABGR8888:
-		return ABGR8888ToRGBA8888;
-	case IMAGE_FORMAT_LINEAR_RGB888:
-		return RGB888ToRGBA8888;
-	case IMAGE_FORMAT_LINEAR_BGR888:
-		return BGR888ToRGBA8888;
-	case IMAGE_FORMAT_LINEAR_I8:
-		return I8ToRGBA8888;
-	case IMAGE_FORMAT_LINEAR_ARGB8888:
-		return ARGB8888ToRGBA8888;
-	case IMAGE_FORMAT_LINEAR_BGRA8888:
-		return BGRA8888ToRGBA8888;
-	case IMAGE_FORMAT_LINEAR_BGRX8888:
-		return BGRX8888ToRGBA8888;
-	case IMAGE_FORMAT_LINEAR_BGRX5551:
-		return BGRX5551ToRGBA8888;
-	case IMAGE_FORMAT_LINEAR_RGBA16161616:
-		return RGBA16161616ToRGBA8888;
-#endif
-
 	default:
 		return NULL;
 	}
@@ -211,28 +188,6 @@ static RGBA8888ToUserFormatFunc_t GetRGBA8888ToUserFormatFunc_t( ImageFormat dst
 		return RGBA8888ToUVLX8888;
 	case IMAGE_FORMAT_RGBA16161616F:
 		return NULL;
-
-#if defined( _X360 )
-	case IMAGE_FORMAT_LINEAR_RGBA8888:
-		return RGBA8888ToRGBA8888;
-	case IMAGE_FORMAT_LINEAR_ABGR8888:
-		return RGBA8888ToABGR8888;
-	case IMAGE_FORMAT_LINEAR_RGB888:
-		return RGBA8888ToRGB888;
-	case IMAGE_FORMAT_LINEAR_BGR888:
-		return RGBA8888ToBGR888;
-	case IMAGE_FORMAT_LINEAR_I8:
-		return RGBA8888ToI8;
-	case IMAGE_FORMAT_LINEAR_ARGB8888:
-		return RGBA8888ToARGB8888;
-	case IMAGE_FORMAT_LINEAR_BGRA8888:
-		return RGBA8888ToBGRA8888;
-	case IMAGE_FORMAT_LINEAR_BGRX8888:
-		return RGBA8888ToBGRX8888;
-	case IMAGE_FORMAT_LINEAR_BGRX5551:
-		return RGBA8888ToBGRX5551;
-#endif
-
 	default:
 		return NULL;
 	}
@@ -823,7 +778,7 @@ bool ConvertToATIxN(  const uint8 *src, ImageFormat srcImageFormat,
 					  uint8 *dst, ImageFormat dstImageFormat,
 					  int width, int height, int srcStride, int dstStride )
 {
-#if !defined( _X360 ) && !defined( _LINUX )
+#if !defined( _LINUX )
 
 	// from rgb(a) to ATIxN
 	if( srcStride != 0 || dstStride != 0 )
@@ -872,7 +827,7 @@ bool ConvertToDXT(  const uint8 *src, ImageFormat srcImageFormat,
  					uint8 *dst, ImageFormat dstImageFormat, 
 					int width, int height, int srcStride, int dstStride )
 {
-#if !defined( _X360 ) && !defined( _LINUX )
+#if !defined( _LINUX )
 	// from rgb(a) to dxtN
 	if( srcStride != 0 || dstStride != 0 )
 		return false;
@@ -1399,13 +1354,6 @@ bool ConvertImageFormat( const uint8 *src, ImageFormat srcImageFormat,
 		if( ( srcImageFormat == dstImageFormat ) || 
 			((srcImageFormat == IMAGE_FORMAT_BGRA8888) && (dstImageFormat == IMAGE_FORMAT_BGRX8888)) )
 		{
-			if ( IsX360() && ( srcStride == dstStride ) && ( width*srcPixelSize == srcStride ) )
-			{
-				// fastest path
-				memcpy( dst, src, height*srcStride ); 
-				return true;
-			}
-
 			for ( line = 0; line < height; ++line )
 			{
 				memcpy( dst, src, width*srcPixelSize ); 

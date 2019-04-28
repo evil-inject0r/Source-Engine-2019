@@ -1127,23 +1127,6 @@ void CBasePanel::DrawBackgroundImage()
 	surface()->DrawSetColor( 255, 255, 255, alpha );
 	surface()->DrawSetTexture( iImageID );
 	surface()->DrawTexturedRect( 0, 0, wide, tall );
-#ifdef _X360
-	if ( IsX360() && m_ExitingFrameCount )
-	{
-		// Make invisible when going back to appchooser
-		m_pGameMenu->BaseClass::SetVisible( false );
-
-		IScheme *pScheme = vgui::scheme()->GetIScheme( vgui::scheme()->GetScheme( "SourceScheme" ) );
-		HFont hFont = pScheme->GetFont( "ChapterTitle" );
-		wchar_t *pString = g_pVGuiLocalize->Find( "#GameUI_Loading" );
-		int textWide, textTall;
-		surface()->GetTextSize( hFont, pString, textWide, textTall );
-		surface()->DrawSetTextPos( ( wide - textWide )/2, tall * 0.50f );
-		surface()->DrawSetTextFont( hFont );
-		surface()->DrawSetTextColor( 255, 255, 255, alpha );
-		surface()->DrawPrintText( pString, wcslen( pString ) );
-	}
-#endif
 
 	// 360 always use the progress bar, TCR Requirement, and never this loading plaque
 	if ( IsPC() && ( m_bRenderingBackgroundTransition || m_eBackgroundState == BACKGROUND_LOADING ) )

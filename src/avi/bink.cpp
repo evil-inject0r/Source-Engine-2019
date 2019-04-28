@@ -833,11 +833,7 @@ public:
 	virtual int GetFrameRate( BIKMaterial_t hMaterial );
 	virtual void SetFrame( BIKMaterial_t hMaterial, float flFrame );
 	virtual int GetFrameCount( BIKMaterial_t hMaterial );
-#if !defined( _X360 )
 	virtual bool SetDirectSoundDevice( void *pDevice );	
-#else
-	virtual bool HookXAudio( void );
-#endif
 
 private:
 	static void * RADLINK BinkMemAlloc( U32 bytes ) { return malloc( bytes ); };
@@ -847,13 +843,11 @@ private:
 	CUtlLinkedList< CBIKMaterial*, BIKMaterial_t > m_BIKMaterials;
 };
 
-
 //-----------------------------------------------------------------------------
 // Singleton
 //-----------------------------------------------------------------------------
 static CBik g_BIK;
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CBik, IBik, BIK_INTERFACE_VERSION, g_BIK );
-
 
 //-----------------------------------------------------------------------------
 // Constructor/destructor
@@ -861,7 +855,6 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CBik, IBik, BIK_INTERFACE_VERSION, g_BIK );
 CBik::CBik()
 {
 }
-
 
 //-----------------------------------------------------------------------------
 // Connect/disconnect
@@ -882,7 +875,6 @@ void CBik::Disconnect( void )
 {
 }
 
-
 //-----------------------------------------------------------------------------
 // Query Interface
 //-----------------------------------------------------------------------------
@@ -893,7 +885,6 @@ void *CBik::QueryInterface( const char *pInterfaceName )
 
 	return NULL;
 }
-
 
 //-----------------------------------------------------------------------------
 // Init/shutdown
@@ -908,7 +899,6 @@ InitReturnVal_t CBik::Init()
 void CBik::Shutdown()
 {
 }
-
 
 //-----------------------------------------------------------------------------
 // Create/destroy an BIK material
@@ -937,7 +927,6 @@ void CBik::DestroyMaterial( BIKMaterial_t h )
 	}
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : hMaterial - 
@@ -962,7 +951,6 @@ IMaterial* CBik::GetMaterial( BIKMaterial_t h )
 	return NULL;
 }
 
-
 //-----------------------------------------------------------------------------
 // Returns the max texture coordinate of the BIK
 //-----------------------------------------------------------------------------
@@ -977,7 +965,6 @@ void CBik::GetTexCoordRange( BIKMaterial_t h, float *pMaxU, float *pMaxV )
 		*pMaxU = *pMaxV = 1.0f;
 	}
 }
-
 
 //-----------------------------------------------------------------------------
 // Returns the frame size of the BIK (is a subrect of the material itself)
@@ -1016,7 +1003,6 @@ int CBik::GetFrameCount( BIKMaterial_t h )
 	return m_BIKMaterials[h]->GetFrameCount();;
 }
 
-
 //-----------------------------------------------------------------------------
 // Sets the frame for an BIK material (use instead of SetTime)
 //-----------------------------------------------------------------------------
@@ -1028,8 +1014,6 @@ void CBik::SetFrame( BIKMaterial_t h, float flFrame )
 	}
 }
 
-
-#if !defined( _X360 )
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : pDevice - 
@@ -1039,9 +1023,3 @@ bool CBik::SetDirectSoundDevice( void *pDevice )
 {
 	return ( BinkSoundUseDirectSound( pDevice ) != 0 );
 }
-#else
-bool CBik::HookXAudio( void )
-{
-	return ( BinkSoundUseXAudio() != 0 );
-}
-#endif

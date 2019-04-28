@@ -633,13 +633,9 @@ void CThreadLocalBase::Set( void *value )
 //-----------------------------------------------------------------------------
 
 #ifdef _WIN32
-#ifdef _X360
-#define TO_INTERLOCK_PARAM(p)		((long *)p)
-#define TO_INTERLOCK_PTR_PARAM(p)	((void **)p)
-#else
+
 #define TO_INTERLOCK_PARAM(p)		(p)
 #define TO_INTERLOCK_PTR_PARAM(p)	(p)
-#endif
 
 #ifndef USE_INTRINSIC_INTERLOCKED
 long ThreadInterlockedIncrement( long volatile *pDest )

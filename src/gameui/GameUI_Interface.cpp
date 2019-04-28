@@ -1105,10 +1105,6 @@ void CGameUI::UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTeam, 
 {
 	BasePanel()->UpdatePlayerInfo( nPlayerId, pName, nTeam, cVoiceState, nPlayersNeeded, bHost );
 }
-void CGameUI::SessionSearchResult( int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping )
-{
-	BasePanel()->SessionSearchResult( searchIdx, pHostData, pResult, ping );
-}
 void CGameUI::OnCreditsFinished( void )
 {
 	BasePanel()->OnCreditsFinished();
