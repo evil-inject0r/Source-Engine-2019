@@ -99,24 +99,6 @@ D3DFORMAT GetNearestD3DColorFormat( ImageFormat fmt,
 			return D3DFMT_A4R4G4B4;
 		break;
 
-#if defined( _X360 )
-	case IMAGE_FORMAT_LINEAR_RGBA8888:
-	case IMAGE_FORMAT_LINEAR_ABGR8888:
-	case IMAGE_FORMAT_LINEAR_ARGB8888:
-	case IMAGE_FORMAT_LINEAR_BGRA8888:
-		// same as above - all xxxx8888 RGBA ordering funnels to d3d a8r8g8b8
-		if ( TestTextureFormat( D3DFMT_LIN_A8R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired ) )
-			return D3DFMT_LIN_A8R8G8B8;
-		break;
-#endif
-
-#if defined( _X360 )
-	case IMAGE_FORMAT_LINEAR_BGRX8888:
-		if ( TestTextureFormat( D3DFMT_LIN_X8R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired ) )
-			return D3DFMT_LIN_X8R8G8B8;
-		break;
-#endif
-
 	case IMAGE_FORMAT_BGRX8888:
 		// We want this format to return exactly it's equivalent so that
 		// when we create render targets to blit to from the framebuffer,
@@ -127,10 +109,8 @@ D3DFORMAT GetNearestD3DColorFormat( ImageFormat fmt,
 		// fall through. . . .
 	case IMAGE_FORMAT_RGB888:
 	case IMAGE_FORMAT_BGR888:
-#if !defined( _X360 )
 		if (TestTextureFormat(D3DFMT_R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
 			return D3DFMT_R8G8B8;
-#endif
 		if (TestTextureFormat(D3DFMT_X8R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
 			return D3DFMT_X8R8G8B8;
 		if (TestTextureFormat(D3DFMT_A8R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
@@ -151,10 +131,8 @@ D3DFORMAT GetNearestD3DColorFormat( ImageFormat fmt,
 			return D3DFMT_X1R5G5B5;
 		if (TestTextureFormat(D3DFMT_A1R5G5B5, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
 			return D3DFMT_A1R5G5B5;
-#if !defined( _X360 )
 		if (TestTextureFormat(D3DFMT_R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
 			return D3DFMT_R8G8B8;
-#endif
 		if (TestTextureFormat(D3DFMT_X8R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
 			return D3DFMT_X8R8G8B8;
 		if (TestTextureFormat(D3DFMT_A8R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
@@ -168,22 +146,13 @@ D3DFORMAT GetNearestD3DColorFormat( ImageFormat fmt,
 			return D3DFMT_A1R5G5B5;
 		if (TestTextureFormat(D3DFMT_R5G6B5, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
 			return D3DFMT_R5G6B5;
-#if !defined( _X360 )
 		if (TestTextureFormat(D3DFMT_R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
 			return D3DFMT_R8G8B8;
-#endif
 		if (TestTextureFormat(D3DFMT_X8R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
 			return D3DFMT_X8R8G8B8;
 		if (TestTextureFormat(D3DFMT_A8R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
 			return D3DFMT_A8R8G8B8;
 		break;
-
-#if defined( _X360 )
-	case IMAGE_FORMAT_LINEAR_BGRX5551:
-		if ( TestTextureFormat( D3DFMT_LIN_X1R5G5B5, isRenderTarget, bIsVertexTexture, bIsFilterableRequired ) )
-			return D3DFMT_LIN_X1R5G5B5;
-		break;
-#endif
 
 	case IMAGE_FORMAT_BGRA5551:
 		if (TestTextureFormat(D3DFMT_A1R5G5B5, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
@@ -207,13 +176,6 @@ D3DFORMAT GetNearestD3DColorFormat( ImageFormat fmt,
 		if (TestTextureFormat(D3DFMT_A8R8G8B8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
 			return D3DFMT_A8R8G8B8;
 		break;
-
-#if defined( _X360 )
-	case IMAGE_FORMAT_LINEAR_I8:
-		if ( TestTextureFormat( D3DFMT_LIN_L8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired ) )
-			return D3DFMT_LIN_L8;
-		break;
-#endif
 
 	case IMAGE_FORMAT_IA88:
 		if (TestTextureFormat(D3DFMT_A8L8, isRenderTarget, bIsVertexTexture, bIsFilterableRequired))
@@ -274,13 +236,6 @@ D3DFORMAT GetNearestD3DColorFormat( ImageFormat fmt,
 			return D3DFMT_A16B16G16R16F;
 		break;
 
-#if defined( _X360 )
-	case IMAGE_FORMAT_LINEAR_RGBA16161616:
-		if ( TestTextureFormat( D3DFMT_LIN_A16B16G16R16, isRenderTarget, bIsVertexTexture, bIsFilterableRequired ) )
-			return D3DFMT_LIN_A16B16G16R16;
-		break;
-#endif
-
 	case IMAGE_FORMAT_R32F:
 		if ( TestTextureFormat( D3DFMT_R32F, isRenderTarget, bIsVertexTexture, bIsFilterableRequired ) )
 			return D3DFMT_R32F;
@@ -290,23 +245,6 @@ D3DFORMAT GetNearestD3DColorFormat( ImageFormat fmt,
 		if ( TestTextureFormat( D3DFMT_A32B32G32R32F, isRenderTarget, bIsVertexTexture, bIsFilterableRequired ) )
 			return D3DFMT_A32B32G32R32F;
 		break;
-
-#if defined( _X360 )
-	case IMAGE_FORMAT_X360_DST16:
-		return D3DFMT_D16;
-
-	case IMAGE_FORMAT_X360_DST24:
-		return D3DFMT_D24S8;
-
-	case IMAGE_FORMAT_X360_DST24F:
-		return D3DFMT_D24FS8;
-
-	case IMAGE_FORMAT_LE_BGRX8888:
-		return D3DFMT_LE_X8R8G8B8;
-
-	case IMAGE_FORMAT_LE_BGRA8888:
-		return D3DFMT_LE_A8R8G8B8;
-#endif
 
 	// nVidia overloads DST formats as texture formats
 	case IMAGE_FORMAT_NV_DST16:
@@ -397,23 +335,15 @@ void InitializeColorInformation( UINT displayAdapter, D3DDEVTYPE deviceType,
         D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D16 );
 	g_bSupportsD16 = !FAILED(hr);
 
-#if !defined( _X360 )
 	hr = D3D()->CheckDeviceFormat( 
 		g_DisplayAdapter, g_DeviceType, ImageLoader::ImageFormatToD3DFormat( g_DeviceFormat ),
 		D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D24X4S4 );
 	g_bSupportsD24X4S4 = !FAILED(hr);
-#else
-	g_bSupportsD24X4S4 = false;
-#endif
 
-#if !defined( _X360 )
 	hr = D3D()->CheckDeviceFormat( 
 		g_DisplayAdapter, g_DeviceType, ImageLoader::ImageFormatToD3DFormat( g_DeviceFormat ),
 		D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D15S1 );
 	g_bSupportsD15S1 = !FAILED(hr);
-#else
-	g_bSupportsD15S1 = false;
-#endif
 }
 
 
@@ -475,23 +405,13 @@ D3DFORMAT FindNearestSupportedDepthFormat( int nAdapter, ImageFormat displayForm
 
 	switch (depthFormat)
 	{
-#if defined( _X360 )
-	case D3DFMT_D24FS8:
-		return D3DFMT_D24FS8;
-
-	case D3DFMT_LIN_D24S8:
-		if ( g_bSupportsD24S8 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_LIN_D24S8 ) )
-			return D3DFMT_LIN_D24S8;
-#endif
 	case D3DFMT_D24S8:
 		if ( g_bSupportsD24S8 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D24S8 ) )
 			return D3DFMT_D24S8;
-#if !defined( _X360 )
 		if ( g_bSupportsD24X4S4 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D24X4S4 ) )
 			return D3DFMT_D24X4S4;
 		if ( g_bSupportsD15S1 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D15S1 ) )
 			return D3DFMT_D15S1;
-#endif
 		if ( g_bSupportsD24X8 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D24X8 ) )
 			return D3DFMT_D24X8;
 		if ( g_bSupportsD16 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D16 ) )
@@ -503,33 +423,25 @@ D3DFORMAT FindNearestSupportedDepthFormat( int nAdapter, ImageFormat displayForm
 			return D3DFMT_D24X8;
 		if ( g_bSupportsD24S8 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D24S8 ) )
 			return D3DFMT_D24S8;
-#if !defined( _X360 )
 		if ( g_bSupportsD24X4S4 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D24X4S4 ) )
 			return D3DFMT_D24X4S4;
-#endif
         if ( g_bSupportsD16 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D16 ) )
 			return D3DFMT_D16;
-#if !defined( _X360 )
 		if ( g_bSupportsD15S1 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D15S1 ) )
 			return D3DFMT_D15S1;
-#endif
 		break;
 
 	case D3DFMT_D16:
 		if ( g_bSupportsD16 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D16 ) )
 			return D3DFMT_D16;
-#if !defined( _X360 )
 		if ( g_bSupportsD15S1 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D15S1 ) )
 			return D3DFMT_D15S1;
-#endif
 		if ( g_bSupportsD24X8 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D24X8 ) )
 			return D3DFMT_D24X8;
 		if ( g_bSupportsD24S8 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D24S8 ) )
 			return D3DFMT_D24S8;
-#if !defined( _X360 )
 		if ( g_bSupportsD24X4S4 && IsDepthFormatCompatible( nAdapter, displayFormat, renderTargetFormat, D3DFMT_D24X4S4 ) )
 			return D3DFMT_D24X4S4;
-#endif
 		break;
 	}
 
@@ -661,63 +573,3 @@ ImageFormat FindNearestSupportedBackBufferFormat( UINT displayAdapter,
 
 	return IMAGE_FORMAT_UNKNOWN;
 }
-
-#if defined( _X360 )
-const char *D3DFormatName( D3DFORMAT d3dFormat )
-{
-	if ( IS_D3DFORMAT_SRGB( d3dFormat ) )
-	{
-		// sanitize the format from possible sRGB state for comparison purposes
-		d3dFormat = MAKE_NON_SRGB_FMT( d3dFormat );
-	}
-
-	switch ( d3dFormat )
-	{
-	case D3DFMT_A8R8G8B8:
-		return "D3DFMT_A8R8G8B8";
-	case D3DFMT_LIN_A8R8G8B8:
-		return "D3DFMT_LIN_A8R8G8B8";
-	case D3DFMT_X8R8G8B8:
-		return "D3DFMT_X8R8G8B8";
-	case D3DFMT_LIN_X8R8G8B8:
-		return "D3DFMT_LIN_X8R8G8B8";
-	case D3DFMT_R5G6B5:
-		return "D3DFMT_R5G6B5";
-	case D3DFMT_X1R5G5B5:
-		return "D3DFMT_X1R5G5B5";
-	case D3DFMT_A1R5G5B5:
-		return "D3DFMT_A1R5G5B5";
-	case D3DFMT_A4R4G4B4:
-		return "D3DFMT_A4R4G4B4";
-	case D3DFMT_L8:
-		return "D3DFMT_L8";
-	case D3DFMT_A8L8:
-		return "D3DFMT_A8L8";
-	case D3DFMT_A8:
-		return "D3DFMT_A8";
-	case D3DFMT_DXT1:
-		return "D3DFMT_DXT1";
-	case D3DFMT_DXT3:
-		return "D3DFMT_DXT3";
-	case D3DFMT_DXT5:
-		return "D3DFMT_DXT5";
-	case D3DFMT_V8U8:
-		return "D3DFMT_V8U8";
-	case D3DFMT_Q8W8V8U8:
-		return "D3DFMT_Q8W8V8U8";
-	case D3DFMT_D16:
-		return "D3DFMT_D16";
-	case D3DFMT_D24S8:
-		return "D3DFMT_D24S8";
-	case D3DFMT_D24FS8:
-		return "D3DFMT_D24FS8";
-	case D3DFMT_LIN_D24S8:
-		return "D3DFMT_LIN_D24S8";
-	case D3DFMT_A16B16G16R16:
-		return "D3DFMT_A16B16G16R16";
-	case D3DFMT_LIN_A16B16G16R16:
-		return "D3DFMT_LIN_A16B16G16R16";
-	}
-	return "???";
-}
-#endif

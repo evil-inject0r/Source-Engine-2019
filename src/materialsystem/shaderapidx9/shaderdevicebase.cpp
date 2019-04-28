@@ -23,9 +23,6 @@
 #include "shaderapi/ishadershadow.h"
 #include "shaderapi_global.h"
 
-#ifdef _X360
-#include "xbox/xbox_win32stubs.h"
-#endif
 
 //-----------------------------------------------------------------------------
 // Globals
@@ -284,12 +281,6 @@ KeyValues *CShaderDeviceMgrBase::FindDXLevelSpecificConfig( KeyValues *pKeyValue
 //-----------------------------------------------------------------------------
 KeyValues *CShaderDeviceMgrBase::FindDXLevelAndVendorSpecificConfig( KeyValues *pKeyValues, int nDxLevel, int nVendorID )
 {
-	if ( IsX360() )
-	{
-		// 360 unique dxlevel implies hw config, vendor variance not applicable
-		return NULL;
-	}
-
 	KeyValues *pGroup = pKeyValues->GetFirstSubKey();
 	for( pGroup = pKeyValues->GetFirstSubKey(); pGroup; pGroup = pGroup->GetNextKey() )
 	{
@@ -307,12 +298,6 @@ KeyValues *CShaderDeviceMgrBase::FindDXLevelAndVendorSpecificConfig( KeyValues *
 //-----------------------------------------------------------------------------
 KeyValues *CShaderDeviceMgrBase::FindCPUSpecificConfig( KeyValues *pKeyValues, int nCPUMhz, bool bAMD )
 {
-	if ( IsX360() )
-	{
-		// 360 unique dxlevel implies hw config, cpu variance not applicable
-		return NULL;
-	}
-
 	for( KeyValues *pGroup = pKeyValues->GetFirstSubKey(); pGroup; pGroup = pGroup->GetNextKey() )
 	{
 		const char *pName = pGroup->GetString( "name", NULL );
@@ -340,12 +325,6 @@ KeyValues *CShaderDeviceMgrBase::FindCPUSpecificConfig( KeyValues *pKeyValues, i
 //-----------------------------------------------------------------------------
 KeyValues *CShaderDeviceMgrBase::FindCardSpecificConfig( KeyValues *pKeyValues, int nVendorId, int nDeviceId )
 {
-	if ( IsX360() )
-	{
-		// 360 unique dxlevel implies hw config, vendor variance not applicable
-		return NULL;
-	}
-
 	KeyValues *pGroup = pKeyValues->GetFirstSubKey();
 	for( pGroup = pKeyValues->GetFirstSubKey(); pGroup; pGroup = pGroup->GetNextKey() )
 	{
@@ -365,12 +344,6 @@ KeyValues *CShaderDeviceMgrBase::FindCardSpecificConfig( KeyValues *pKeyValues, 
 //-----------------------------------------------------------------------------
 KeyValues *CShaderDeviceMgrBase::FindMemorySpecificConfig( KeyValues *pKeyValues, int nSystemRamMB )
 {
-	if ( IsX360() )
-	{
-		// 360 unique dxlevel implies hw config, memory variance not applicable
-		return NULL;
-	}
-
 	for( KeyValues *pGroup = pKeyValues->GetFirstSubKey(); pGroup; pGroup = pGroup->GetNextKey() )
 	{
 		// Used to help us debug this code
@@ -393,12 +366,6 @@ KeyValues *CShaderDeviceMgrBase::FindMemorySpecificConfig( KeyValues *pKeyValues
 //-----------------------------------------------------------------------------
 KeyValues *CShaderDeviceMgrBase::FindVidMemSpecificConfig( KeyValues *pKeyValues, int nVideoRamMB )
 {	
-	if ( IsX360() )
-	{
-		// 360 unique dxlevel implies hw config, vidmem variance not applicable
-		return NULL;
-	}
-
 	for( KeyValues *pGroup = pKeyValues->GetFirstSubKey(); pGroup; pGroup = pGroup->GetNextKey() )
 	{
 		int nMinMB = pGroup->GetInt( "min megatexels", -1 );
@@ -782,17 +749,9 @@ bool CShaderDeviceMgrBase::GetRecommendedConfigurationInfo( int nAdapter, int nD
 //-----------------------------------------------------------------------------
 int CShaderDeviceMgrBase::GetClosestActualDXLevel( int nDxLevel ) const
 {
-	if ( nDxLevel <= 69 )
-		return 60;
-	if ( nDxLevel <= 79 )
-		return 70;
-	if ( nDxLevel == 80 )
-		return 80;
-	if ( nDxLevel <= 89 )
-		return 81;
 	if ( nDxLevel <= 94 )
 		return 90;
-	if ( IsX360() && nDxLevel <= 98 )
+	if ( nDxLevel <= 98 )
 		return 98;
 	if ( nDxLevel <= 99 )
 		return 95;
@@ -1006,15 +965,15 @@ void CShaderDeviceBase::InstallWindowHook( void* hWnd )
 	wc.style         = CS_NOCLOSE | CS_PARENTDC;
 	wc.lpfnWndProc   = ShaderDX8WndProc;
 	wc.hInstance     = hInst;
-	wc.lpszClassName = "shaderdx8";
+	wc.lpszClassName = "shaderdx9";
 
 	// In case an old one is sitting around still...
-	UnregisterClass( "shaderdx8", hInst );
+	UnregisterClass( "shaderdx9", hInst );
 
 	RegisterClass( &wc );
 
 	// Create the window
-	m_hWndCookie = CreateWindow( "shaderdx8", "shaderdx8", WS_CHILD, 
+	m_hWndCookie = CreateWindow( "shaderdx9", "shaderdx9", WS_CHILD, 
 		0, 0, 0, 0, hParent, NULL, hInst, NULL );
 
 	// Marks it as a material system window
@@ -1033,7 +992,7 @@ void CShaderDeviceBase::RemoveWindowHook( void* hWnd )
 
 	HWND hParent = GetTopmostParentWindow( (HWND)hWnd );
 	HINSTANCE hInst = (HINSTANCE)GetWindowLongPtr( hParent, GWLP_HINSTANCE );
-	UnregisterClass( "shaderdx8", hInst );
+	UnregisterClass( "shaderdx9", hInst );
 #endif
 }
 
