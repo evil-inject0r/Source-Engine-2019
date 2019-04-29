@@ -184,14 +184,25 @@ typedef struct VCR_s
 
 	// If you use this, then any VCR stuff the thread does will work with VCR mode.
 	// This mirrors the Windows API CreateThread function and returns a HANDLE the same way.
-	void*		(*Hook_CreateThread)( 
-		void *lpThreadAttributes,
+
+#ifdef PLATFORM_64BITS
+	void* (*Hook_CreateThread)(
+		void* lpThreadAttributes,
 		unsigned long dwStackSize,
-		void *lpStartAddress,
-		void *lpParameter,
+		void* lpStartAddress,
+		void* lpParameter,
 		unsigned long dwCreationFlags,
-		unsigned long *lpThreadID );
-	
+		uint64* lpThreadID);
+#else
+	void* (*Hook_CreateThread)(
+		void* lpThreadAttributes,
+		unsigned long dwStackSize,
+		void* lpStartAddress,
+		void* lpParameter,
+		unsigned long dwCreationFlags,
+		uint32* lpThreadID);
+#endif
+		
 	unsigned long (*Hook_WaitForSingleObject)(
 		void *handle,
 		unsigned long dwMilliseconds );

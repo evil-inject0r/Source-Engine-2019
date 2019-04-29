@@ -74,7 +74,9 @@ struct CSizeTest
 		COMPILE_TIME_ASSERT( sizeof( Quaternion )	== 16 );
 		COMPILE_TIME_ASSERT( sizeof( VMatrix )		== 64 );
 	//	COMPILE_TIME_ASSERT( sizeof( CUtlString )	== 16 ); // FIX ME: CUtlString differs from 2007, will this break support for old dmxs?
+#if !defined( PLATFORM_64BITS )
 		COMPILE_TIME_ASSERT( sizeof( CUtlBinaryBlock ) == 16 );
+#endif // PLATFORM_64BITS
 		COMPILE_TIME_ASSERT( sizeof( DmObjectId_t )	== 16 );
 	};
 };

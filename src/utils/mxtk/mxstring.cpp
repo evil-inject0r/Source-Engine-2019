@@ -22,7 +22,7 @@
 int
 mx_strncasecmp (const char *s1, const char *s2, int count)
 {
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64)
 	return _strnicmp (s1, s2, count);
 #else
 	return strncasecmp (s1, s2, count);
@@ -34,7 +34,7 @@ mx_strncasecmp (const char *s1, const char *s2, int count)
 int
 mx_strcasecmp (const char *s1, const char *s2)
 {
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64)
 	return _stricmp (s1, s2);
 #else
 	return strcasecmp (s1, s2);

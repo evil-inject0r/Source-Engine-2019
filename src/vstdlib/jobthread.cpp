@@ -970,11 +970,7 @@ void CThreadPool::Distribute( bool bDistribute, int *pAffinityTable )
 	}
 	else
 	{
-	#ifndef WIN64
-		unsigned long dwProcessAffinity, dwSystemAffinity;
-	#else
-		unsigned long long dwProcessAffinity, dwSystemAffinity;
-	#endif
+		DWORD_PTR dwProcessAffinity, dwSystemAffinity;
 		if ( GetProcessAffinityMask( GetCurrentProcess(), &dwProcessAffinity, &dwSystemAffinity ) )
 		{
 			for ( int i = 0; i < m_Threads.Count(); i++ )

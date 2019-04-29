@@ -901,7 +901,7 @@ void CMainFrame::OnPaint(void)
 //			sets the timer.  This is now also called for the autosave timer.
 // Input  : nIDEvent - 
 //-----------------------------------------------------------------------------
-void CMainFrame::OnTimer(UINT nIDEvent) 
+void CMainFrame::OnTimer(UINT_PTR nIDEvent) 
 {
 	if (!::IsWindow(m_hWnd))
 	{

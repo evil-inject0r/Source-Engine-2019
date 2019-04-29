@@ -277,11 +277,7 @@ void ThreadSetDebugName( ThreadId_t id, const char *pszName )
 
 		__try
 		{
-		#ifndef WIN64
-			RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(DWORD), (DWORD *)&info);
-		#else
 			RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(DWORD), (ULONG_PTR *)&info);
-		#endif
 		}
 		__except (EXCEPTION_CONTINUE_EXECUTION)
 		{

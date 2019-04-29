@@ -12,15 +12,7 @@
 #pragma once
 #endif
 
-#define null 0L
-
-#ifndef NULL
-#ifdef __cplusplus
-#define NULL    0
-#else
-#define NULL    ((void *)0)
-#endif
-#endif
+#include "tier0/platform.h"
 
 #pragma warning( disable: 4800 )	// disables 'performance warning converting int to bool'
 #pragma warning( disable: 4786 )	// disables 'identifier truncated in browser information' warning
@@ -50,7 +42,7 @@ namespace vgui
 {
 // handle to an internal vgui panel
 // this is the only handle to a panel that is valid across dll boundaries
-typedef unsigned int VPANEL;
+typedef uintp VPANEL;
 
 // handles to vgui objects
 // NULL values signify an invalid value
@@ -65,15 +57,6 @@ const HFont INVALID_FONT = 0; // the value of an invalid font handle
 }
 
 #include "tier1/strtools.h"
-
-#if 0 // defined( OSX ) // || defined( LINUX )
-// Disabled all platforms. Did a major cleanup of osxfont.cpp, and having this
-//  turned off renders much closer to Windows and Linux and also uses the same
-//  code paths (which is good).
-#define USE_GETKERNEDCHARWIDTH 1
-#else
-#define USE_GETKERNEDCHARWIDTH 0
-#endif
 
 
 #endif // VGUI_H

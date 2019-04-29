@@ -481,8 +481,8 @@ $Project "engine"
 		$File	"EngineSoundClient.cpp"
 		$File	"EngSoundService.cpp"
 		$File   "audio\private\voice_wavefile.cpp"
-		$File	"audio\private\MPAFile.cpp"			[$WIN32]
-		$File	"audio\private\MPAHeader.cpp"		[$WIN32]
+		$File	"audio\private\MPAFile.cpp"			[$WINDOWS]
+		$File	"audio\private\MPAHeader.cpp"		[$WINDOWS]
 		$File	"audio\private\CircularBuffer.cpp"
 		
 		$File	"audio\audio_pch.cpp"
@@ -534,7 +534,7 @@ $Project "engine"
 				"audio\private\voice.cpp"					\
 				"audio\private\voice_mixer_controls.cpp"	\
 				"audio\private\voice_record_dsound.cpp"		\
-				"audio\private\voice_sound_engine_interface.cpp"	[$WIN32]
+				"audio\private\voice_sound_engine_interface.cpp"	[$WINDOWS]
 		{
 			$Configuration
 			{
@@ -574,16 +574,16 @@ $Project "engine"
 			$File	"audio\public\SoundService.h"
 			$File	"audio\public\Voice.h"
 			$File	"audio\public\vox.h"
-			$File	"audio\private\MPAFile.h"							[$WIN32]
-			$File	"audio\private\MPAHeader.h"							[$WIN32]
-			$File	"audio\private\VBRHeader.h"							[$WIN32]
+			$File	"audio\private\MPAFile.h"							[$WINDOWS]
+			$File	"audio\private\MPAHeader.h"							[$WINDOWS]
+			$File	"audio\private\VBRHeader.h"							[$WINDOWS]
 			$File	"audio\private\CircularBuffer.h"
 			$File	"audio\private\EAX.H"
 			$File	"audio\private\snd_channels.h"
 			$File	"audio\private\snd_convars.h"
 			$File	"audio\private\snd_dev_common.h"
-			$File	"audio\private\snd_dev_direct.h"					[$WIN32]
-			$File	"audio\private\snd_dev_wave.h"						[$WIN32]
+			$File	"audio\private\snd_dev_direct.h"					[$WINDOWS]
+			$File	"audio\private\snd_dev_wave.h"						[$WINDOWS]
 			$File	"audio\private\snd_dev_xaudio.h"
 			$File	"audio\private\snd_dma.h"
 			$File	"audio\private\snd_env_fx.h"

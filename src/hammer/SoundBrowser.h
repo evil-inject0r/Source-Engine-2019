@@ -42,7 +42,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CSoundBrowser)
 	public:
-	virtual int DoModal();
+	virtual INT_PTR DoModal();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -63,7 +63,7 @@ protected:
 	afx_msg void OnPreview();
 	afx_msg void OnAutoplay();
 	afx_msg void OnRefreshSounds();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnOpenSource();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

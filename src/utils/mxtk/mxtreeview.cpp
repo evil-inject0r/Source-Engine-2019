@@ -41,7 +41,7 @@ mxTreeView::mxTreeView (mxWindow *parent, int x, int y, int w, int h, int id)
 				(HMENU) id, (HINSTANCE) GetModuleHandle (NULL), NULL);
 	
 	SendMessage (d_this->d_hwnd, WM_SETFONT, (WPARAM) (HFONT) GetStockObject (ANSI_VAR_FONT), MAKELPARAM (TRUE, 0));
-	SetWindowLong (d_this->d_hwnd, GWL_USERDATA, (LONG) this);
+	SetWindowLongPtr(d_this->d_hwnd, GWLP_USERDATA, (LONG) this);
 
 	setHandle ((void *) d_this->d_hwnd);
 	setType (MX_TREEVIEW);
@@ -331,6 +331,12 @@ void mxTreeView::setImages(mxTreeViewItem *item, int imagenormal, int imageselec
 		TreeView_SetItem (d_this->d_hwnd, &tvItem);
 	}
 }
+
+int CALLBACK UserGroupCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	return 0;
+}
+
 void mxTreeView::sortTree( mxTreeViewItem *parent, bool recurse, 
 	void *func, int parameter )
 {
@@ -342,7 +348,7 @@ void mxTreeView::sortTree( mxTreeViewItem *parent, bool recurse,
 
 	cb.hParent = (HTREEITEM)parent;
 	cb.lParam = parameter;
-	cb.lpfnCompare = (int (__stdcall *)(long,long,long)) func;
+	cb.lpfnCompare = UserGroupCompareProc; // (CALLBACK *PFNTVCOMPARE)LPARAM lParam1, LPARAM lParam2, LPARAM lParam12) func;
 
 	TreeView_SortChildrenCB( d_this->d_hwnd, &cb, recurse );
 }

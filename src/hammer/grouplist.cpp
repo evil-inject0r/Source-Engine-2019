@@ -581,7 +581,7 @@ void CGroupList::Drop(DropType_t eDropType, UINT nFlags, CPoint point)
 // Purpose: 
 // Input  : nIDEvent - 
 //-----------------------------------------------------------------------------
-void CGroupList::OnTimer(UINT nIDEvent) 
+void CGroupList::OnTimer(UINT_PTR nIDEvent) 
 {
 	//DBG("OnTimer\n");
 	switch (nIDEvent)

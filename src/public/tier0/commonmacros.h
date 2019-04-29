@@ -154,10 +154,10 @@ char (*RtlpNumberOf( UNALIGNED T (&)[N] ))[N];
 
 // TODO: Remove osx32 and rename osx64 to macos
 // macOS does not support x86 anymore, only x64 now
-#if defined(WIN32)
-#define PLATFORM_SUBDIR "win32"
-#elif defined(WIN64)
+#if defined(_WIN64)
 #define PLATFORM_SUBDIR "win64"
+#elif defined(WIN32)
+#define PLATFORM_SUBDIR "win32"
 #elif defined(LINUX32)
 #define PLATFORM_SUBDIR "linux32"
 #elif defined(LINUX64)

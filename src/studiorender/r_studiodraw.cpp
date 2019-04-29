@@ -654,7 +654,7 @@ static matrix3x4_t *ComputeSkinMatrix( mstudioboneweight_t &boneweights, matrix3
 static matrix3x4_t *ComputeSkinMatrixSSE( mstudioboneweight_t &boneweights, matrix3x4_t *pPoseToWorld, matrix3x4_t &result )
 {
 	// NOTE: pPoseToWorld, being cache aligned, doesn't need explicit initialization
-#if defined( _WIN32 ) && !defined( _X360 )
+#if defined( _WIN32 ) && !defined( _WIN64 )
 	switch( boneweights.numbones )
 	{
 	default:
@@ -862,7 +862,7 @@ static matrix3x4_t *ComputeSkinMatrixSSE( mstudioboneweight_t &boneweights, matr
 #elif _LINUX
 #warning "ComputeSkinMatrixSSE C implementation only"
 	return ComputeSkinMatrix( boneweights, pPoseToWorld, result );
-#elif defined( _X360 )
+#elif defined( _WIN64 )
 	return ComputeSkinMatrix( boneweights, pPoseToWorld, result );
 #else
 	#error
@@ -1154,7 +1154,7 @@ public:
 		int n, idx;
 		for ( int j=0; j < numVertices; ++j )
 		{
-#if defined( _WIN32 ) && !defined( _X360 )
+#if defined( _WIN32 ) && !defined( _WIN64 )
 			if ( nHasSIMD )
 			{
 				char *pMem = (char*)&pGroupToMesh[j + PREFETCH_VERT_COUNT + 1];
@@ -1207,7 +1207,7 @@ public:
 			R_TransformVert( pSrcPos, pSrcNorm, pSrcTangentS, pSkinMat, 
 				*(VectorAligned*)&dstVertex.m_vecPosition, dstVertex.m_vecNormal, *(Vector4DAligned*)&dstVertex.m_vecUserData );
 
-#if defined( _WIN32 ) && !defined( _X360 )
+#if defined( _WIN32 ) && !defined( _WIN64 )
 			if ( nHasSIMD )
 			{
 				_mm_prefetch( (char*)&pVertices[ntemp[idx]], _MM_HINT_NTA);

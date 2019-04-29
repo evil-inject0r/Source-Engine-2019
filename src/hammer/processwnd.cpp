@@ -202,7 +202,7 @@ int CProcessWnd::Execute(LPCTSTR pszCmd, LPCTSTR pszCmdLine)
 // CProcessWnd message handlers
 
 
-void CProcessWnd::OnTimer(UINT nIDEvent) 
+void CProcessWnd::OnTimer(UINT_PTR nIDEvent)
 {
 	CWnd::OnTimer(nIDEvent);
 }

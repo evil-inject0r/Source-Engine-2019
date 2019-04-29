@@ -412,7 +412,7 @@ void VCR_HandlePlaybackMessages(
 //-----------------------------------------------------------------------------
 // Calls the default window procedure
 //-----------------------------------------------------------------------------
-static LONG WINAPI CallDefaultWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+static LONG_PTR WINAPI CallDefaultWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	return DefWindowProc( hWnd, uMsg, wParam, lParam );
 }

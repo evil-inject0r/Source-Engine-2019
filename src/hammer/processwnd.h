@@ -55,7 +55,7 @@ protected:
 	CButton m_btnCopyAll;
 
 	//{{AFX_MSG(CProcessWnd)
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void CProcessWnd::OnCopyAll();

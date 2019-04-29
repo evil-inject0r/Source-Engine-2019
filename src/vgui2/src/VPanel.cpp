@@ -325,7 +325,7 @@ void VPanel::SetParent(VPanel *newParent)
 	if (_parent != NULL)
 	{
 		_parent->_childDar.RemoveElement(this);
-		_parent = null;
+		_parent = NULL;
 	}
 
 	if (newParent != NULL)

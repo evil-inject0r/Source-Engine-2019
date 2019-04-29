@@ -38,6 +38,6 @@ $Project "VAudio_Miles"
 
 	$Folder	"Link Libraries"
 	{
-		$File	"$LIBCOMMON\mss32.lib"
+		$File	"$LIBCOMMON\mss32.lib" [$WIN32]
 	}
 }

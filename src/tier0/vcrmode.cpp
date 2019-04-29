@@ -1542,14 +1542,23 @@ double VCR_GetPercentCompleted()
 		return 0;
 	}
 }
-
-void* VCR_CreateThread( 
-	void *lpThreadAttributes,
+#ifdef PLATFORM_64BITS
+void* VCR_CreateThread(
+	void* lpThreadAttributes,
 	unsigned long dwStackSize,
-	void *lpStartAddress,
-	void *lpParameter,
+	void* lpStartAddress,
+	void* lpParameter,
 	unsigned long dwCreationFlags,
-	unsigned long *lpThreadID )
+	uint64* lpThreadID)
+#else
+void* VCR_CreateThread(
+	void* lpThreadAttributes,
+	unsigned long dwStackSize,
+	void* lpStartAddress,
+	void* lpParameter,
+	unsigned long dwCreationFlags,
+	uint32* lpThreadID)
+#endif
 {
 	unsigned dwThreadID = 0;
 

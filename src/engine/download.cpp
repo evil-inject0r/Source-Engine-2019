@@ -877,7 +877,11 @@ void DownloadManager::StartNewDownload()
 		m_lastPercent = 0;
 
 		// Start the thread
-		DWORD threadID;
+#if PLATFORM_64BITS
+		uint64 threadID;
+#else
+		uint32 threadID;
+#endif
 		VCRHook_CreateThread(NULL, 0, DownloadThread, m_activeRequest, 0, &threadID );
 	}
 	else

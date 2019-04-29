@@ -246,7 +246,7 @@ void CSoundBrowser::OnFilterChanged( const char *pFilter )
 // Purpose: Timer used to control updates when the filter terms change.
 // Input  : nIDEvent - 
 //-----------------------------------------------------------------------------
-void CSoundBrowser::OnTimer(UINT nIDEvent) 
+void CSoundBrowser::OnTimer(UINT_PTR nIDEvent)
 {
 	if (!m_bFilterChanged)
 		return;
@@ -354,9 +354,9 @@ void CSoundBrowser::OnRefreshSounds()
 	SetWindowText( oldTitle );
 }
 
-int CSoundBrowser::DoModal() 
+INT_PTR CSoundBrowser::DoModal()
 {	
-	int nRet = CDialog::DoModal();
+	INT_PTR nRet = CDialog::DoModal();
 	Shutdown();
 	return nRet;
 }

@@ -258,7 +258,7 @@ void CEntityReportDlg::OnProperties()
 	GetMainWnd()->pObjectProperties->ShowWindow(SW_SHOW);
 }
 
-void CEntityReportDlg::OnTimer(UINT nIDEvent) 
+void CEntityReportDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	CDialog::OnTimer(nIDEvent);
 

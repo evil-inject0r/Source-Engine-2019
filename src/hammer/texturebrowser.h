@@ -42,7 +42,7 @@ protected:
 	afx_msg void OnSelendokTexturesize();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnClose();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnUsed();
 	afx_msg void OnReplace();
 	afx_msg void OnMark();

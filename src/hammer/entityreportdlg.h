@@ -76,7 +76,7 @@ protected:
 	afx_msg void OnChangeFiltervalue();
 	afx_msg void OnGoto();
 	afx_msg void OnProperties();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnEditchangeFilterclass();
 	afx_msg void OnFilterbyclass();
 	afx_msg void OnSelchangeFilterclass();

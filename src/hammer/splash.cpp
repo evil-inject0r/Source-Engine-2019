@@ -244,7 +244,7 @@ void CSplashWnd::HideSplashScreen()
 //-----------------------------------------------------------------------------
 // Purpose: Guarantees that the splash screen stays up long enough to see.
 //-----------------------------------------------------------------------------
-void CSplashWnd::OnTimer(UINT nIDEvent)
+void CSplashWnd::OnTimer(UINT_PTR nIDEvent)
 {
 	m_bMinTimerExpired = true;
 	KillTimer(nIDEvent);
