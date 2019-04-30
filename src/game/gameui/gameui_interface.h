@@ -63,7 +63,6 @@ public:
 	virtual void SystemNotification(const int notification);
 	virtual void ShowMessageDialog(const uint nType, vgui::Panel *pOwner);
 	virtual void UpdatePlayerInfo(uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost);
-	virtual void SessionSearchResult(int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping);
 	virtual void OnCreditsFinished(void);
 	virtual void BonusMapUnlock(const char *pchFileName = NULL, const char *pchMapName = NULL);
 	virtual void BonusMapComplete(const char *pchFileName = NULL, const char *pchMapName = NULL);

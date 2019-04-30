@@ -27,9 +27,6 @@
 #include "tier0/icommandline.h"
 #include "byteswap.h"
 
-#if defined( _X360 )
-#include "xbox/xbox_win32stubs.h"
-#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1027,12 +1024,6 @@ void CLocalizedStringTable::ConstructString(wchar_t *unicodeOutput, int unicodeB
 				if ( IsPC() )
 				{
 					param = va_argByIndex( argList, wchar_t *, argindex );
-				}
-				else
-				{
-					// X360TBD: convert string to new %var% format if this assert hits
-					Assert( argindex == curArgIdx++ );
-					param = va_arg( argList, wchar_t* );
 				}
 
 				if (!param)
