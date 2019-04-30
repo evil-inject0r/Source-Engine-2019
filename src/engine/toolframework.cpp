@@ -587,6 +587,7 @@ void CToolFrameworkInternal::LoadTools()
 		{
 			if ( !Q_stricmp( tool->GetName(),  "library" ) )
 			{
+				// CHECK both bin/tools and gamedir/bin/tools
 				LoadToolsFromLibrary( tool->GetString() );
 			}
 		}

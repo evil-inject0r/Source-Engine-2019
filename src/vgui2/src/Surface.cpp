@@ -1124,12 +1124,12 @@ void CWin32Surface::PushMakeCurrent(VPANEL panel, bool useInsets)
 	if ( _currentContextPanel == panel )
 	{
 		// this panel has it's own window, so use screen space
-		::SetViewportOrgEx(PLAT(_currentContextPanel)->hdc,0+inset[0],0+inset[1],null);
+		::SetViewportOrgEx(PLAT(_currentContextPanel)->hdc,0+inset[0],0+inset[1], NULL);
 	}
 	else
 	{
 		// child window, so set win32 up so all subsequent drawing calls are done in local space
-		::SetViewportOrgEx(PLAT(_currentContextPanel)->hdc,(absPanel[0]+inset[0])-absThis[0],(absPanel[1]+inset[1])-absThis[1],null);
+		::SetViewportOrgEx(PLAT(_currentContextPanel)->hdc,(absPanel[0]+inset[0])-absThis[0],(absPanel[1]+inset[1])-absThis[1], NULL);
 	}
 
 	// setup clipping
@@ -1280,7 +1280,7 @@ void CWin32Surface::DrawSetColor(Color col)
 
 void CWin32Surface::DrawSetTextPos(int x, int y)
 {
-	MoveToEx(PLAT(_currentContextPanel)->hdc,x,y,null);	
+	MoveToEx(PLAT(_currentContextPanel)->hdc,x,y, NULL);
 	m_TextPos[0] = x;
 	m_TextPos[1] = y;
 }
@@ -1675,12 +1675,12 @@ void CWin32Surface::DrawSetTextureFile(int id, const char *filename, int hardwar
 //-----------------------------------------------------------------------------
 void CWin32Surface::DrawTexturedRect(int x0,int y0,int x1,int y1)
 {
-	if (m_pCurrentTexture == null)
+	if (m_pCurrentTexture == NULL)
 	{
 		return;
 	}
 
-	if (PLAT(_currentContextPanel)->textureDC == null)
+	if (PLAT(_currentContextPanel)->textureDC == NULL)
 	{
 		return;
 	}
@@ -2429,7 +2429,7 @@ void CWin32Surface::CreatePopup(VPANEL panel, bool minimised, bool showTaskbarIc
 	plat->clipRgn = CreateRectRgn(0,0,64,64);
 	plat->hdc = CreateCompatibleDC(NULL);
 	plat->hwndDC = NULL;
-	plat->bitmap = null;
+	plat->bitmap = NULL;
 	plat->bitmapSize[0] = 0;
 	plat->bitmapSize[1] = 0;
 	plat->isFullscreen = false;
@@ -2439,7 +2439,7 @@ void CWin32Surface::CreatePopup(VPANEL panel, bool minimised, bool showTaskbarIc
 	plat->textureDC = NULL;
 
 	::SetBkMode(plat->hdc, TRANSPARENT);
-	::SetWindowLong(plat->hwnd, GWL_USERDATA, (LONG)g_pIVgui->PanelToHandle(panel));
+	::SetWindowLongPtr(plat->hwnd, GWLP_USERDATA, (LONG)g_pIVgui->PanelToHandle(panel));
 	::SetTextAlign(plat->hdc, TA_LEFT | TA_TOP | TA_UPDATECP);
 	
 	if (!((VPanel *)panel)->IsVisible() || panel == _embeddedPanel)
@@ -2460,7 +2460,7 @@ void CWin32Surface::CreatePopup(VPANEL panel, bool minimised, bool showTaskbarIc
 	else
 	{
 		// somehow getting added twice, fundamental problem
-		_asm int 3;
+		DebuggerBreak();
 	}
 
 	// hack, force a windows sound to be played
@@ -2517,7 +2517,7 @@ void CWin32Surface::ReleasePanel(VPANEL panel)
 		SetPanelVisible(panel, false);
 
 		// free all the windows/bitmap/DC handles we are using
-		::SetWindowLong(plat->hwnd, GWL_USERDATA, (LONG)-1);
+		::SetWindowLongPtr(plat->hwnd, GWLP_USERDATA, (LONG)-1);
 		::SetWindowPos(plat->hwnd, HWND_BOTTOM, 0, 0, 1, 1, SWP_NOREDRAW|SWP_HIDEWINDOW);
 
 		// free the window context
@@ -2567,7 +2567,7 @@ bool CWin32Surface::RecreateContext(VPANEL panel)
 			|| (wide < (plat->bitmapSize[0] - 200)) 
 			|| (tall < (plat->bitmapSize[1] - 200)))
 		{
-			if (plat->bitmap != null)
+			if (plat->bitmap != NULL)
 			{
 				::DeleteObject(plat->bitmap);
 			}
@@ -2693,7 +2693,7 @@ void CWin32Surface::ApplyChanges()
 		// if they are not the same, then adjust the win32 window so it is
 		if ((x != sx) || (y != sy) || (wide != swide) || (tall != stall))
 		{
-			::SetWindowPos(Plat->hwnd, null, x, y, wide, tall, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS);
+			::SetWindowPos(Plat->hwnd, NULL, x, y, wide, tall, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS);
 			if ( sx > 0 || sy > 0 ) // only message for moves that are on the screen
 			{
 				g_pIVgui->PostMessage(panel, new KeyValues("Move"), NULL ); 
@@ -3580,20 +3580,20 @@ void CWin32Surface::initStaticData()
 {
 	//load up all default cursors, this gets called everytime a Surface is created, but
 	//who cares
-	staticDefaultCursor[dc_none]     =null;
-	staticDefaultCursor[dc_arrow]    =(HICON)LoadCursor(null,(LPCTSTR)OCR_NORMAL);
-	staticDefaultCursor[dc_ibeam]    =(HICON)LoadCursor(null,(LPCTSTR)OCR_IBEAM);
-	staticDefaultCursor[dc_hourglass]=(HICON)LoadCursor(null,(LPCTSTR)OCR_WAIT);
-	staticDefaultCursor[dc_waitarrow]=(HICON)LoadCursor(null,(LPCTSTR)OCR_APPSTARTING);
-	staticDefaultCursor[dc_crosshair]=(HICON)LoadCursor(null,(LPCTSTR)OCR_CROSS);
-	staticDefaultCursor[dc_up]       =(HICON)LoadCursor(null,(LPCTSTR)OCR_UP);
-	staticDefaultCursor[dc_sizenwse] =(HICON)LoadCursor(null,(LPCTSTR)OCR_SIZENWSE);
-	staticDefaultCursor[dc_sizenesw] =(HICON)LoadCursor(null,(LPCTSTR)OCR_SIZENESW);
-	staticDefaultCursor[dc_sizewe]   =(HICON)LoadCursor(null,(LPCTSTR)OCR_SIZEWE);
-	staticDefaultCursor[dc_sizens]   =(HICON)LoadCursor(null,(LPCTSTR)OCR_SIZENS);
-	staticDefaultCursor[dc_sizeall]  =(HICON)LoadCursor(null,(LPCTSTR)OCR_SIZEALL);
-	staticDefaultCursor[dc_no]       =(HICON)LoadCursor(null,(LPCTSTR)OCR_NO);
-	staticDefaultCursor[dc_hand]     =(HICON)LoadCursor(null,(LPCTSTR)32649);
+	staticDefaultCursor[dc_none]     = NULL;
+	staticDefaultCursor[dc_arrow]    =(HICON)LoadCursor(NULL,(LPCTSTR)OCR_NORMAL);
+	staticDefaultCursor[dc_ibeam]    =(HICON)LoadCursor(NULL,(LPCTSTR)OCR_IBEAM);
+	staticDefaultCursor[dc_hourglass]=(HICON)LoadCursor(NULL,(LPCTSTR)OCR_WAIT);
+	staticDefaultCursor[dc_waitarrow]=(HICON)LoadCursor(NULL,(LPCTSTR)OCR_APPSTARTING);
+	staticDefaultCursor[dc_crosshair]=(HICON)LoadCursor(NULL,(LPCTSTR)OCR_CROSS);
+	staticDefaultCursor[dc_up]       =(HICON)LoadCursor(NULL,(LPCTSTR)OCR_UP);
+	staticDefaultCursor[dc_sizenwse] =(HICON)LoadCursor(NULL,(LPCTSTR)OCR_SIZENWSE);
+	staticDefaultCursor[dc_sizenesw] =(HICON)LoadCursor(NULL,(LPCTSTR)OCR_SIZENESW);
+	staticDefaultCursor[dc_sizewe]   =(HICON)LoadCursor(NULL,(LPCTSTR)OCR_SIZEWE);
+	staticDefaultCursor[dc_sizens]   =(HICON)LoadCursor(NULL,(LPCTSTR)OCR_SIZENS);
+	staticDefaultCursor[dc_sizeall]  =(HICON)LoadCursor(NULL,(LPCTSTR)OCR_SIZEALL);
+	staticDefaultCursor[dc_no]       =(HICON)LoadCursor(NULL,(LPCTSTR)OCR_NO);
+	staticDefaultCursor[dc_hand]     =(HICON)LoadCursor(NULL,(LPCTSTR)32649);
 
 	// make and register a very simple Window Class
 	memset( &staticWndclass,0,sizeof(staticWndclass) );
@@ -3687,7 +3687,7 @@ static LRESULT CALLBACK staticProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lpara
 
 	if (staticSurfaceAvailable)
 	{
-		panel = g_pIVgui->HandleToPanel(::GetWindowLong(hwnd, GWL_USERDATA));
+		panel = g_pIVgui->HandleToPanel(::GetWindowLong(hwnd, GWLP_USERDATA));
 
 		if (panel)
 		{
