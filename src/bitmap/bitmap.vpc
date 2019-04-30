@@ -54,7 +54,7 @@ $Project "bitmap"
 	$Folder "Link Libraries"
 	{
 		$Lib	"$LIBPUBLIC\nvtc.lib"                   [$WIN32]
-        $Lib    "$LIBCOMMON\nvtc64.lib                  [$WIN64]
+        $Lib    "$LIBCOMMON\nvtc64"                     [$WIN64]
 		$Lib	"$LIBPUBLIC\ATI_Compress_MT_VC8.lib"    [$WIN32]
 	}
 }
