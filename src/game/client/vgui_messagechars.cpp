@@ -99,7 +99,7 @@ CMessageCharsPanel::CMessageCharsPanel( vgui::VPANEL parent ) :
 	SetSize( ScreenWidth(), ScreenHeight() );
 	SetPos( 0, 0 );
 	SetVisible( true );
-	SetCursor( null );
+	SetCursor( NULL );
 	SetKeyBoardInputEnabled( false );
 	SetMouseInputEnabled( false );
 	

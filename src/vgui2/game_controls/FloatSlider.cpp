@@ -914,7 +914,7 @@ void FloatSlider::OnMouseReleased(MouseCode code)
 	if ( _dragging )
 	{
 		_dragging=false;
-		input()->SetMouseCapture(null);
+		input()->SetMouseCapture(NULL);
 	}
 
 	if ( IsEnabled() )

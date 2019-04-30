@@ -76,7 +76,7 @@ CFPSPanel::CFPSPanel( vgui::VPANEL parent ) : BaseClass( NULL, "CFPSPanel" )
 {
 	SetParent( parent );
 	SetVisible( false );
-	SetCursor( null );
+	SetCursor( NULL );
 
 	SetFgColor( Color( 0, 0, 0, 255 ) );
 	SetPaintBackgroundEnabled( false );
