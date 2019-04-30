@@ -197,7 +197,7 @@ void CAudioWaveInput::OpenDevice( void )
 	format.wFormatTag = WAVE_FORMAT_PCM;
 	format.nBlockAlign = m_sampleSize;
 
-	MMRESULT errorCode = waveInOpen( &m_deviceHandle, m_deviceId, &format, (DWORD)WaveData, (DWORD)this, CALLBACK_FUNCTION );
+	MMRESULT errorCode = waveInOpen( &m_deviceHandle, m_deviceId, &format, (DWORD_PTR)WaveData, (DWORD_PTR)this, CALLBACK_FUNCTION );
 	if ( errorCode == MMSYSERR_NOERROR )
 	{
 		// valid device opened

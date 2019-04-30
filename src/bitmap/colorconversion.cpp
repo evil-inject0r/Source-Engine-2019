@@ -22,9 +22,11 @@
 #ifdef _LINUX
 typedef int32 *DWORD_PTR;
 #endif
-
-#include "ATI_Compress.h"
 #include "bitmap/float_bm.h"
+
+#if !defined( WIN64 )
+#include "ATI_Compress.h"
+#endif // WIN64
 
 // Should be last include
 #include "tier0/memdbgon.h"
@@ -778,7 +780,7 @@ bool ConvertToATIxN(  const uint8 *src, ImageFormat srcImageFormat,
 					  uint8 *dst, ImageFormat dstImageFormat,
 					  int width, int height, int srcStride, int dstStride )
 {
-#if !defined( _LINUX )
+#if !defined( _LINUX ) && !defined(_WIN64)
 
 	// from rgb(a) to ATIxN
 	if( srcStride != 0 || dstStride != 0 )

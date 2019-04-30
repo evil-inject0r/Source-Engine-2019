@@ -24,7 +24,7 @@ static HWND		*g_rgButtons = NULL;
 #define PHONEME_GAP			10
 #define PHONEME_VGAP		5
 
-typedef long (__stdcall *WINPROCTYPE)( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+typedef LRESULT (__stdcall *WINPROCTYPE)( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 static WINPROCTYPE lpfnOldButtonProc;
 
 static BOOL CALLBACK PhonemeBtnProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
@@ -40,7 +40,7 @@ static BOOL CALLBACK PhonemeBtnProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 				HWND helpText = GetDlgItem( dialog, IDC_STATIC_HELPTEXT );
 				if ( helpText )
 				{
-					CExpression *exp = ( CExpression * )GetWindowLong( (HWND)hwnd, GWL_USERDATA );
+					CExpression *exp = ( CExpression * )GetWindowLong( (HWND)hwnd, GWLP_USERDATA );
 					if ( exp )
 					{
 						SendMessage( helpText, WM_SETTEXT, 0, (LPARAM)exp->description );
@@ -82,7 +82,7 @@ static void ClickedPhoneme( HWND hwndDlg, int phoneme )
 	}
 
 	HWND button = g_rgButtons[ phoneme ];
-	CExpression *exp = ( CExpression * )GetWindowLong( (HWND)button, GWL_USERDATA );
+	CExpression *exp = ( CExpression * )GetWindowLong( (HWND)button, GWLP_USERDATA );
 	if ( exp )
 	{
 		if ( strlen( g_Params.m_szName ) > 0 )
@@ -204,10 +204,10 @@ static void CreateAndLayoutControls( HWND hwndDlg, CPhonemeParams* params )
 			(HINSTANCE)GetModuleHandle( 0 ),
 			NULL );
 		Assert( button );
-		SetWindowLong( (HWND)button, GWL_USERDATA, (LONG)exp );
+		SetWindowLongPtr( (HWND)button, GWLP_USERDATA, (LONG)exp );
 
 		// Subclass it
-		lpfnOldButtonProc = (WINPROCTYPE)SetWindowLong( (HWND)button, GWL_WNDPROC, (LONG)PhonemeBtnProc );
+		lpfnOldButtonProc = (WINPROCTYPE)SetWindowLongPtr( (HWND)button, GWLP_WNDPROC, (LONG)PhonemeBtnProc );
 
 		SendMessage ((HWND)button, WM_SETFONT, (WPARAM) (HFONT) GetStockObject (ANSI_VAR_FONT), MAKELPARAM (TRUE, 0));
 

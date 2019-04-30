@@ -95,7 +95,7 @@ bool CConsoleWnd::Init( void *hInstance, int dialogResourceID, int editControlID
 	if ( !m_hWnd )
 		return false;
 
-	SetWindowLong( m_hWnd, GWL_USERDATA, reinterpret_cast< LONG >( this ) );
+	SetWindowLong( m_hWnd, GWLP_USERDATA, reinterpret_cast< LONG >( this ) );
 	if ( bVisible )
 		ShowWindow( m_hWnd, SW_SHOW );
 
@@ -234,7 +234,7 @@ int	CConsoleWnd::StaticWindowProc(
 	LPARAM lParam  // second message parameter
 	)
 {
-	CConsoleWnd *pDlg = (CConsoleWnd*)GetWindowLong( hwndDlg, GWL_USERDATA );
+	CConsoleWnd *pDlg = (CConsoleWnd*)GetWindowLong( hwndDlg, GWLP_USERDATA );
 	if ( pDlg )
 		return pDlg->WindowProc( hwndDlg, uMsg, wParam, lParam );
 	else

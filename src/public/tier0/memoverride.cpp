@@ -170,7 +170,7 @@ extern "C"
 
 // 64-bit
 #ifdef _WIN64
-void* __cdecl _malloc_base( size_t nSize )
+__declspec(restrict) void* __cdecl _malloc_base( size_t nSize )
 {
 	return AllocUnattributed( nSize );
 }

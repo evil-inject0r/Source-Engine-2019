@@ -555,7 +555,7 @@ InitReturnVal_t CEngineAPI::Init()
 	m_bRunningSimulation = false;
 
 	// Initialize the FPU control word
-#if !defined( SWDS )
+#if !defined( SWDS ) && !defined( PLATFORM_64BITS )
 	_asm
 	{
 		fninit

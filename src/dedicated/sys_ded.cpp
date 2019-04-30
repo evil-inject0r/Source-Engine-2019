@@ -493,7 +493,7 @@ bool CDedicatedSteamApplication::Create( )
 
 int main(int argc, char **argv)
 {
-#ifndef _LINUX
+#if !defined( _LINUX ) && !defined( WIN64 )
 	_asm
 	{
 		fninit
