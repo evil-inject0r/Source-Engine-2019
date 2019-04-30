@@ -26,8 +26,7 @@ $Project "vgui_surfacelib"
 		$File	"FontManager.cpp"
 		$File	"FontEffects.cpp"
 		$File	"FontEffects.h"
-		$File	"Win32Font.cpp"			[$WIN32]
-		$File	"Win32Font_x360.cpp"	[$X360]
+		$File	"Win32Font.cpp"			[$WINDOWS]
 	}
 
 	$Folder	"Public Header Files"
