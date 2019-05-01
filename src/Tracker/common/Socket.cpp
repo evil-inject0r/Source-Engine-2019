@@ -70,8 +70,12 @@ private:
 	threadsocket_t			*m_pSocketList;
 	// Thread handle
 	HANDLE					m_hThread;
+#if PLATFORM_64BITS
 	// Thread id
-	DWORD					m_nThreadId;
+	uint64					m_nThreadId;
+#else
+	uint32					m_nThreadId;
+#endif // PLATFORM_64BITS
 	// Event to set when we want to tell the thread to shut itself down
 	HANDLE					m_hShutdown;
 

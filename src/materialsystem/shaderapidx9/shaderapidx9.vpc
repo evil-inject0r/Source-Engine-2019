@@ -115,7 +115,8 @@ $Project "shaderapidx9"
 		$Lib	"$LIBPUBLIC\tier2"
 		$Lib	"$SRCDIR\dx9sdk\lib\d3d9"       [$WIN32]
 		$Lib	"$SRCDIR\dx9sdk\lib\d3dx9"      [$WIN32]
-        $Lib    "$SRCDIR\dx10sdk\lib\x64\d3dx9" [$WIN64]
+		$Lib	$SRCDIR\dx10sdk\lib\x64\d3d9    [$WIN64]
+        $Lib    $SRCDIR\dx10sdk\lib\x64\d3dx9   [$WIN64]
 
 
 

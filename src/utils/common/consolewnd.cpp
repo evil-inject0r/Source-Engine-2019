@@ -95,7 +95,7 @@ bool CConsoleWnd::Init( void *hInstance, int dialogResourceID, int editControlID
 	if ( !m_hWnd )
 		return false;
 
-	SetWindowLong( m_hWnd, GWLP_USERDATA, reinterpret_cast< LONG >( this ) );
+	SetWindowLongPtr( m_hWnd, GWLP_USERDATA, reinterpret_cast< LONG >( this ) );
 	if ( bVisible )
 		ShowWindow( m_hWnd, SW_SHOW );
 
