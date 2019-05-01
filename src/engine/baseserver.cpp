@@ -54,10 +54,6 @@
 #include "tier0/vcrmode.h"
 #include "sv_ipratelimit.h"
 
-#if defined( _X360 )
-#include "xbox/xbox_win32stubs.h"
-#endif
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -222,10 +218,6 @@ bool CBaseServer::CheckChallengeNr( netadr_t &adr, int nChallengeValue )
 	// See if the challenge is valid
 	// Don't care if it is a local address.
 	if ( adr.IsLoopback() )
-		return true;
-
-	// X360TBD: network
-	if ( IsX360() )
 		return true;
 
 	for (int i=0 ; i<m_ServerQueryChallenges.Count() ; i++)
@@ -839,7 +831,7 @@ void CBaseServer::ReplyChallenge(netadr_t &adr)
 	msg.WriteLong( challengeNr );
 	msg.WriteLong( authprotocol );
 
-#if !defined( NO_STEAM ) //#ifndef _XBOX
+#if !defined( NO_STEAM )
 	if ( authprotocol == PROTOCOL_STEAM )
 	{
 		CSteamID steamID = Steam3Server().GetGSSteamID();
@@ -1413,10 +1405,6 @@ bool CBaseServer::CheckIPRestrictions( const netadr_t &adr, int nAuthProtocol )
 {
 	// Determine if client is outside appropriate address range
 	if ( adr.IsLoopback() )
-		return true;
-
-	// X360TBD: network
-	if ( IsX360() )
 		return true;
 
 	// allow other users if they're on the same ip range
