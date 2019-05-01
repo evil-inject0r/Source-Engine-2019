@@ -81,7 +81,7 @@ $Configuration "Debug"
 
 		// Code Generation
 		$EnableStringPooling					"Yes (/GF)"
-		$EnableMinimalRebuild					"Yes (/Gm)" [!$VS2017]
+		$EnableMinimalRebuild					"Yes (/Gm)" [!$VS2017&&!$VS2019]
 		$EnableC++Exceptions					"No"
 		$SmallerTypeCheck
 		$BasicRuntimeChecks						"Default"
