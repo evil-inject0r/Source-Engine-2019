@@ -48,4 +48,9 @@ $Project "choreoobjects"
 		$File	"$SRCDIR\public\mathlib\vector.h"
 		$File	"$SRCDIR\public\mathlib\vector2d.h"
 	}
+
+    $Folder	"Link Libraries"
+	{
+        $Lib    $LIBCOMMON\lzma
+    }
 }

@@ -59,6 +59,7 @@ $Project "Vmpi"
 
 	$Folder "Link Libraries"
 	{
-		$File	"ZLib.lib"
+		$Lib	$LIBCOMMON\zlib [$WIN32]
+		$Lib	$LIBCOMMON\zlib [$WIN64]
 	}
 }

@@ -18,23 +18,7 @@ $Configuration
 
 	$Linker
 	{
-		$AdditionalDependencies		"$BASE shlwapi.lib winmm.lib wsock32.lib odbc32.lib odbccp32.lib $SRCDIR\dx9sdk\lib\dinput8.lib $SRCDIR\dx9sdk\lib\ddraw.lib" [$WIN32]
-	}
-}
-
-$Configuration "Debug"
-{
-	$Linker
-	{
-		$AdditionalDependencies			"$BASE Xonlined.lib" [$X360]
-	}
-}
-
-$Configuration "Release"
-{
-	$Linker
-	{
-		$AdditionalDependencies			"$BASE Xonline.lib" [$X360]
+		$AdditionalDependencies		"$BASE shlwapi.lib winmm.lib wsock32.lib odbc32.lib odbccp32.lib" [$WINDOWS]
 	}
 }
 
@@ -82,4 +66,10 @@ $Project "launcher"
 		$Lib	"$LIBPUBLIC\appframework"
 		$Lib	"$LIBPUBLIC\tier2"
 		$Lib	"$LIBPUBLIC\tier3"
+
+        $Lib    $SRCDIR\dx9sdk\lib\dinput8 [$WIN32]
+        $Lib    $SRCDIR\dx9sdk\lib\ddraw [$WIN32]
+
+        $Lib    $SRCDIR\dx10sdk\lib\x64\dinput8 [$WIN64]
+        $Lib    $SRCDIR\dx10sdk\lib\x64\ddraw [$WIN64]
 }

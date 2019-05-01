@@ -257,8 +257,9 @@ unsigned int	dictionarySize )
 	}
 
 	// compress, skipping past our header
-	unsigned int compressedSize;
+	size_t compressedSize;
 	int result = LzmaEncode( pInput, inputSize, pOutputBuffer + sizeof( lzma_header_t ), outSize - sizeof( lzma_header_t ), &compressedSize, dictionarySize );
+	
 	if ( result != SZE_OK )
 	{
 		free( pOutputBuffer );
