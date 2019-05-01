@@ -43,7 +43,7 @@ protected:
 
 	// Vehicle headlight dynamic light pointer
 	dlight_t *m_pPointLight;
-	float m_flCurrentPullBackDist;
+	float m_flDistMod;
 
 	// Texture for flashlight
 	CTextureReference m_FlashlightTexture;

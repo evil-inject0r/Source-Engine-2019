@@ -233,125 +233,22 @@ LINK_ENTITY_TO_CLASS( light_spot, CLight );
 LINK_ENTITY_TO_CLASS( light_glspot, CLight );
 
 
-class CEnvLight : public CBaseEntity
+class CEnvLight : public CLight
 {
 public:
-	DECLARE_CLASS( CEnvLight, CBaseEntity );
-	DECLARE_NETWORKCLASS();
-	DECLARE_DATADESC();
+	DECLARE_CLASS( CEnvLight, CLight );
 
-	CEnvLight();
-
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
-	
-	virtual void Spawn();
-
-	virtual int ObjectCaps()
-	{
-		return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
-	}
-
-	virtual int UpdateTransmitState()
-	{
-		return SetTransmitState( FL_EDICT_ALWAYS );
-	}
-
-private:
-	CNetworkQAngle( m_angSunAngles );
-	CNetworkVector( m_vecLight );
-	CNetworkVector( m_vecAmbient );
-	CNetworkVar( bool, m_bCascadedShadowMappingEnabled );
-	bool m_bHasHDRLightSet;
-	bool m_bHasHDRAmbientSet;
+	bool	KeyValue( const char *szKeyName, const char *szValue ); 
+	void	Spawn( void );
 };
 
 LINK_ENTITY_TO_CLASS( light_environment, CEnvLight );
 
-BEGIN_DATADESC( CEnvLight )
-	DEFINE_FIELD( m_angSunAngles, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecLight, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecAmbient, FIELD_VECTOR ),
-	DEFINE_FIELD( m_bCascadedShadowMappingEnabled, FIELD_BOOLEAN ),
-END_DATADESC()
-
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CEnvLight, DT_CEnvLight )
-	SendPropQAngles( SENDINFO( m_angSunAngles ) ),
-	SendPropVector( SENDINFO( m_vecLight ) ),
-	SendPropVector( SENDINFO( m_vecAmbient ) ),
-	SendPropBool( SENDINFO( m_bCascadedShadowMappingEnabled ) ),
-END_SEND_TABLE()
-
-CEnvLight::CEnvLight() : m_bHasHDRLightSet( false ), m_bHasHDRAmbientSet( false )
-{}
-
-static Vector ConvertLightmapGammaToLinear( int *iColor4 )
-{
-	Vector vecColor;
-	for ( int i = 0; i < 3; ++i )
-	{
-		vecColor[i] = powf( iColor4[i] / 255.0f, 2.2f );
-	}
-	vecColor *= iColor4[3] / 255.0f;
-	return vecColor;
-}
-
 bool CEnvLight::KeyValue( const char *szKeyName, const char *szValue )
 {
-	if ( FStrEq( szKeyName, "pitch" ) )
+	if (FStrEq(szKeyName, "_light"))
 	{
-		m_angSunAngles.SetX( -atof( szValue ) );
-	}
-	else if ( FStrEq( szKeyName, "angles" ) )
-	{
-		Vector vecParsed;
-		UTIL_StringToVector( vecParsed.Base(), szValue );
-		m_angSunAngles.SetY( vecParsed.y );
-	}
-	else if ( FStrEq( szKeyName, "_light" ) || FStrEq( szKeyName, "_lightHDR" ) )
-	{
-		int iParsed[4];
-		UTIL_StringToIntArray( iParsed, 4, szValue );
-
-		if ( iParsed[0] <= 0 || iParsed[1] <= 0 || iParsed[2] <= 0 )
-			return true;
-
-		if ( FStrEq( szKeyName, "_lightHDR" ) )
-		{
-			// HDR overrides LDR
-			m_bHasHDRLightSet = true;
-		}
-		else if ( m_bHasHDRLightSet )
-		{
-			// If this is LDR and we got HDR already, bail out.
-			return true;
-		}
-
-		m_vecLight = ConvertLightmapGammaToLinear( iParsed );
-		Msg( "Parsed light_environment light: %i %i %i %i\n",
-			 iParsed[0], iParsed[1], iParsed[2], iParsed[3] );
-	}
-	else if ( FStrEq( szKeyName, "_ambient" ) || FStrEq( szKeyName, "_ambientHDR" ) )
-	{
-		int iParsed[4];
-		UTIL_StringToIntArray( iParsed, 4, szValue );
-
-		if ( iParsed[0] <= 0 || iParsed[1] <= 0 || iParsed[2] <= 0 )
-			return true;
-
-		if ( FStrEq( szKeyName, "_ambientHDR" ) )
-		{
-			// HDR overrides LDR
-			m_bHasHDRLightSet = true;
-		}
-		else if ( m_bHasHDRLightSet )
-		{
-			// If this is LDR and we got HDR already, bail out.
-			return true;
-		}
-
-		m_vecAmbient = ConvertLightmapGammaToLinear( iParsed );
-		Msg( "Parsed light_environment ambient: %i %i %i %i\n",
-			 iParsed[0], iParsed[1], iParsed[2], iParsed[3] );
+		// nothing
 	}
 	else
 	{
@@ -361,11 +258,8 @@ bool CEnvLight::KeyValue( const char *szKeyName, const char *szValue )
 	return true;
 }
 
-void CEnvLight::Spawn()
+
+void CEnvLight::Spawn( void )
 {
-	SetName( MAKE_STRING( "light_environment" ) );
-
-	BaseClass::Spawn();
-
-	m_bCascadedShadowMappingEnabled = HasSpawnFlags( 0x01 );
+	BaseClass::Spawn( );
 }
