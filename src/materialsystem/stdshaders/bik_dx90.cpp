@@ -16,8 +16,7 @@
 BEGIN_VS_SHADER( Bik, "Help for Bik" )
 	BEGIN_SHADER_PARAMS
 		SHADER_PARAM( YTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "Y Bink Texture" )
-		// re-enable this if we want alpha blending
-//		SHADER_PARAM( ATEXTURE, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "A Bink Texture" )
+		SHADER_PARAM( ATEXTURE, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "A Bink Texture" )
 		SHADER_PARAM( CRTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "Cr Bink Texture" )
 		SHADER_PARAM( CBTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "Cb Bink Texture" )
 	END_SHADER_PARAMS
@@ -41,10 +40,10 @@ BEGIN_VS_SHADER( Bik, "Help for Bik" )
 		{
 			LoadTexture( YTEXTURE );
 		}
-//		if ( params[ATEXTURE]->IsDefined() )
-//		{
-//			LoadTexture( ATEXTURE );
-//		}
+		if ( params[ATEXTURE]->IsDefined() )
+		{
+			LoadTexture( ATEXTURE );
+		}
 		if ( params[CRTEXTURE]->IsDefined() )
 		{
 			LoadTexture( CRTEXTURE );
@@ -62,7 +61,7 @@ BEGIN_VS_SHADER( Bik, "Help for Bik" )
 			pShaderShadow->EnableTexture( SHADER_SAMPLER0, true );
 			pShaderShadow->EnableTexture( SHADER_SAMPLER1, true );
 			pShaderShadow->EnableTexture( SHADER_SAMPLER2, true );
-//			pShaderShadow->EnableTexture( SHADER_SAMPLER3, true );
+			pShaderShadow->EnableTexture( SHADER_SAMPLER3, true );
 
 			unsigned int flags = VERTEX_POSITION;
 			int numTexCoords = 1;
@@ -84,14 +83,14 @@ BEGIN_VS_SHADER( Bik, "Help for Bik" )
 
 			pShaderShadow->EnableSRGBWrite( false );
 
-//			EnableAlphaBlending( SHADER_BLEND_SRC_ALPHA, SHADER_BLEND_ONE_MINUS_SRC_ALPHA );
+			EnableAlphaBlending( SHADER_BLEND_SRC_ALPHA, SHADER_BLEND_ONE_MINUS_SRC_ALPHA );
 		}
 		DYNAMIC_STATE
 		{
 			BindTexture( SHADER_SAMPLER0, YTEXTURE, FRAME );
 			BindTexture( SHADER_SAMPLER1, CRTEXTURE, FRAME );
 			BindTexture( SHADER_SAMPLER2, CBTEXTURE, FRAME );
-//			BindTexture( SHADER_SAMPLER3, ATEXTURE, FRAME );
+			BindTexture( SHADER_SAMPLER3, ATEXTURE, FRAME );
 
 			// We need the view matrix
 			LoadViewMatrixIntoVertexShaderConstant( VERTEX_SHADER_VIEWMODEL );
