@@ -37,8 +37,8 @@ REM ****************
 REM BUILD SHADERS
 REM ****************
 @REM  >_log_shaderlist_dx9_20b.log
-echo --------------------------------------------------------------------------------------------
-%BUILD_SHADER% _shaderlist_dx9_20b				-game %GAMEDIR% -source %SOURCEDIR% %dynamic_shaders%
+REM echo --------------------------------------------------------------------------------------------
+REM %BUILD_SHADER% _shaderlist_dx9_20b				-game %GAMEDIR% -source %SOURCEDIR% %dynamic_shaders%
 echo --------------------------------------------------------------------------------------------
 %BUILD_SHADER% _shaderlist_dx9_30				-game %GAMEDIR% -source %SOURCEDIR% %dynamic_shaders% -dx9_30 -force30
 echo --------------------------------------------------------------------------------------------
@@ -69,4 +69,4 @@ echo.
 echo Press any key to rebuild stdshader projects and exit . . .
 pause >nul
 
-..\..\devtools\bin\vpc.exe /f /define:VS2019 +stdshaders
+REM ..\..\devtools\bin\vpc.exe /f /define:VS2019 +stdshaders
