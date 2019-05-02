@@ -4,13 +4,10 @@
 //
 //=============================================================================
 
-// STATIC: "CONVERT_TO_SRGB"			"0..1"	[ps20b][= g_pHardwareConfig->NeedsShaderSRGBConversion()]
 // STATIC: "CONVERT_TO_SRGB"			"0..1"	[ps30][= g_pHardwareConfig->NeedsShaderSRGBConversion()]
-// STATIC: "FLASHLIGHTDEPTHFILTERMODE"	"0..2"	[ps20b]
 // STATIC: "FLASHLIGHTDEPTHFILTERMODE"	"0..2"	[ps30]
 
 // DYNAMIC: "PIXELFOGTYPE"				"0..1"
-// DYNAMIC: "FLASHLIGHTSHADOWS"			"0..1"	[ps20b]
 // DYNAMIC: "FLASHLIGHTSHADOWS"			"0..1"	[ps30]
 
 #include "common_flashlight_fxc.h"
@@ -38,16 +35,12 @@ struct PS_INPUT
 
 float4 main( PS_INPUT i ) : COLOR
 {
-#if defined( SHADER_MODEL_PS_2_0 )
-		float3 result = tex2Dproj( SpotSampler, i.spotTexCoord.xyzw );
-#else 
-		float3 vProjCoords = i.spotTexCoord.xyz / i.spotTexCoord.w;
-		float3 result = tex2D( SpotSampler, vProjCoords );
-#endif
+	float3 vProjCoords = i.spotTexCoord.xyz / i.spotTexCoord.w;
+	float3 result = tex2D( SpotSampler, vProjCoords );
 
 	result *= cFlashlightColor.rgb;
 
-#if FLASHLIGHTSHADOWS && ( defined( SHADER_MODEL_PS_2_B ) || defined( SHADER_MODEL_PS_3_0 ) )
+#if FLASHLIGHTSHADOWS && defined( SHADER_MODEL_PS_3_0 )
 	result *= DoFlashlightShadow( FlashlightDepthSampler, vProjCoords, i.projPos.xy / i.projPos.z, FLASHLIGHTDEPTHFILTERMODE, g_ShadowTweaks, true );
 #endif
 	result *= 0.35f;	// Without this, unshadowed teeth always seem to glow

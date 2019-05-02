@@ -11,8 +11,7 @@
 #include "ConVar.h"
 
 #include "lightmappedgeneric_vs30.inc"
-#include "worldtwotextureblend_ps20.inc"
-#include "worldtwotextureblend_ps20b.inc"
+#include "worldtwotextureblend_ps30.inc"
 
 // not ready yet
 //#include "worldtwotextureblend_ps30.inc"
@@ -255,49 +254,19 @@ END_SHADER_PARAMS
 			SET_STATIC_VERTEX_SHADER_COMBO( SEAMLESS, bSeamlessMapping ); //( bumpmap_variant == 2 )?1:0);
 			//SET_STATIC_VERTEX_SHADER_COMBO( FLASHLIGHT, hasFlashlight );
 			SET_STATIC_VERTEX_SHADER( lightmappedgeneric_vs30 );
+						
+			DECLARE_STATIC_PIXEL_SHADER( worldtwotextureblend_ps30 );
+			SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  hasDetailTexture );
+			SET_STATIC_PIXEL_SHADER_COMBO( BUMPMAP,  hasBump );
+			SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSEBUMPMAP,  hasDiffuseBumpmap );
+			SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  hasVertexColor );
+			SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM,  hasSelfIllum );
+			SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_ALPHA_MASK_BASE_TEXTURE,  bHasDetailAlpha );
+			SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  hasFlashlight );
+			SET_STATIC_PIXEL_SHADER_COMBO( SEAMLESS,  bSeamlessMapping );
+			SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
+			SET_STATIC_PIXEL_SHADER( worldtwotextureblend_ps30 );
 			
-			/*if ( g_pHardwareConfig->SupportsShaderModel_3_0() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( worldtwotextureblend_ps30 );
-				SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  hasDetailTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( BUMPMAP,  hasBump );
-				SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSEBUMPMAP,  hasDiffuseBumpmap );
-				SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  hasVertexColor );
-				SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM,  hasSelfIllum );
-				SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_ALPHA_MASK_BASE_TEXTURE,  bHasDetailAlpha );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  hasFlashlight );
-				SET_STATIC_PIXEL_SHADER_COMBO( SEAMLESS,  bSeamlessMapping );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
-				SET_STATIC_PIXEL_SHADER( worldtwotextureblend_ps30 );
-			}
-			else */if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( worldtwotextureblend_ps20b );
-				SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  hasDetailTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( BUMPMAP,  hasBump );
-				SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSEBUMPMAP,  hasDiffuseBumpmap );
-				SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  hasVertexColor );
-				SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM,  hasSelfIllum );
-				SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_ALPHA_MASK_BASE_TEXTURE,  bHasDetailAlpha );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  hasFlashlight );
-				SET_STATIC_PIXEL_SHADER_COMBO( SEAMLESS,  bSeamlessMapping );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
-				SET_STATIC_PIXEL_SHADER( worldtwotextureblend_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( worldtwotextureblend_ps20 );
-				SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  hasDetailTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( BUMPMAP,  hasBump );
-				SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSEBUMPMAP,  hasDiffuseBumpmap );
-				SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  hasVertexColor );
-				SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM,  hasSelfIllum );
-				SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_ALPHA_MASK_BASE_TEXTURE,  bHasDetailAlpha );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  hasFlashlight );
-				SET_STATIC_PIXEL_SHADER_COMBO( SEAMLESS,  bSeamlessMapping );
-				SET_STATIC_PIXEL_SHADER( worldtwotextureblend_ps20 );
-			}
-
 			// HACK HACK HACK - enable alpha writes all the time so that we have them for
 			// underwater stuff. 
 			// But only do it if we're not using the alpha already for translucency
@@ -422,40 +391,15 @@ END_SHADER_PARAMS
 				bWriteWaterFogToAlpha = false;
 			}
 
-			/*if ( g_pHardwareConfig->SupportsShaderModel_3_0() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps30 );
+			DECLARE_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps30 );
 
-				// Don't write fog to alpha if we're using translucency
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA, bWriteWaterFogToAlpha );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, bWriteDepthToAlpha );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
-				SET_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps30 );
-			}
-			else */if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps20b );
-
-				// Don't write fog to alpha if we're using translucency
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA, bWriteWaterFogToAlpha );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, bWriteDepthToAlpha );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
-				SET_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps20 );
-
-				// Don't write fog to alpha if we're using translucency
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA, (fogType == MATERIAL_FOG_LINEAR_BELOW_FOG_Z) && 
-					(nBlendType != BT_BLENDADD) && (nBlendType != BT_BLEND) && !bIsAlphaTested );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps20 );
-			}
-
-
+			// Don't write fog to alpha if we're using translucency
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA, bWriteWaterFogToAlpha );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, bWriteDepthToAlpha );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
+			SET_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps30 );
+			
 			// always set the transform for detail textures since I'm assuming that you'll
 			// always have a detailscale.
 			if( hasDetailTexture )

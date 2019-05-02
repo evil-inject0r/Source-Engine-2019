@@ -13,10 +13,6 @@
 
 #ifdef STDSHADER_DX9_DLL_EXPORT
 
-#include "eyes_vs20.inc"
-#include "eyes_ps20.inc"
-#include "eyes_ps20b.inc"
-
 #include "eyes_vs30.inc"
 #include "eyes_ps30.inc"
 #include "eyes_flashlight_vs30.inc"
@@ -91,11 +87,6 @@ static void SetDepthFlashlightParams( CBaseVSShader *pShader, IShaderDynamicAPI 
 	vScreenScale[0] = (float) nWidth  / 32.0f;
 	vScreenScale[1] = (float) nHeight / 32.0f;
 	pShaderAPI->SetPixelShaderConstant( PSREG_FLASHLIGHT_SCREEN_SCALE, vScreenScale, 1 );
-
-	if ( IsX360() )
-	{
-		pShaderAPI->SetBooleanPixelShaderConstant( 0, &flashlightState.m_nShadowQuality, 1 );
-	}
 }
 
 
@@ -244,37 +235,17 @@ static void DrawUsingVertexShader( bool bDX9, CBaseVSShader *pShader, IMaterialV
 		pShaderShadow->EnableAlphaWrites( true ); //we end up hijacking destination alpha for opaques most of the time.
 		
 #ifdef STDSHADER_DX9_DLL_EXPORT
-		if ( !g_pHardwareConfig->HasFastVertexTextures() )
-		{
-			DECLARE_STATIC_VERTEX_SHADER( eyes_vs20 );
-			SET_STATIC_VERTEX_SHADER_COMBO( HALFLAMBERT, IS_FLAG_SET( MATERIAL_VAR_HALFLAMBERT ) );
-			SET_STATIC_VERTEX_SHADER_COMBO( INTRO, params[info.m_nIntro]->GetIntValue() ? 1 : 0 );
-			SET_STATIC_VERTEX_SHADER( eyes_vs20 );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( eyes_ps20b );
-				SET_STATIC_PIXEL_SHADER( eyes_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( eyes_ps20 );
-				SET_STATIC_PIXEL_SHADER( eyes_ps20 );
-			}
-		}
-		else
-		{
-			// The vertex shader uses the vertex id stream
-			SET_FLAGS2( MATERIAL_VAR2_USES_VERTEXID );
+		// The vertex shader uses the vertex id stream
+		SET_FLAGS2( MATERIAL_VAR2_USES_VERTEXID );
 
-			DECLARE_STATIC_VERTEX_SHADER( eyes_vs30 );
-			SET_STATIC_VERTEX_SHADER_COMBO( HALFLAMBERT, IS_FLAG_SET( MATERIAL_VAR_HALFLAMBERT ) );
-			SET_STATIC_VERTEX_SHADER_COMBO( INTRO, params[info.m_nIntro]->GetIntValue() ? 1 : 0 );
-			SET_STATIC_VERTEX_SHADER( eyes_vs30 );
+		DECLARE_STATIC_VERTEX_SHADER( eyes_vs30 );
+		SET_STATIC_VERTEX_SHADER_COMBO( HALFLAMBERT, IS_FLAG_SET( MATERIAL_VAR_HALFLAMBERT ) );
+		SET_STATIC_VERTEX_SHADER_COMBO( INTRO, params[info.m_nIntro]->GetIntValue() ? 1 : 0 );
+		SET_STATIC_VERTEX_SHADER( eyes_vs30 );
 
-			DECLARE_STATIC_PIXEL_SHADER( eyes_ps30 );
-			SET_STATIC_PIXEL_SHADER( eyes_ps30 );
-		}
+		DECLARE_STATIC_PIXEL_SHADER( eyes_ps30 );
+		SET_STATIC_PIXEL_SHADER( eyes_ps30 );
 
 		// On DX9, get the gamma read and write correct
 		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, true );			// Base
@@ -299,30 +270,17 @@ static void DrawUsingVertexShader( bool bDX9, CBaseVSShader *pShader, IMaterialV
 #ifdef STDSHADER_DX9_DLL_EXPORT
 		LightState_t lightState;
 		pShaderAPI->GetDX9LightState( &lightState );
-
-		if ( !g_pHardwareConfig->HasFastVertexTextures() )
-		{
-			DECLARE_DYNAMIC_VERTEX_SHADER( eyes_vs20 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, pShaderAPI->GetCurrentNumBones() > 0 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( DYNAMIC_LIGHT, lightState.HasDynamicLight() );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( STATIC_LIGHT,  lightState.m_bStaticLight  ? 1 : 0 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
-			SET_DYNAMIC_VERTEX_SHADER( eyes_vs20 );
-		}
-		else
-		{
-			pShader->SetHWMorphVertexShaderState( VERTEX_SHADER_SHADER_SPECIFIC_CONST_7, VERTEX_SHADER_SHADER_SPECIFIC_CONST_8, SHADER_VERTEXTEXTURE_SAMPLER0 );
+				
+		pShader->SetHWMorphVertexShaderState( VERTEX_SHADER_SHADER_SPECIFIC_CONST_7, VERTEX_SHADER_SHADER_SPECIFIC_CONST_8, SHADER_VERTEXTEXTURE_SAMPLER0 );
 			
-			DECLARE_DYNAMIC_VERTEX_SHADER( eyes_vs30 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, pShaderAPI->GetCurrentNumBones() > 0 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( DYNAMIC_LIGHT, lightState.HasDynamicLight() );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( STATIC_LIGHT,  lightState.m_bStaticLight  ? 1 : 0 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( MORPHING, pShaderAPI->IsHWMorphingEnabled() );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
-			SET_DYNAMIC_VERTEX_SHADER( eyes_vs30 );
-		}
+		DECLARE_DYNAMIC_VERTEX_SHADER( eyes_vs30 );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, pShaderAPI->GetCurrentNumBones() > 0 );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( DYNAMIC_LIGHT, lightState.HasDynamicLight() );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( STATIC_LIGHT,  lightState.m_bStaticLight  ? 1 : 0 );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( MORPHING, pShaderAPI->IsHWMorphingEnabled() );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+		SET_DYNAMIC_VERTEX_SHADER( eyes_vs30 );
 
 		// Get luminance of ambient cube and saturate it
 		float fGlintDamping = max(0.0f, min( pShaderAPI->GetAmbientLightCubeLuminance(), 1.0f ) );
@@ -344,30 +302,11 @@ static void DrawUsingVertexShader( bool bDX9, CBaseVSShader *pShader, IMaterialV
 		pShaderAPI->GetWorldSpaceCameraPosition( vEyePos_SpecExponent );
 		vEyePos_SpecExponent[3] = 0.0f;
 		pShaderAPI->SetPixelShaderConstant( PSREG_EYEPOS_SPEC_EXPONENT, vEyePos_SpecExponent, 1 );
-
-		if ( !g_pHardwareConfig->HasFastVertexTextures() )
-		{
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( eyes_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, pShaderAPI->ShouldWriteDepthToDestAlpha() );
-				SET_DYNAMIC_PIXEL_SHADER( eyes_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( eyes_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER( eyes_ps20 );
-			}
-		}
-		else
-		{
-			DECLARE_DYNAMIC_PIXEL_SHADER( eyes_ps30 );
-			SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, pShaderAPI->ShouldWriteDepthToDestAlpha() );
-			SET_DYNAMIC_PIXEL_SHADER( eyes_ps30 );
-		}
+				
+		DECLARE_DYNAMIC_PIXEL_SHADER( eyes_ps30 );
+		SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
+		SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, pShaderAPI->ShouldWriteDepthToDestAlpha() );
+		SET_DYNAMIC_PIXEL_SHADER( eyes_ps30 );
 
 		Assert( info.m_nIntro != -1 );
 		if( params[info.m_nIntro]->GetIntValue() )
@@ -405,7 +344,7 @@ void DrawEyes_DX8_DX9( bool bDX9, CBaseVSShader *pShader, IMaterialVar** params,
 		SET_FLAGS2( MATERIAL_VAR2_LIGHTING_VERTEX_LIT );
 	}
 	bool bHasFlashlight = pShader->UsingFlashlight( params );
-	if( bHasFlashlight && ( IsX360() || r_flashlight_version2.GetInt() ) )
+	if( bHasFlashlight && (r_flashlight_version2.GetInt() ) )
 	{
 		DrawEyes_DX8_DX9_Internal( bDX9, pShader, params, pShaderAPI, pShaderShadow, false, info, vertexCompression );
 		if ( pShaderShadow )

@@ -7,15 +7,12 @@
 
 #include "basevsshader.h"
 
-#include "screenspaceeffect_vs20.inc"
+#include "screenspaceeffect_vs30.inc"
 
 #define SHADER_MODEL_VS_30
 
 #ifdef SHADER_MODEL_VS_30
 #include "Engine_Post_ps30.inc"
-#else
-#include "Engine_Post_ps20.inc"
-#include "Engine_Post_ps20b.inc"
 #endif
 
 #include "..\materialsystem_global.h"
@@ -117,28 +114,11 @@ BEGIN_VS_SHADER_FLAGS( Engine_Post_dx9, "Engine post-processing effects (softwar
 			int		userDataSize		= 0;
 			pShaderShadow->VertexShaderVertexFormat( format, numTexCoords, pTexCoordDimensions, userDataSize );
 
-			DECLARE_STATIC_VERTEX_SHADER( screenspaceeffect_vs20 );
-			SET_STATIC_VERTEX_SHADER( screenspaceeffect_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( screenspaceeffect_vs30 );
+			SET_STATIC_VERTEX_SHADER( screenspaceeffect_vs30 );
 
-#ifdef SHADER_MODEL_VS_30
-			//if ( g_pHardwareConfig->SupportsShaderModel_3_0() )
-			//{
-				DECLARE_STATIC_PIXEL_SHADER( engine_post_ps30 );
-				SET_STATIC_PIXEL_SHADER( engine_post_ps30 );
-			//}
-#else
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-
-			{
-				DECLARE_STATIC_PIXEL_SHADER( engine_post_ps20b );
-				SET_STATIC_PIXEL_SHADER( engine_post_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( engine_post_ps20 );
-				SET_STATIC_PIXEL_SHADER( engine_post_ps20 );
-			}
-#endif
+			DECLARE_STATIC_PIXEL_SHADER( engine_post_ps30 );
+			SET_STATIC_PIXEL_SHADER( engine_post_ps30 );
 		}
 		DYNAMIC_STATE
 		{
@@ -203,39 +183,15 @@ BEGIN_VS_SHADER_FLAGS( Engine_Post_dx9, "Engine post-processing effects (softwar
 				colCorrectNumLookups = 0;
 			}
 
-#ifdef SHADER_MODEL_VS_30
-
 			DECLARE_DYNAMIC_PIXEL_SHADER( engine_post_ps30 );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_ENABLE,						aaEnabled );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_QUALITY_MODE,				aaQualityMode );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_REDUCE_ONE_PIXEL_LINE_BLUR,	aaReduceOnePixelLineBlur );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( COL_CORRECT_NUM_LOOKUPS,		colCorrectNumLookups );
 			SET_DYNAMIC_PIXEL_SHADER( engine_post_ps30 );
-#else
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( engine_post_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_ENABLE,						aaEnabled );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_QUALITY_MODE,				aaQualityMode );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_REDUCE_ONE_PIXEL_LINE_BLUR,	aaReduceOnePixelLineBlur );
-//				SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_DEBUG_MODE,					aaDebugMode );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( COL_CORRECT_NUM_LOOKUPS,		colCorrectNumLookups );
-				SET_DYNAMIC_PIXEL_SHADER( engine_post_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( engine_post_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_ENABLE,						aaEnabled );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_QUALITY_MODE,				0 ); // Only enough instruction slots in ps2b
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_REDUCE_ONE_PIXEL_LINE_BLUR,	0 );
-//				SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_DEBUG_MODE,					aaDebugMode );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( COL_CORRECT_NUM_LOOKUPS,		colCorrectNumLookups );
-				SET_DYNAMIC_PIXEL_SHADER( engine_post_ps20 );
-			}
-#endif
 
-			DECLARE_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs20 );
-			SET_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs20 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs30 );
+			SET_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs30 );
 		}
 		Draw();
 	}

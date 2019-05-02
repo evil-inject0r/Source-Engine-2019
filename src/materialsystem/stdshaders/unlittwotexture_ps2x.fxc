@@ -1,12 +1,8 @@
 // DYNAMIC: "PIXELFOGTYPE"				"0..1"
 // DYNAMIC: "LIGHTING_PREVIEW"			"0..2"
-// DYNAMIC: "WRITE_DEPTH_TO_DESTALPHA"	"0..1"	[ps20b]
+// DYNAMIC: "WRITE_DEPTH_TO_DESTALPHA"	"0..1"	[ps30]
 
-// STATIC: "CONVERT_TO_SRGB"			"0..1"	[ps20b][= g_pHardwareConfig->NeedsShaderSRGBConversion()]
-
-#if defined( SHADER_MODEL_PS_2_0 )
-#	define WRITE_DEPTH_TO_DESTALPHA 0
-#endif
+// STATIC: "CONVERT_TO_SRGB"			"0..1"	[ps30][= g_pHardwareConfig->NeedsShaderSRGBConversion()]
 
 #include "common_ps_fxc.h"
 #include "shader_constant_register_map.h"
@@ -35,10 +31,6 @@ struct PS_INPUT
 	HALF2 baseTexCoord2				: TEXCOORD1;		// Base texture coordinate
 	float4 worldPos_projPosZ		: TEXCOORD7;		// Necessary for water fog dest alpha
 	float4 fogFactorW				: COLOR1;
-	
-#if defined( _X360 ) //matching pixel shader inputs to vertex shader outputs to avoid shader patches	
-	float4 vColor	: COLOR0;
-#endif
 };
 
 #if LIGHTING_PREVIEW == 2

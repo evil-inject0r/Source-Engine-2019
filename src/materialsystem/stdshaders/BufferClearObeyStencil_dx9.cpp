@@ -6,9 +6,8 @@
 
 #include "BaseVSShader.h"
 
-#include "bufferclearobeystencil_vs20.inc"
-#include "bufferclearobeystencil_ps20.inc"
-#include "bufferclearobeystencil_ps20b.inc"
+#include "bufferclearobeystencil_vs30.inc"
+#include "bufferclearobeystencil_ps30.inc"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -55,44 +54,28 @@ BEGIN_VS_SHADER_FLAGS( BufferClearObeyStencil_DX9, "", SHADER_NOT_EDITABLE )
 
 			pShaderShadow->VertexShaderVertexFormat( VERTEX_POSITION|VERTEX_COLOR, 1, NULL, 0 );
 
-			DECLARE_STATIC_VERTEX_SHADER( bufferclearobeystencil_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( bufferclearobeystencil_vs30 );
 			SET_STATIC_VERTEX_SHADER_COMBO( USESCOLOR, bEnableColorWrites );
-			SET_STATIC_VERTEX_SHADER( bufferclearobeystencil_vs20 );
+			SET_STATIC_VERTEX_SHADER( bufferclearobeystencil_vs30 );
 
 			//avoid setting a pixel shader when only doing depth/stencil operations, as recommended by PIX
 			if( bEnableColorWrites )
 			{
-				if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-				{
-					DECLARE_STATIC_PIXEL_SHADER( bufferclearobeystencil_ps20b );
-					SET_STATIC_PIXEL_SHADER( bufferclearobeystencil_ps20b );
-				}
-				else
-				{
-					DECLARE_STATIC_PIXEL_SHADER( bufferclearobeystencil_ps20 );
-					SET_STATIC_PIXEL_SHADER( bufferclearobeystencil_ps20 );
-				}
+				DECLARE_STATIC_PIXEL_SHADER( bufferclearobeystencil_ps30 );
+				SET_STATIC_PIXEL_SHADER( bufferclearobeystencil_ps30 );
 			}
 		}
 
 		DYNAMIC_STATE
 		{
-			DECLARE_DYNAMIC_VERTEX_SHADER( bufferclearobeystencil_vs20 );
-			SET_DYNAMIC_VERTEX_SHADER( bufferclearobeystencil_vs20 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( bufferclearobeystencil_vs30 );
+			SET_DYNAMIC_VERTEX_SHADER( bufferclearobeystencil_vs30 );
 
 			//avoid setting a pixel shader when only doing depth/stencil operations, as recommended by PIX
 			if( bEnableColorWrites )
 			{
-				if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-				{
-					DECLARE_DYNAMIC_PIXEL_SHADER( bufferclearobeystencil_ps20b );
-					SET_DYNAMIC_PIXEL_SHADER( bufferclearobeystencil_ps20b );
-				}
-				else
-				{
-					DECLARE_DYNAMIC_PIXEL_SHADER( bufferclearobeystencil_ps20 );
-					SET_DYNAMIC_PIXEL_SHADER( bufferclearobeystencil_ps20 );
-				}
+				DECLARE_DYNAMIC_PIXEL_SHADER( bufferclearobeystencil_ps30 );
+				SET_DYNAMIC_PIXEL_SHADER( bufferclearobeystencil_ps30 );
 			}
 		}
 

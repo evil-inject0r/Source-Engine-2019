@@ -4,13 +4,10 @@
 //
 //=============================================================================
 
-// STATIC: "CONVERT_TO_SRGB"			"0..1"	[ps20b][= g_pHardwareConfig->NeedsShaderSRGBConversion()]
 // STATIC: "CONVERT_TO_SRGB"			"0..1"	[ps30][= g_pHardwareConfig->NeedsShaderSRGBConversion()]
 // STATIC:  "LIGHTWARPTEXTURE"			"0..1"
 // DYNAMIC: "PIXELFOGTYPE"				"0..1"
 // DYNAMIC: "WRITEWATERFOGTODESTALPHA"	"0..1"
-// DYNAMIC: "NUM_LIGHTS"				"0..2"	[ps20]
-// DYNAMIC: "NUM_LIGHTS"				"0..4"	[ps20b]
 // DYNAMIC: "NUM_LIGHTS"				"0..4"	[ps30]
 
 
@@ -90,8 +87,6 @@ float4 main( PS_INPUT i ) : COLOR
 
 
 
-
-
 	// Transform world space normal into clip space and project
 	float2 vProjNormal;
 	vProjNormal.x = dot( vWorldNormal, g_ViewProj[0] );	// 1st row
@@ -104,12 +99,8 @@ float4 main( PS_INPUT i ) : COLOR
 	vRefractTexCoord *= scale;
 	vRefractTexCoord += vRefractTexCoordNoWarp;
 
-#ifdef SHADER_MODEL_PS_2_0
-	float3 vRefract = tex2D( RefractSampler, vRefractTexCoordNoWarp );
-#endif
-
 	// Extra refraction rays, specular, rim etc are only done on ps_2_b
-#if defined( SHADER_MODEL_PS_2_B ) || defined( SHADER_MODEL_PS_3_0 )
+#if defined( SHADER_MODEL_PS_3_0 )
 	// Blur by scalable Poisson filter
 	float fBlurAmount = lerp( 0.05f, 0.0f, g_CloakControl.y );
 	float3 vRefract = tex2D( RefractSampler, vRefractTexCoord );

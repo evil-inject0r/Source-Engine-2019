@@ -7,9 +7,8 @@
 
 #include "basevsshader.h"
 
-#include "screenspaceeffect_vs20.inc"
-#include "colorcorrection_ps20.inc"
-#include "colorcorrection_ps20b.inc"
+#include "screenspaceeffect_vs30.inc"
+#include "colorcorrection_ps30.inc"
 
 #include "..\materialsystem_global.h"
 
@@ -82,19 +81,12 @@ BEGIN_VS_SHADER_FLAGS( ColorCorrection, "Help for ColorCorrection", SHADER_NOT_E
 			int fmt = VERTEX_POSITION;
 			pShaderShadow->VertexShaderVertexFormat( fmt, 1, 0, 0 );
 
-			DECLARE_STATIC_VERTEX_SHADER( screenspaceeffect_vs20 );
-			SET_STATIC_VERTEX_SHADER( screenspaceeffect_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( screenspaceeffect_vs30 );
+			SET_STATIC_VERTEX_SHADER( screenspaceeffect_vs30 );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( colorcorrection_ps20b );
-				SET_STATIC_PIXEL_SHADER( colorcorrection_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( colorcorrection_ps20 );
-				SET_STATIC_PIXEL_SHADER( colorcorrection_ps20 );
-			}
+			DECLARE_STATIC_PIXEL_SHADER( colorcorrection_ps30 );
+			SET_STATIC_PIXEL_SHADER( colorcorrection_ps30 );
+			
 			pShaderShadow->EnableSRGBWrite( false );
 		}
 		DYNAMIC_STATE
@@ -121,21 +113,12 @@ BEGIN_VS_SHADER_FLAGS( ColorCorrection, "Help for ColorCorrection", SHADER_NOT_E
 			pShaderAPI->SetPixelShaderConstant( 3, &weights[2] );
 			pShaderAPI->SetPixelShaderConstant( 4, &weights[3] );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( colorcorrection_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LOOKUPS, params[ NUM_LOOKUPS ]->GetIntValue() );
-				SET_DYNAMIC_PIXEL_SHADER( colorcorrection_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( colorcorrection_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LOOKUPS, params[ NUM_LOOKUPS ]->GetIntValue() );
-				SET_DYNAMIC_PIXEL_SHADER( colorcorrection_ps20 );
-			}
-
-			DECLARE_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs20 );
-			SET_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs20 );
+			DECLARE_DYNAMIC_PIXEL_SHADER( colorcorrection_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LOOKUPS, params[ NUM_LOOKUPS ]->GetIntValue() );
+			SET_DYNAMIC_PIXEL_SHADER( colorcorrection_ps30 );
+			
+			DECLARE_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs30 );
+			SET_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs30 );
 		}
 		Draw();
 	}
