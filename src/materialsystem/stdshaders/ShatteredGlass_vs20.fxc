@@ -20,9 +20,7 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 projPos					: POSITION;	
-#if !defined( _X360 )
 	float  fog						: FOG;
-#endif
 	float2 baseTexCoord				: TEXCOORD0;
 	float2 detailTexCoord			: TEXCOORD1;
 	float2 lightmapTexCoord			: TEXCOORD2;
@@ -55,12 +53,8 @@ VS_OUTPUT main( const VS_INPUT v )
 	o.envmapMaskTexCoord.y = dot( v.vDetailTexCoord, cDetailTexCoordTransform[1] ) + cDetailTexCoordTransform[1].w;
 	o.lightmapTexCoord = v.vLightmapTexCoord;
 	
-	
-
 	o.fogFactorW = CalcFog( o.worldPos_projPosZ.xyz, projPos, g_FogType );
-#if !defined( _X360 )
 	o.fog = o.fogFactorW;
-#endif	
 	o.vertexColor = cModulationColor;
 
 	return o;
