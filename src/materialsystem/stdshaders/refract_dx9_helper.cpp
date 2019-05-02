@@ -8,7 +8,7 @@
 #include "BaseVSShader.h"
 #include "refract_dx9_helper.h"
 #include "convar.h"
-#include "refract_vs20.inc"
+#include "refract_vs30.inc"
 #include "refract_ps30.inc"
 #include "cpp_shader_constant_register_map.h"
 
@@ -201,10 +201,10 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 
 		pShaderShadow->VertexShaderVertexFormat( flags, nTexCoordCount, NULL, userDataSize );
 		
-		DECLARE_STATIC_VERTEX_SHADER( refract_vs20 );
+		DECLARE_STATIC_VERTEX_SHADER( refract_vs30 );
 		SET_STATIC_VERTEX_SHADER_COMBO( MODEL,  bIsModel );
 		SET_STATIC_VERTEX_SHADER_COMBO( COLORMODULATE, bColorModulate );
-		SET_STATIC_VERTEX_SHADER( refract_vs20 );
+		SET_STATIC_VERTEX_SHADER( refract_vs30 );
 
 		DECLARE_STATIC_PIXEL_SHADER( refract_ps30 );
 		SET_STATIC_PIXEL_SHADER_COMBO( BLUR,  blurAmount );
@@ -269,10 +269,10 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 			pShader->BindTexture( SHADER_SAMPLER5, info.m_nRefractTintTexture, info.m_nRefractTintTextureFrame );
 		}
 
-		DECLARE_DYNAMIC_VERTEX_SHADER( refract_vs20 );
+		DECLARE_DYNAMIC_VERTEX_SHADER( refract_vs30 );
 		SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING,  pShaderAPI->GetCurrentNumBones() > 0 );
 		SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
-		SET_DYNAMIC_VERTEX_SHADER( refract_vs20 );
+		SET_DYNAMIC_VERTEX_SHADER( refract_vs30 );
 
 		DECLARE_DYNAMIC_PIXEL_SHADER( refract_ps30 );
 		SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
