@@ -187,7 +187,6 @@ private:
 	enum
 	{
 		MATERIAL_FILL_RATE = 0,
-		MATERIAL_FILL_RATE_DX6,
 		MATERIAL_DEBUG_NORMALMAP,
 		MATERIAL_DEBUG_ENVMAPMASK,
 		MATERIAL_DEBUG_DEPTH,
@@ -219,16 +218,11 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CShaderSystem, IShaderSystem,
 const char *CShaderSystem::s_pDebugShaderName[MATERIAL_DEBUG_COUNT]	=
 {
 	"FillRate",
-	"FillRate_Dx6",
 	"DebugNormalMap",
 	"DebugDrawEnvmapMask",
 	"DebugDepth",
 	"DebugDepth",
-#if !defined( _X360 )
-	"Wireframe_DX6",
-#else
-	"Wireframe_DX9",
-#endif
+	"Wireframe_DX9"
 };
 
 //-----------------------------------------------------------------------------
@@ -1729,9 +1723,7 @@ void CShaderSystem::CopyMaterialVarToDebugShader( IMaterialInternal *pDebugMater
 void CShaderSystem::DrawMeasureFillRate( ShaderRenderState_t* pRenderState, int mod, VertexCompressionType_t vertexCompression )
 {
 	int nPassCount = pRenderState->m_pSnapshots[mod].m_nPassCount;
-
-	bool bUsesVertexShader = (VertexFlags(pRenderState->m_VertexFormat) & VERTEX_FORMAT_VERTEX_SHADER) != 0;
-	IMaterialInternal *pMaterial = m_pDebugMaterials[ bUsesVertexShader ? MATERIAL_FILL_RATE : MATERIAL_FILL_RATE_DX6 ];
+	IMaterialInternal *pMaterial = m_pDebugMaterials[MATERIAL_FILL_RATE];
 
 	bool bFound;
 	IMaterialVar *pMaterialVar = pMaterial->FindVar( "$passcount", &bFound );
