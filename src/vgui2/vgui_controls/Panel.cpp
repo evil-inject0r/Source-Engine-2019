@@ -843,7 +843,6 @@ Panel::~Panel()
 void Panel::MakeReadyForUse()
 {
 //	PerformApplySchemeSettings();
-	UpdateSiblingPin();
 	surface()->SolveTraverse( GetVPanel(), true );
 }
 
@@ -1489,8 +1488,6 @@ void Panel::SetParent(VPANEL newParent)
 			SetMouseInputEnabled(ipanel()->IsMouseInputEnabled(GetVParent()));
 		}
 	}
-
-	UpdateSiblingPin();
 }
 
 //-----------------------------------------------------------------------------
@@ -4025,61 +4022,6 @@ void Panel::GetResizeOffset( int &dx, int &dy )
 	dy = m_nResizeDeltaY;
 }
 
-//-----------------------------------------------------------------------------
-// Tells this panel that it should pin itself to the corner of a specified sibling panel
-//-----------------------------------------------------------------------------
-void Panel::PinToSibling( const char *pszSibling, PinCorner_e pinOurCorner, PinCorner_e pinSibling )
-{
-	_pinCornerToSibling = pinOurCorner;
-	_pinToSiblingCorner = pinSibling;
-
-	if ( m_pinSibling.Get() && _pinToSibling && pszSibling && !Q_strcmp( _pinToSibling, pszSibling ) )
-		return;
-
-	if (_pinToSibling)
-	{
-		delete [] _pinToSibling;
-		_pinToSibling = NULL;
-	}
-
-	if (pszSibling)
-	{
-		int len = Q_strlen(pszSibling) + 1;
-		_pinToSibling = new char[ len ];
-		Q_strncpy( _pinToSibling, pszSibling, len );
-	}
-	m_pinSibling = NULL;
-
-	UpdateSiblingPin();
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void Panel::UpdateSiblingPin( void )
-{
-	if ( !_pinToSibling )
-	{
-		ipanel()->SetSiblingPin(GetVPanel(), NULL);
-		return;
-	}
-
-	if ( !m_pinSibling.Get() )
-	{
-		// Resolve our sibling now
-		m_pinSibling = FindSiblingByName( _pinToSibling );
-	}
-
-	if ( m_pinSibling.Get() )
-	{
-		ipanel()->SetSiblingPin( GetVPanel(), m_pinSibling->GetVPanel(), _pinCornerToSibling, _pinToSiblingCorner );
-	}
-	else
-	{
-		ipanel()->SetSiblingPin(GetVPanel(), NULL);
-	}
-}
-
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -4127,8 +4069,6 @@ void Panel::PerformApplySchemeSettings()
 			//_needsSchemeUpdate = false;	
 
 			ApplyOverridableColors();
-
-			UpdateSiblingPin();
 		}
 	}
 }

@@ -303,8 +303,6 @@ public:
 	void GetResizeOffset( int &dx, int &dy );
 
 	void PinToSibling( const char *pszSibling, PinCorner_e pinOurCorner, PinCorner_e pinSibling );
-	void UpdateSiblingPin( void );
-
 	// colors
 	virtual void SetBgColor(Color color);
 	virtual void SetFgColor(Color color);

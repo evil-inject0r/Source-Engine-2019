@@ -60,8 +60,6 @@ public:
 	// Finds the localized text for pName
 	wchar_t *Find(const char *pName);
 
-	virtual const char *FindAsUTF8( const char *pchTokenName );
-
 	// finds the index of a token by token name
 	StringIndex_t FindIndex(const char *pName);
 	
@@ -680,11 +678,6 @@ wchar_t *CLocalizedStringTable::Find(const char *pName)
 		return NULL;
 
 	return &m_Values[m_Lookup[idx].valueIndex];
-}
-
-const char * CLocalizedStringTable::FindAsUTF8( const char * pchTokenName )
-{
-	return NULL;
 }
 
 //-----------------------------------------------------------------------------

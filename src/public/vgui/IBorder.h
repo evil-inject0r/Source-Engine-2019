@@ -56,8 +56,6 @@ public:
 		SIDE_RIGHT = 2,
 		SIDE_BOTTOM = 3
 	};
-
-	virtual bool PaintFirst( void ) = 0;
 };
 
 } // namespace vgui

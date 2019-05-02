@@ -78,8 +78,6 @@ public:
 	// for development only, reloads localization files
 	virtual void ReloadLocalizationFiles( ) = 0;
 
-	virtual const char *FindAsUTF8( const char *pchTokenName ) = 0;
-
 	// need to replace the existing ConstructString with this
 	virtual void ConstructString(OUT_Z_BYTECAP(unicodeBufferSizeInBytes) wchar_t *unicodeOutput, int unicodeBufferSizeInBytes, const char *tokenName, KeyValues *localizationVariables) = 0;
 	virtual void ConstructString(OUT_Z_BYTECAP(unicodeBufferSizeInBytes) wchar_t *unicodeOutput, int unicodeBufferSizeInBytes, StringIndex_t unlocalizedTextSymbol, KeyValues *localizationVariables) = 0;

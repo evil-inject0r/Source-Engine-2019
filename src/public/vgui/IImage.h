@@ -56,17 +56,6 @@ public:
 
 	// virtual destructor
 	virtual ~IImage() {}
-
-	// not for general purpose use
-	// evicts the underlying image from memory if refcounts permit, otherwise ignored
-	// returns true if eviction occurred, otherwise false
-	virtual bool Evict() = 0;
-
-	virtual int GetNumFrames() = 0;
-	virtual void SetFrame( int nFrame ) = 0;
-	virtual HTexture GetID() = 0;
-
-	virtual void SetRotation( int iRotation ) = 0;
 };
 
 } // namespace vgui

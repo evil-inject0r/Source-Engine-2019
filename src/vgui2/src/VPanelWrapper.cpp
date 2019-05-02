@@ -128,11 +128,6 @@ public:
 		return ((VPanel *)vguiPanel)->SetTopmostPopup( state );
 	}
 
-	virtual void SetSiblingPin( VPANEL vguiPanel, VPANEL newSibling, byte iMyCornerToPin = 0, byte iSiblingCornerToPinTo = 0 )
-	{
-
-	}
-
 	virtual void SetParent(VPANEL vguiPanel, VPANEL newParent)
 	{
 		((VPanel *)vguiPanel)->SetParent((VPanel *)newParent);

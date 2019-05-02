@@ -177,13 +177,6 @@ public:
 		return m_InDispatcher;
 	}
 
-	// enables VR mode
-	virtual void SetVRMode( bool bVRMode );
-	virtual bool GetVRMode();
-
-	// add a tick signal like above, but to the head of the list of tick signals
-	virtual void AddTickSignalToHead( VPANEL panel, int intervalMilliseconds = 0 );
-
 private:
 	// VGUI contexts
 	struct Context_t
@@ -398,19 +391,6 @@ void CVGui::ActivateContext( HContext context )
 	}
 }
 
-void CVGui::SetVRMode( bool bVRMode )
-{
-}
-
-bool CVGui::GetVRMode()
-{
-	return false;
-}
-
-void CVGui::AddTickSignalToHead( VPANEL panel, int intervalMilliseconds )
-{
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: Runs a single vgui frame, pumping all message to panels
 //-----------------------------------------------------------------------------
@@ -490,7 +470,7 @@ void CVGui::RunFrame()
 				t->nexttick = time + t->interval;
 			}
 
-			((VPanel *)t->panel)->Client()->OnTick();
+			PostMessage(tickTarget, new KeyValues("Tick"), NULL);
 		}
 	}
 

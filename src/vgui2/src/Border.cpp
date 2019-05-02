@@ -268,8 +268,3 @@ IBorder::backgroundtype_e Border::GetBackgroundType()
 	return m_eBackgroundType;
 }
 
-bool vgui::Border::PaintFirst( void )
-{
-	return false;
-}
-

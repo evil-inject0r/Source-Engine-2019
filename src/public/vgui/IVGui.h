@@ -95,13 +95,6 @@ public:
 
 	// data accessor for above
 	virtual bool GetShouldVGuiControlSleep() = 0;
-
-	// enables VR mode
-	virtual void SetVRMode( bool bVRMode ) = 0;
-	virtual bool GetVRMode() = 0;
-
-	// add a tick signal like above, but to the head of the list of tick signals
-	virtual void AddTickSignalToHead( VPANEL panel, int intervalMilliseconds = 0 ) = 0;
 };
 
 #define VGUI_IVGUI_INTERFACE_VERSION "VGUI_ivgui008"

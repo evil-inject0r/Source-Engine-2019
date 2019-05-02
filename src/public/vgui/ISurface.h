@@ -173,7 +173,6 @@ public:
 	virtual void DrawGetTextureSize(int id, int &wide, int &tall) = 0;
 	virtual void DrawTexturedRect(int x0, int y0, int x1, int y1) = 0;
 	virtual bool IsTextureIDValid(int id) = 0;
-	virtual bool DeleteTextureByID(int id) = 0;
 
 	virtual int CreateNewTextureID( bool procedural = false ) = 0;
 
@@ -193,7 +192,6 @@ public:
 	virtual void SwapBuffers(VPANEL panel) = 0;
 	virtual void Invalidate(VPANEL panel) = 0;
 	virtual void SetCursor(HCursor cursor) = 0;
-	virtual void SetCursorAlwaysVisible( bool visible ) = 0;
 	virtual bool IsCursorVisible() = 0;
 	virtual void ApplyChanges() = 0;
 	virtual bool IsWithin(int x, int y) = 0;
@@ -257,7 +255,6 @@ public:
 
 	// returns the details about the font
 	virtual int GetFontTall(HFont font) = 0;
-	virtual int GetFontTallRequested(HFont font) = 0;
 	virtual int GetFontAscent(HFont font, wchar_t wch) = 0;
 	virtual bool IsFontAdditive(HFont font) = 0;
 	virtual void GetCharABCwide(HFont font, int ch, int &a, int &b, int &c) = 0;
@@ -303,6 +300,7 @@ public:
 	virtual void SurfaceGetCursorPos(int &x, int &y) = 0;
 	virtual void SurfaceSetCursorPos(int x, int y) = 0;
 
+
 	// SRC only functions!!!
 	virtual void DrawTexturedLine( const Vertex_t &a, const Vertex_t &b ) = 0;
 	virtual void DrawOutlinedCircle(int x, int y, int radius, int segments) = 0;
@@ -339,7 +337,6 @@ public:
 
 	// From the Xbox
 	virtual void SetPanelForInput( VPANEL vpanel ) = 0;
-	virtual void DrawFilledRectFastFade( int x0, int y0, int x1, int y1, int fadeStartPt, int fadeEndPt, unsigned int alpha0, unsigned int alpha1, bool bHorizontal ) = 0;
 	virtual void DrawFilledRectFade( int x0, int y0, int x1, int y1, unsigned int alpha0, unsigned int alpha1, bool bHorizontal ) = 0;
 	virtual void DrawSetTextureRGBAEx(int id, const unsigned char *rgba, int wide, int tall, ImageFormat imageFormat ) = 0;
 	virtual void DrawSetTextScale(float sx, float sy) = 0;
@@ -357,49 +354,6 @@ public:
 	virtual void PrecacheFontCharacters(HFont font, const wchar_t *pCharacters) = 0;
 	// Console-only.  Get the string to use for the current video mode for layout files.
 	virtual const char *GetResolutionKey( void ) const = 0;
-	
-	virtual const char *GetFontName( HFont font ) = 0;
-	virtual const char *GetFontFamilyName( HFont font ) = 0;
-	virtual void GetKernedCharWidth( HFont font, wchar_t ch, wchar_t chBefore, wchar_t chAfter, float &wide, float &abcA ) = 0;
-
-	virtual bool ForceScreenSizeOverride( bool bState, int wide, int tall ) = 0;
-	// LocalToScreen, ParentLocalToScreen fixups for explicit PaintTraverse calls on Panels not at 0, 0 position
-	virtual bool ForceScreenPosOffset( bool bState, int x, int y ) = 0;
-	virtual void OffsetAbsPos( int &x, int &y ) = 0;
-
-
-	// Causes fonts to get reloaded, etc.
-	virtual void ResetFontCaches() = 0;
-
-	virtual int GetTextureNumFrames( int id ) = 0;
-	virtual void DrawSetTextureFrame( int id, int nFrame, unsigned int *pFrameCache ) = 0;
-	virtual bool IsScreenSizeOverrideActive( void ) = 0;
-	virtual bool IsScreenPosOverrideActive( void ) = 0;
-
-	virtual void DestroyTextureID( int id ) = 0;
-
-	virtual void DrawUpdateRegionTextureRGBA( int nTextureID, int x, int y, const unsigned char *pchData, int wide, int tall, ImageFormat imageFormat ) = 0;
-	virtual bool BHTMLWindowNeedsPaint(IHTML *htmlwin) = 0 ;
-
-	virtual const char *GetWebkitHTMLUserAgentString() = 0;
-
-	virtual void *Deprecated_AccessChromeHTMLController() = 0;
-
-	// the origin of the viewport on the framebuffer (Which might not be 0,0 for stereo)
-	virtual void SetFullscreenViewport( int x, int y, int w, int h ) = 0; // this uses NULL for the render target.
-	virtual void GetFullscreenViewport( int & x, int & y, int & w, int & h ) = 0;
-	virtual void PushFullscreenViewport() = 0;
-	virtual void PopFullscreenViewport() = 0;
-
-	// handles support for software cursors
-	virtual void SetSoftwareCursor( bool bUseSoftwareCursor ) = 0;
-	virtual void PaintSoftwareCursor() = 0;
-
-
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// !! WARNING! YOU MUST NOT ADD YOUR NEW METHOD HERE OR YOU WILL BREAK MODS !!
-	// !! Add your new stuff to the bottom of IMatSystemSurface instead.        !!
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 };
 
 }

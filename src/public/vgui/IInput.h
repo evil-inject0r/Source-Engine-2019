@@ -54,7 +54,6 @@ public:
 
 	// focus
 	virtual VPANEL GetFocus() = 0;
-	virtual VPANEL GetCalculatedFocus() = 0;// to handle cases where the focus changes inside a frame.
 	virtual VPANEL GetMouseOver() = 0;		// returns the panel the mouse is currently over, ignoring mouse capture
 
 	// mouse state

@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Holds the enumerated list of default cursors
 //
@@ -41,40 +41,40 @@ public:
 public:
 	void SetCount(int count)
 	{
-		this->EnsureCount( count );
+		EnsureCount( count );
 	}
 	int GetCount()
 	{
-		return this->Count();
+		return Count();
 	}
 	int AddElement(ELEMTYPE elem)
 	{
-		return this->AddToTail( elem );
+		return AddToTail( elem );
 	}
 	void MoveElementToEnd( ELEMTYPE elem )
 	{
-		if ( this->Count() == 0 )
+		if ( Count() == 0 )
 			return;
 
 		// quick check to see if it's already at the end
-		if ( this->Element( this->Count() - 1 ) == elem )
+		if ( Element( Count() - 1 ) == elem )
 			return;
 
-		int idx = this->Find( elem );
-		if ( idx == this->InvalidIndex() )
+		int idx = Find( elem );
+		if ( idx == InvalidIndex() )
 			return;
 
-		this->Remove( idx );
-		this->AddToTail( elem );
+		Remove( idx );
+		AddToTail( elem );
 	}
 	// returns the index of the element in the array, -1 if not found
 	int FindElement(ELEMTYPE elem)
 	{
-		return this->Find( elem );
+		return Find( elem );
 	}
 	bool HasElement(ELEMTYPE elem)
 	{
-		if ( this->FindElement(elem) != this->InvalidIndex() )
+		if ( FindElement(elem) != InvalidIndex() )
 		{
 			return true;
 		}
@@ -82,48 +82,48 @@ public:
 	}
 	int PutElement(ELEMTYPE elem)
 	{
-		int index = this->FindElement(elem);
+		int index = FindElement(elem);
 		if (index >= 0)
 		{
 			return index;
 		}
-		return this->AddElement(elem);
+		return AddElement(elem);
 	}
 	// insert element at index and move all the others down 1
 	void InsertElementAt(ELEMTYPE elem,int index)
 	{
-		this->InsertBefore( index, elem );
+		InsertBefore( index, elem );
 	}
 	void SetElementAt(ELEMTYPE elem,int index)
 	{
-		this->EnsureCount( index + 1 );
-		this->Element( index ) = elem;
+		EnsureCount( index + 1 );
+		Element( index ) = elem;
 	}
 	void RemoveElementAt(int index)
 	{
-		this->Remove( index );
+		Remove( index );
 	} 
 
 	void RemoveElementsBefore(int index)
 	{
 		if ( index <= 0 )
 			return;
-		this->RemoveMultiple( 0, index - 1 );
+		RemoveMultiple( 0, index - 1 );
 	}  
 
 	void RemoveElement(ELEMTYPE elem)
 	{
-		this->FindAndRemove( elem );
+		FindAndRemove( elem );
 	}
 
 	void *GetBaseData()
 	{
-		return this->Base();
+		return Base();
 	}
 
 	void CopyFrom(Dar<ELEMTYPE> &dar)
 	{
-		this->CopyArray( dar.Base(), dar.Count() );
+		CoypArray( dar.Base(), dar.Count() );
 	}
 };
 

@@ -138,7 +138,6 @@ public:
 	virtual void DrawSetColor(int r, int g, int b, int a);
 	virtual void DrawSetColor(Color col);
 	virtual void DrawFilledRect(int x0, int y0, int x1, int y1);
-	virtual void DrawFilledRectFastFade( int x0, int y0, int x1, int y1, int fadeStartPt, int fadeEndPt, unsigned int alpha0, unsigned int alpha1, bool bHorizontal );
 	virtual void DrawFilledRectFade( int x0, int y0, int x1, int y1, unsigned int alpha0, unsigned int alpha1, bool bHorizontal );
 	virtual void DrawFilledRectArray( IntRect *pRects, int numRects );
 	virtual void DrawOutlinedRect(int x0, int y0, int x1, int y1);
@@ -164,8 +163,7 @@ public:
 	virtual IVguiMatInfo *DrawGetTextureMatInfoFactory( int id ) { return NULL; }
 	virtual void DrawTexturedRect(int x0, int y0, int x1, int y1);
 	virtual int CreateNewTextureID( bool procedural );
-	virtual bool IsTextureIDValid( int id );
-	virtual bool DeleteTextureByID( int id );
+	virtual bool IsTextureIDValid(int id);
 	virtual void DrawFlushText();
 	virtual IHTML *CreateHTMLWindow(vgui::IHTMLEvents *events, VPANEL context);
 	virtual void PaintHTMLWindow(IHTML *htmlwin);
@@ -202,7 +200,6 @@ public:
 	virtual void SwapBuffers(VPANEL panel);
 	virtual void Invalidate(VPANEL panel);
 	virtual void SetCursor(HCursor cursor);
-	virtual void SetCursorAlwaysVisible( bool visible );
 	virtual void ApplyChanges();
 	virtual bool IsWithin(int x, int y);
 	virtual bool HasFocus();
@@ -225,18 +222,13 @@ public:
 
 	// fonts
 	virtual HFont CreateFont();
-	virtual bool SetFontGlyphSet(HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags);
-	virtual const char *GetFontName( HFont font );
-	virtual const char *GetFontFamilyName( HFont font );
-	virtual void GetKernedCharWidth( HFont font, wchar_t ch, wchar_t chBefore, wchar_t chAfter, float &wide, float &abcA );
+	virtual bool SetFontGlyphSet(HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int nRangeMin, int nRangeMax);
 	virtual int GetFontTall(HFont font);
-	virtual int GetFontTallRequested( HFont font );
 	virtual int GetFontAscent(HFont font, wchar_t wch);
 	virtual void GetCharABCwide(HFont font, int ch, int &a, int &b, int &c);
 	virtual int GetCharacterWidth(HFont font, int ch);
 	virtual void GetTextSize(HFont font, const wchar_t *text, int &wide, int &tall);
-	virtual bool SetFontGlyphSet( HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int nRangeMin = 0, int nRangeMax = 0 );
-	virtual bool AddCustomFontFile( const char *fontName, const char *fontFileName );
+	virtual bool AddCustomFontFile(const char *fontName, const char *fontFileName);
 	virtual bool AddBitmapFontFile(const char *fontFileName);
 	virtual void SetBitmapFontName( const char *pName, const char *pFontFilename );
 	virtual const char *GetBitmapFontName( const char *pName );
@@ -285,36 +277,6 @@ public:
 	// alpha multipliers not yet implemented
 	virtual void DrawSetAlphaMultiplier( float alpha /* [0..1] */ ) {}
 	virtual float DrawGetAlphaMultiplier() { return 1.0f; }
-
-	virtual bool ForceScreenSizeOverride( bool bState, int wide, int tall );
-	virtual bool ForceScreenPosOffset( bool bState, int x, int y );
-	virtual void OffsetAbsPos( int &x, int &y );
-
-	virtual void ResetFontCaches();
-
-	virtual int GetTextureNumFrames( int id );
-	virtual void DrawSetTextureFrame( int id, int nFrame, unsigned int *pFrameCache );
-	virtual bool IsScreenSizeOverrideActive( void );
-	virtual bool IsScreenPosOverrideActive( void );
-
-	virtual void DestroyTextureID( int id );
-
-	virtual void DrawUpdateRegionTextureRGBA( int nTextureID, int x, int y, const unsigned char *pchData, int wide, int tall, ImageFormat imageFormat );
-	virtual bool BHTMLWindowNeedsPaint( IHTML *htmlwin );
-
-	virtual const char *GetWebkitHTMLUserAgentString();
-
-	virtual void *Deprecated_AccessChromeHTMLController();
-
-	// the origin of the viewport on the framebuffer (Which might not be 0,0 for stereo)
-	virtual void SetFullscreenViewport( int x, int y, int w, int h ); // this uses NULL for the render target.
-	virtual void GetFullscreenViewport( int & x, int & y, int & w, int & h );
-	virtual void PushFullscreenViewport();
-	virtual void PopFullscreenViewport();
-
-	// handles support for software cursors
-	virtual void SetSoftwareCursor( bool bUseSoftwareCursor );
-	virtual void PaintSoftwareCursor();
 
 	// Here's where the app systems get to learn about each other 
 	virtual bool Connect( CreateInterfaceFn factory );
@@ -968,90 +930,6 @@ void CWin32Surface::DrawRenderCharFromInfo( const CharRenderInfo& info )
 	Assert( 0 );
 }
 
-bool CWin32Surface::ForceScreenSizeOverride( bool bState, int wide, int tall )
-{
-	return false;
-}
-
-bool CWin32Surface::ForceScreenPosOffset( bool bState, int x, int y )
-{
-	return false;
-}
-
-void CWin32Surface::OffsetAbsPos( int & x, int & y )
-{
-}
-
-void CWin32Surface::ResetFontCaches()
-{
-}
-
-int CWin32Surface::GetTextureNumFrames( int id )
-{
-	return 0;
-}
-
-void CWin32Surface::DrawSetTextureFrame( int id, int nFrame, unsigned int * pFrameCache )
-{
-}
-
-bool CWin32Surface::IsScreenSizeOverrideActive( void )
-{
-	return false;
-}
-
-bool CWin32Surface::IsScreenPosOverrideActive( void )
-{
-	return false;
-}
-
-void CWin32Surface::DestroyTextureID( int id )
-{
-}
-
-void CWin32Surface::DrawUpdateRegionTextureRGBA( int nTextureID, int x, int y, const unsigned char * pchData, int wide, int tall, ImageFormat imageFormat )
-{
-}
-
-bool CWin32Surface::BHTMLWindowNeedsPaint( IHTML * htmlwin )
-{
-	return false;
-}
-
-const char * CWin32Surface::GetWebkitHTMLUserAgentString()
-{
-	return nullptr;
-}
-
-void * CWin32Surface::Deprecated_AccessChromeHTMLController()
-{
-	return nullptr;
-}
-
-void CWin32Surface::SetFullscreenViewport( int x, int y, int w, int h )
-{
-}
-
-void CWin32Surface::GetFullscreenViewport( int & x, int & y, int & w, int & h )
-{
-}
-
-void CWin32Surface::PushFullscreenViewport()
-{
-}
-
-void CWin32Surface::PopFullscreenViewport()
-{
-}
-
-void CWin32Surface::SetSoftwareCursor( bool bUseSoftwareCursor )
-{
-}
-
-void CWin32Surface::PaintSoftwareCursor()
-{
-}
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Sets the current drawing context
@@ -1309,10 +1187,6 @@ void CWin32Surface::DrawFilledRect(int x0,int y0,int x1,int y1)
 	ExtTextOut(PLAT(_currentContextPanel)->hdc, 0, 0, ETO_OPAQUE, &rect, NULL, 0, NULL);
 }
 
-void CWin32Surface::DrawFilledRectFastFade( int x0, int y0, int x1, int y1, int fadeStartPt, int fadeEndPt, unsigned int alpha0, unsigned int alpha1, bool bHorizontal )
-{
-}
-
 void CWin32Surface::DrawFilledRectArray( IntRect *pRects, int numRects )
 {
 	int i;
@@ -1470,11 +1344,6 @@ int CWin32Surface::CreateNewTextureID( bool procedural )
 bool CWin32Surface::IsTextureIDValid(int id)
 {
 	return (GetTextureById(id) != NULL);
-}
-
-bool CWin32Surface::DeleteTextureByID( int id )
-{
-	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -2932,10 +2801,6 @@ void CWin32Surface::SetCursor(HCursor cursor)
 	::SetCursor(_currentCursor);
 }
 
-void CWin32Surface::SetCursorAlwaysVisible( bool visible )
-{
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: Forces the window to be redrawn
 //-----------------------------------------------------------------------------
@@ -3156,23 +3021,9 @@ HFont CWin32Surface::CreateFont()
 //-----------------------------------------------------------------------------
 // Purpose: adds glyphs to a font created by CreateFont()
 //-----------------------------------------------------------------------------
-bool CWin32Surface::SetFontGlyphSet(HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags)
+bool CWin32Surface::SetFontGlyphSet(HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int nRangeMin , int nRangeMax )
 {
 	return FontManager().SetFontGlyphSet(font, windowsFontName, tall, weight, blur, scanlines, flags);
-}
-
-const char * CWin32Surface::GetFontName( HFont font )
-{
-	return nullptr;
-}
-
-const char * CWin32Surface::GetFontFamilyName( HFont font )
-{
-	return nullptr;
-}
-
-void CWin32Surface::GetKernedCharWidth( HFont font, wchar_t ch, wchar_t chBefore, wchar_t chAfter, float & wide, float & abcA )
-{
 }
 
 //-----------------------------------------------------------------------------
@@ -3181,11 +3032,6 @@ void CWin32Surface::GetKernedCharWidth( HFont font, wchar_t ch, wchar_t chBefore
 int CWin32Surface::GetFontTall(HFont font)
 {
 	return FontManager().GetFontTall(font);
-}
-
-int CWin32Surface::GetFontTallRequested( HFont font )
-{
-	return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -3228,11 +3074,6 @@ int CWin32Surface::GetCharacterWidth(HFont font, int ch)
 void CWin32Surface::GetTextSize(HFont font, const wchar_t *text, int &wide, int &tall)
 {
 	FontManager().GetTextSize(font, text, wide, tall);
-}
-
-bool CWin32Surface::SetFontGlyphSet( HFont font, const char * windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int nRangeMin, int nRangeMax )
-{
-	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -3438,29 +3279,6 @@ public:
 		// Nothing
 	}
 
-	virtual bool Evict()
-	{
-		return false; 
-	}
-
-	virtual int GetNumFrames()
-	{ 
-		return 0;
-	}
-
-	virtual void SetFrame( int nFrame )
-	{
-
-	}
-
-	virtual HTexture GetID() 
-	{
-		return 0;
-	}
-
-	virtual void SetRotation( int iRotation )
-	{
-	}
 
 private:
 

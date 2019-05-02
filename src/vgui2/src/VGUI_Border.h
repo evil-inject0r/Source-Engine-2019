@@ -44,8 +44,6 @@ public:
 	virtual void SetName(const char *name);
 	virtual backgroundtype_e GetBackgroundType();
 
-	virtual bool PaintFirst( void );
-
 protected:
 	int _inset[4];
 
