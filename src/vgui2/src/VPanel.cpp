@@ -325,7 +325,7 @@ void VPanel::SetParent(VPanel *newParent)
 	if (_parent != NULL)
 	{
 		_parent->_childDar.RemoveElement(this);
-		_parent = NULL;
+		_parent = null;
 	}
 
 	if (newParent != NULL)
@@ -354,14 +354,6 @@ int VPanel::GetChildCount()
 VPanel *VPanel::GetChild(int index)
 {
 	return _childDar[index];
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-CUtlVector<VPanel *> &VPanel::GetChildren()
-{
-	return _childDar;
 }
 
 //-----------------------------------------------------------------------------

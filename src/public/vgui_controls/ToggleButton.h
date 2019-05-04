@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -27,7 +27,6 @@ class ToggleButton : public Button
 
 public:
 	ToggleButton(Panel *parent, const char *panelName, const char *text);
-	virtual ~ToggleButton() { }
 
 	virtual void DoClick();
 

@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -11,7 +11,6 @@
 #include <vgui/ISystem.h>
 #include <vgui/ILocalize.h>
 #include <KeyValues.h>
-#include "vgui/IVGui.h"
 
 #include <vgui_controls/BuildGroup.h>
 #include <vgui_controls/BuildModeDialog.h>
@@ -36,9 +35,6 @@
 #include <vgui_controls/RichText.h>
 #include <vgui_controls/BitmapImagePanel.h>
 
-#include "filesystem.h"
-#include "fmtstr.h"
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
@@ -57,7 +53,6 @@ EditablePanel::EditablePanel(Panel *parent, const char *panelName) : Panel(paren
 	m_pszConfigName = NULL;
 	m_iConfigID = 0;
 	m_pDialogVariables = NULL;
-	m_bShouldSkipAutoResize = false;
 
 	// add ourselves to the build group
 	SetBuildGroup(GetBuildGroup());
@@ -72,7 +67,6 @@ EditablePanel::EditablePanel(Panel *parent, const char *panelName, HScheme hSche
 	m_pszConfigName = NULL;
 	m_iConfigID = 0;
 	m_pDialogVariables = NULL;
-	m_bShouldSkipAutoResize = false;
 
 	// add ourselves to the build group
 	SetBuildGroup(GetBuildGroup());
@@ -113,60 +107,27 @@ void EditablePanel::OnChildAdded(VPANEL child)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void EditablePanel::OnKeyCodePressed( KeyCode code )
+void EditablePanel::OnKeyCodeTyped(KeyCode code)
 {
-	static ConVarRef vgui_nav_lock_default_button( "vgui_nav_lock_default_button" );
-	if ( !vgui_nav_lock_default_button.IsValid() || vgui_nav_lock_default_button.GetInt() == 0 )
+	if (code == KEY_ENTER)
 	{
-		ButtonCode_t nButtonCode = GetBaseButtonCode( code );
-
 		// check for a default button
 		VPANEL panel = GetFocusNavGroup().GetCurrentDefaultButton();
-		if ( panel && !IsConsoleStylePanel() )
+		if (panel && ipanel()->IsVisible( panel ) && ipanel()->IsEnabled( panel ))
 		{
-			switch ( nButtonCode )
-			{
-			case KEY_XBUTTON_UP:
-			case KEY_XSTICK1_UP:
-			case KEY_XSTICK2_UP:
-			case KEY_UP:
-			case KEY_XBUTTON_DOWN:
-			case KEY_XSTICK1_DOWN:
-			case KEY_XSTICK2_DOWN:
-			case KEY_DOWN:
-			case KEY_XBUTTON_LEFT:
-			case KEY_XSTICK1_LEFT:
-			case KEY_XSTICK2_LEFT:
-			case KEY_LEFT:
-			case KEY_XBUTTON_RIGHT:
-			case KEY_XSTICK1_RIGHT:
-			case KEY_XSTICK2_RIGHT:
-			case KEY_RIGHT:
-			case KEY_XBUTTON_B:
-				// Navigating menus
-				vgui_nav_lock_default_button.SetValue( 1 );
-				PostMessage( panel, new KeyValues( "KeyCodePressed", "code", code ) );
-				return;
-			
-			case KEY_XBUTTON_A:
-			case KEY_ENTER:
-				if ( ipanel()->IsVisible( panel ) && ipanel()->IsEnabled( panel ) )
-				{
-					// Activate the button
-					PostMessage( panel, new KeyValues( "Hotkey" ) );
-					return;
-				}
-			}
+			// Activate the button
+			PostMessage(panel, new KeyValues("Hotkey"));
+		}
+		else
+		{
+			BaseClass::OnKeyCodeTyped(code);
 		}
 	}
-
-	if ( !m_PassUnhandledInput )
-		return;
-
-	// Nothing to do with the button
-	BaseClass::OnKeyCodePressed( code );
+	else
+	{
+		BaseClass::OnKeyCodeTyped(code);
+	}
 }
-
 
 
 //-----------------------------------------------------------------------------
@@ -200,51 +161,43 @@ void EditablePanel::OnSizeChanged(int wide, int tall)
 		bool bResizeHoriz = ( resize == AUTORESIZE_RIGHT || resize == AUTORESIZE_DOWNANDRIGHT );
 		bool bResizeVert = ( resize == AUTORESIZE_DOWN || resize == AUTORESIZE_DOWNANDRIGHT );
 
-		// The correct version of this code would say:
-		// if ( resize != AUTORESIZE_NO )
-		// but we're very close to shipping and this causes artifacts in other vgui panels that now
-		// depend on this bug.  So, I've added m_bShouldSkipAutoResize, which defaults to false but can
-		// be set using "skip_autoresize" in a .res file
-		if ( !m_bShouldSkipAutoResize )
+		PinCorner_e pinCorner = child->GetPinCorner();
+		if ( pinCorner == PIN_TOPRIGHT || pinCorner == PIN_BOTTOMRIGHT )
 		{
-			PinCorner_e pinCorner = child->GetPinCorner();
-			if ( pinCorner == PIN_TOPRIGHT || pinCorner == PIN_BOTTOMRIGHT )
-			{
-				// move along with the right edge
-				ex = wide + px;
-				x = bResizeHoriz ? ox : ex - w;
-			}
-			else
-			{
-				x = px;
-				ex = bResizeHoriz ? wide + ox : px + w;
-			}
-
-			if ( pinCorner == PIN_BOTTOMLEFT || pinCorner == PIN_BOTTOMRIGHT )
-			{
-				// move along with the right edge
-				ey = tall + py;
-				y = bResizeVert ? oy : ey - h;
-			}
-			else
-			{
-				y = py;
-				ey = bResizeVert ? tall + oy : py + h;
-			}
-
-			// Clamp..
-			if ( ex < x )
-			{
-				ex = x;
-			}
-			if ( ey < y )
-			{
-				ey = y;
-			}
-
-			child->SetBounds( x, y, ex - x, ey - y );
-			child->InvalidateLayout();
+			// move along with the right edge
+			ex = wide + px;
+			x = bResizeHoriz ? ox : ex - w;
 		}
+		else
+		{
+			x = px;
+			ex = bResizeHoriz ? wide + ox : px + w;
+		}
+
+		if ( pinCorner == PIN_BOTTOMLEFT || pinCorner == PIN_BOTTOMRIGHT )
+		{
+			// move along with the right edge
+			ey = tall + py;
+			y = bResizeVert ? oy : ey - h;
+		}
+		else
+		{
+			y = py;
+			ey = bResizeVert ? tall + oy : py + h;
+		}
+
+		// Clamp..
+		if ( ex < x )
+		{
+			ex = x;
+		}
+		if ( ey < y )
+		{
+			ey = y;
+		}
+
+		child->SetBounds( x, y, ex - x, ey - y );
+		child->InvalidateLayout();
 	}
 	Repaint();
 }
@@ -253,15 +206,15 @@ void EditablePanel::OnSizeChanged(int wide, int tall)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void EditablePanel::OnCurrentDefaultButtonSet( VPANEL defaultButton )
+void EditablePanel::OnCurrentDefaultButtonSet(Panel *defaultButton)
 {
-	m_NavGroup.SetCurrentDefaultButton( defaultButton, false );
+	m_NavGroup.SetCurrentDefaultButton(defaultButton->GetVPanel(), false);
 
 	// forward the message up
 	if (GetVParent())
 	{
 		KeyValues *msg = new KeyValues("CurrentDefaultButtonSet");
-		msg->SetInt("button", ivgui()->PanelToHandle( defaultButton ) );
+		msg->SetPtr("button", defaultButton);
 		PostMessage(GetVParent(), msg);
 	}
 }
@@ -269,11 +222,9 @@ void EditablePanel::OnCurrentDefaultButtonSet( VPANEL defaultButton )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void EditablePanel::OnDefaultButtonSet( VPANEL defaultButton )
+void EditablePanel::OnDefaultButtonSet(Panel *defaultButton)
 {
-	Panel *panel = ipanel()->GetPanel( defaultButton, GetModuleName() );
-
-	m_NavGroup.SetDefaultButton(panel);
+	m_NavGroup.SetDefaultButton(defaultButton);
 }
 
 //-----------------------------------------------------------------------------
@@ -562,19 +513,9 @@ void EditablePanel::ActivateBuildMode()
 //-----------------------------------------------------------------------------
 // Purpose: Loads panel settings from a resource file.
 //-----------------------------------------------------------------------------
-void EditablePanel::LoadControlSettings(const char *resourceName, const char *pathID, KeyValues *pKeyValues, KeyValues *pConditions)
+void EditablePanel::LoadControlSettings(const char *resourceName, const char *pathID, KeyValues *pKeyValues)
 {
-#if defined( DBGFLAG_ASSERT ) && !defined(OSX) && !defined(LINUX)
-	extern IFileSystem *g_pFullFileSystem;
-	// Since nobody wants to fix this assert, I'm making it a Msg instead:
-	//     editablepanel.cpp (535) : Resource file "resource\DebugOptionsPanel.res" not found on disk!
-	// AssertMsg( g_pFullFileSystem->FileExists( resourceName ), CFmtStr( "Resource file \"%s\" not found on disk!", resourceName ).Access() );
-	if ( !g_pFullFileSystem->FileExists( resourceName ) )
-	{
-		Msg( "Resource file \"%s\" not found on disk!", resourceName );
-	}
-#endif
-	_buildGroup->LoadControlSettings(resourceName, pathID, pKeyValues, pConditions);
+	_buildGroup->LoadControlSettings(resourceName, pathID, pKeyValues);
 	ForceSubPanelsToUpdateWithNewDialogVariables();
 	InvalidateLayout();
 }
@@ -727,12 +668,7 @@ FocusNavGroup &EditablePanel::GetFocusNavGroup()
 //-----------------------------------------------------------------------------
 bool EditablePanel::RequestFocusNext(VPANEL panel)
 {
-	bool bRet = m_NavGroup.RequestFocusNext(panel);
-	if ( IsPC() && !bRet && IsConsoleStylePanel() )
-	{
-		NavigateDown();
-	}
-	return bRet;
+	return m_NavGroup.RequestFocusNext(panel);
 }
 
 //-----------------------------------------------------------------------------
@@ -740,12 +676,7 @@ bool EditablePanel::RequestFocusNext(VPANEL panel)
 //-----------------------------------------------------------------------------
 bool EditablePanel::RequestFocusPrev(VPANEL panel)
 {
-	bool bRet = m_NavGroup.RequestFocusPrev(panel);
-	if ( IsPC() && !bRet && IsConsoleStylePanel() )
-	{
-		NavigateUp();
-	}
-	return bRet;
+	return m_NavGroup.RequestFocusPrev(panel);
 }
 
 //-----------------------------------------------------------------------------
@@ -799,11 +730,9 @@ void EditablePanel::OnSetFocus()
 //-----------------------------------------------------------------------------
 void EditablePanel::ApplySettings(KeyValues *inResourceData)
 {
-	BaseClass::ApplySettings(inResourceData);
+	Panel::ApplySettings(inResourceData);
 
 	_buildGroup->ApplySettings(inResourceData);
-
-	m_bShouldSkipAutoResize = inResourceData->GetBool( "skip_autoresize", false );
 }
 
 
@@ -911,18 +840,6 @@ void EditablePanel::SetControlString(const char *controlName, const char *string
 		{
 			PostMessage(control, new KeyValues("SetText", "text", string));
 		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Shortcut function to set data in child controls
-//-----------------------------------------------------------------------------
-void EditablePanel::SetControlString(const char *controlName, const wchar_t *string)
-{
-	Panel *control = FindChildByName(controlName);
-	if (control)
-	{
-		PostMessage(control, new KeyValues("SetText", "text", string));
 	}
 }
 

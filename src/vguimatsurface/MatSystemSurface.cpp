@@ -1125,10 +1125,6 @@ void CMatSystemSurface::DrawFilledRectArray( IntRect *pRects, int numRects )
 	m_pMesh->Draw();
 }
 
-void CMatSystemSurface::DrawFilledRectFastFade( int x0, int y0, int x1, int y1, int fadeStartPt, int fadeEndPt, unsigned int alpha0, unsigned int alpha1, bool bHorizontal )
-{
-}
-
 //-----------------------------------------------------------------------------
 // Draws a fade with the current draw color oriented according to argument
 //-----------------------------------------------------------------------------
@@ -1290,45 +1286,12 @@ int CMatSystemSurface::CreateNewTextureID( bool procedural /*=false*/ )
 	return TextureDictionary()->CreateTexture( procedural );
 }
 
-
+#ifdef _X360
 void CMatSystemSurface::DestroyTextureID( int id )
 {
 	TextureDictionary()->DestroyTexture( id );
 }
-
-void CMatSystemSurface::DrawUpdateRegionTextureRGBA( int nTextureID, int x, int y, const unsigned char * pchData, int wide, int tall, ImageFormat imageFormat )
-{
-}
-bool CMatSystemSurface::BHTMLWindowNeedsPaint( IHTML * htmlwin )
-{
-	return false;
-}
-
-const char * CMatSystemSurface::GetWebkitHTMLUserAgentString()
-{
-	return nullptr;
-}
-
-void * CMatSystemSurface::Deprecated_AccessChromeHTMLController()
-{
-	return nullptr;
-}
-
-void CMatSystemSurface::SetFullscreenViewport( int x, int y, int w, int h )
-{
-}
-
-void CMatSystemSurface::GetFullscreenViewport( int & x, int & y, int & w, int & h )
-{
-}
-
-void CMatSystemSurface::PushFullscreenViewport()
-{
-}
-
-void CMatSystemSurface::PopFullscreenViewport()
-{
-}
+#endif
 
 #ifdef _X360
 void CMatSystemSurface::UncacheUnusedMaterials()
@@ -1512,7 +1475,7 @@ void CMatSystemSurface::DrawTexturedSubRect( int x0, int y0, int x1, int y1, flo
 //-----------------------------------------------------------------------------
 // Draws a textured polygon
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::DrawTexturedPolygon( int n, Vertex_t *pVertices, bool bClipVertices /*= true*/ )
+void CMatSystemSurface::DrawTexturedPolygon(int n, Vertex_t *pVertices)
 {
 	Assert( !m_bIn3DPaintMode );
 
@@ -1567,7 +1530,7 @@ HFont CMatSystemSurface::CreateFont()
 //-----------------------------------------------------------------------------
 // Purpose: adds glyphs to a font created by CreateFont()
 //-----------------------------------------------------------------------------
-bool CMatSystemSurface::SetFontGlyphSet( HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int nRangeMin, int nRangeMax )
+bool CMatSystemSurface::SetFontGlyphSet(HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags)
 {
 	return FontManager().SetFontGlyphSet(font, windowsFontName, tall, weight, blur, scanlines, flags);
 }
@@ -1588,31 +1551,12 @@ int CMatSystemSurface::GetFontTall(HFont font)
 	return FontManager().GetFontTall(font);
 }
 
-int CMatSystemSurface::GetFontTallRequested( HFont font )
-{
-	return 0;
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: returns the max height of a font
 //-----------------------------------------------------------------------------
 int CMatSystemSurface::GetFontAscent(HFont font, wchar_t wch)
 {
 	return FontManager().GetFontAscent(font,wch);
-}
-
-const char * CMatSystemSurface::GetFontName( HFont font )
-{
-	return nullptr;
-}
-
-const char * CMatSystemSurface::GetFontFamilyName( HFont font )
-{
-	return nullptr;
-}
-
-void CMatSystemSurface::GetKernedCharWidth( HFont font, wchar_t ch, wchar_t chBefore, wchar_t chAfter, float & wide, float & abcA )
-{
 }
 
 //-----------------------------------------------------------------------------
@@ -1652,7 +1596,7 @@ void CMatSystemSurface::GetTextSize(HFont font, const wchar_t *text, int &wide, 
 //-----------------------------------------------------------------------------
 // Purpose: adds a custom font file (only supports true type font files (.ttf) for now)
 //-----------------------------------------------------------------------------
-bool CMatSystemSurface::AddCustomFontFile( const char *fontName, const char *fontFileName )
+bool CMatSystemSurface::AddCustomFontFile( const char *fontFileName )
 {
 	char fullPath[MAX_PATH];
 	bool bFound = false;
@@ -1818,7 +1762,7 @@ void CMatSystemSurface::ClearTemporaryFontCache( void )
 //-----------------------------------------------------------------------------
 // Purpose: Force a set of characters to be rendered into the font page.
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::PrecacheFontCharacters( HFont font, const wchar_t *pCharacterString )
+void CMatSystemSurface::PrecacheFontCharacters( HFont font, wchar_t *pCharacterString )
 {
 	if ( !pCharacterString || !pCharacterString[0] )
 		return;
@@ -1997,37 +1941,6 @@ bool CMatSystemSurface::DrawGetUnicodeCharRenderInfo( wchar_t ch, CharRenderInfo
 	info.shouldclip = true;
 
 	return info.valid;
-}
-
-void CMatSystemSurface::ResetFontCaches()
-{
-}
-
-int CMatSystemSurface::GetTextureNumFrames( int id )
-{
-	return 0;
-}
-
-void CMatSystemSurface::DrawSetTextureFrame( int id, int nFrame, unsigned int * pFrameCache )
-{
-}
-
-bool CMatSystemSurface::IsScreenSizeOverrideActive( void )
-{
-	return false;
-}
-
-bool CMatSystemSurface::IsScreenPosOverrideActive( void )
-{
-	return false;
-}
-
-void CMatSystemSurface::SetSoftwareCursor( bool bUseSoftwareCursor )
-{
-}
-
-void CMatSystemSurface::PaintSoftwareCursor()
-{
 }
 
 //-----------------------------------------------------------------------------
@@ -2468,10 +2381,6 @@ void CMatSystemSurface::SetCursor(HCursor hCursor)
 		_currentCursor = hCursor;
 		CursorSelect( hCursor );
 	}
-}
-
-void CMatSystemSurface::SetCursorAlwaysVisible( bool visible )
-{
 }
 
 void CMatSystemSurface::EnableMouseCapture( VPANEL panel, bool state )
@@ -3419,12 +3328,6 @@ bool CMatSystemSurface::IsTextureIDValid(int id)
 	return true;
 }
 
-bool CMatSystemSurface::DeleteTextureByID( int id )
-{
-	TextureDictionary()->DestroyTexture( id );
-	return true;
-}
-
 void CMatSystemSurface::SetAllowHTMLJavaScript( bool state )
 { 
 	m_bAllowJavaScript = state; 
@@ -3432,45 +3335,17 @@ void CMatSystemSurface::SetAllowHTMLJavaScript( bool state )
 
 IHTML *CMatSystemSurface::CreateHTMLWindow(vgui::IHTMLEvents *events,VPANEL context)
 {
-#if defined( ENABLE_HTMLWINDOW )
-	HtmlWindow *IE = new HtmlWindow(events,context,reinterpret_cast<HWND>(m_HWnd), m_bAllowJavaScript, false);
-	IE->Show(false);
-	_htmlWindows.AddToTail(IE);
-	return dynamic_cast<IHTML *>(IE);
-#else
 	Assert( 0 );
 	return NULL;
-#endif
 }
 
 
 void CMatSystemSurface::DeleteHTMLWindow(IHTML *htmlwin)
 {
-#if defined( ENABLE_HTMLWINDOW )
-	HtmlWindow *IE =static_cast<HtmlWindow *>(htmlwin);
-
-	if(IE)
-	{
-		_htmlWindows.FindAndRemove( IE );
-		delete IE;
-	}
-#endif
 }
-
-
 
 void CMatSystemSurface::PaintHTMLWindow(IHTML *htmlwin)
 {
-#if defined( ENABLE_HTMLWINDOW )
-	HtmlWindow *IE = static_cast<HtmlWindow *>(htmlwin);
-	if(IE)
-	{
-		//HBITMAP bits;
-		HDC hdc = ::GetDC(reinterpret_cast<HWND>(m_HWnd));
-		IE->OnPaint(hdc);
-		::ReleaseDC( reinterpret_cast<HWND>(m_HWnd), hdc );
-	}
-#endif
 }
 
 void CMatSystemSurface::DrawSetTextureRGBA(int id, const unsigned char* rgba, int wide, int tall, int hardwareFilter, bool forceUpload)
@@ -3841,18 +3716,4 @@ const char *CMatSystemSurface::GetResolutionKey( void ) const
 	{
 		return "_hidef";
 	}
-}
-
-bool CMatSystemSurface::ForceScreenSizeOverride( bool bState, int wide, int tall )
-{
-	return false;
-}
-
-bool CMatSystemSurface::ForceScreenPosOffset( bool bState, int x, int y )
-{
-	return false;
-}
-
-void CMatSystemSurface::OffsetAbsPos( int & x, int & y )
-{
 }

@@ -1,18 +1,18 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
 //
 // This is a helper class designed to help with the chains of modal dialogs
 // encountered when trying to open or save a particular file
 //
 //=============================================================================
 
-#include "vgui_controls/FileOpenStateMachine.h"
-#include "tier1/KeyValues.h"
+#include "vgui_controls/fileopenstatemachine.h"
+#include "tier1/keyvalues.h"
 #include "vgui_controls/FileOpenDialog.h"
 #include "vgui_controls/MessageBox.h"
+#include "vgui_controls/perforcefilelistframe.h"
 #include "vgui_controls/savedocumentquery.h"
 #include "filesystem.h"
 #include "tier2/tier2.h"
-#include "tier0/icommandline.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -238,6 +238,8 @@ void FileOpenStateMachine::MakeFileWriteableDialog( )
 		return;
 	}
 
+	// If it's in perforce, and not checked out, then we must abort.
+
 	m_CurrentState = STATE_SHOWING_MAKE_FILE_WRITEABLE_DIALOG;
 
 	char pBuf[1024];
@@ -260,6 +262,31 @@ void FileOpenStateMachine::MakeFileWriteableDialog( )
 //-----------------------------------------------------------------------------
 void FileOpenStateMachine::OnPerforceQueryCompleted( KeyValues *pKeyValues )
 {
+	if ( m_CurrentState == STATE_SHOWING_CHECK_OUT_DIALOG )
+	{
+		if ( pKeyValues->GetInt( "operationPerformed" ) == 0 )
+		{
+			SetCompletionState( FILE_NOT_CHECKED_OUT );
+			return;
+		}
+
+		MakeFileWriteableDialog();
+		return;
+	}
+
+	if ( m_CurrentState == STATE_SHOWING_PERFORCE_ADD_DIALOG )
+	{
+		if ( !m_bIsOpeningFile )
+		{
+			SetCompletionState( SUCCESSFUL );
+			return;
+		}
+
+		OpenFileDialog();
+		return;
+	}
+
+	Assert(0);
 }
 
 
@@ -332,7 +359,7 @@ void FileOpenStateMachine::SaveFile( KeyValues *pContextKeyValues, const char *p
 	m_SaveFileType = pFileType;
 	m_OpenFileType = NULL;
 	m_OpenFileName = NULL;
-
+	m_bShowPerforceDialogs = ( nFlags & FOSM_SHOW_PERFORCE_DIALOGS ) != 0;
 	m_bShowSaveQuery = ( nFlags & FOSM_SHOW_SAVE_QUERY ) != 0;
 	m_bIsOpeningFile = false;
 	m_bWroteFile = false;
@@ -398,6 +425,7 @@ void FileOpenStateMachine::OpenFile( const char *pOpenFileType, KeyValues *pCont
 	m_SaveFileType = pSaveFileType;
 	m_OpenFileType = pOpenFileType;
 	m_OpenFileName = NULL;
+	m_bShowPerforceDialogs = ( nFlags & FOSM_SHOW_PERFORCE_DIALOGS ) != 0;
 	m_bShowSaveQuery = ( nFlags & FOSM_SHOW_SAVE_QUERY ) != 0;
 	m_bIsOpeningFile = true;
 	m_bWroteFile = false;
@@ -423,6 +451,7 @@ void FileOpenStateMachine::OpenFile( const char *pOpenFileName, const char *pOpe
 	m_FileName = pSaveFileName;
 	m_SaveFileType = pSaveFileType;
 	m_OpenFileType = pOpenFileType;
+	m_bShowPerforceDialogs = ( nFlags & FOSM_SHOW_PERFORCE_DIALOGS ) != 0;
 	m_bShowSaveQuery = ( nFlags & FOSM_SHOW_SAVE_QUERY ) != 0;
 	m_bIsOpeningFile = true;
 	m_bWroteFile = false;

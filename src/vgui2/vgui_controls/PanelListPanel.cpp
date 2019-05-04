@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -24,12 +24,10 @@
 
 using namespace vgui;
 
-DECLARE_BUILD_FACTORY( PanelListPanel );
-
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-PanelListPanel::PanelListPanel( vgui::Panel *parent, char const *panelName ) : EditablePanel( parent, panelName )
+PanelListPanel::PanelListPanel( vgui::Panel *parent, char const *panelName ) : Panel( parent, panelName )
 {
 	SetBounds( 0, 0, 100, 100 );
 
@@ -87,11 +85,6 @@ int	PanelListPanel::ComputeVPixelsNeeded()
 		if ( !panel )
 			continue;
 
-		if ( panel->IsLayoutInvalid() )
-		{
-			panel->InvalidateLayout( true );
-		}
-
 		int iCurrentColumn = iCurrentItem % m_iNumColumns;
 
 		int w, h;
@@ -137,7 +130,7 @@ Panel *PanelListPanel::GetCellRenderer( int row )
 //			data->GetName() is used to uniquely identify an item
 //			data sub items are matched against column header name to be used in the table
 //-----------------------------------------------------------------------------
-int PanelListPanel::AddItem( Panel *labelPanel, Panel *panel )
+int PanelListPanel::AddItem( Panel *labelPanel, Panel *panel)
 {
 	Assert(panel);
 
@@ -248,8 +241,7 @@ void PanelListPanel::DeleteAllItems()
 	{
 		if ( m_DataItems[i].panel )
 		{
-			m_DataItems[i].panel->MarkForDeletion();
-			m_DataItems[i].panel = NULL;
+			delete m_DataItems[i].panel;
 		}
 	}
 
@@ -279,7 +271,6 @@ void PanelListPanel::OnSizeChanged(int wide, int tall)
 {
 	BaseClass::OnSizeChanged(wide, tall);
 	InvalidateLayout();
-	Repaint();
 }
 
 //-----------------------------------------------------------------------------
@@ -292,6 +283,7 @@ void PanelListPanel::PerformLayout()
 
 	int vpixels = ComputeVPixelsNeeded();
 
+	m_vbar->SetVisible( true );
 	m_vbar->SetRange( 0, vpixels );
 	m_vbar->SetRangeWindow( tall );
 	m_vbar->SetButtonPressedScrollValue( tall / 4 ); // standard height of labels/buttons etc.
@@ -301,16 +293,10 @@ void PanelListPanel::PerformLayout()
 
 	int top = m_vbar->GetValue();
 
-	m_pPanelEmbedded->SetPos( 0, -top );
-	m_pPanelEmbedded->SetSize( wide - m_vbar->GetWide(), vpixels );	// scrollbar will sit on top (zpos set explicitly)
+	m_pPanelEmbedded->SetPos( 1, -top );
+	m_pPanelEmbedded->SetSize( wide - m_vbar->GetWide() - 2, vpixels );
 
-	bool bScrollbarVisible = true;
-	// If we're supposed to automatically hide the scrollbar when unnecessary, check it now
-	if ( m_bAutoHideScrollbar )
-	{
-		bScrollbarVisible = (m_pPanelEmbedded->GetTall() > tall);
-	}
-	m_vbar->SetVisible( bScrollbarVisible );
+	int sliderPos = m_vbar->GetValue();
 	
 	// Now lay out the controls on the embedded panel
 	int y = 0;
@@ -333,12 +319,15 @@ void PanelListPanel::PerformLayout()
 		if ( h < item.panel->GetTall() )
 			h = item.panel->GetTall();
 
-		if ( item.labelPanel )
+		if (totalh >= sliderPos)
 		{
-			item.labelPanel->SetBounds( 0, y, m_iFirstColumnWidth, item.panel->GetTall() );
-		}
+			if ( item.labelPanel )
+			{
+				item.labelPanel->SetBounds( 0, y, m_iFirstColumnWidth, item.panel->GetTall() );
+			}
 
-		item.panel->SetBounds( xpos + iCurrentColumn * iColumnWidth, y, iColumnWidth, item.panel->GetTall() );
+			item.panel->SetBounds( xpos + iCurrentColumn * iColumnWidth, y, iColumnWidth, item.panel->GetTall() );
+		}
 
 		if ( iCurrentColumn >= m_iNumColumns - 1 )
 		{
@@ -424,7 +413,7 @@ void PanelListPanel::SetSelectedPanel( Panel *panel )
 		// notify the panels of the selection change
 		if ( m_hSelectedItem )
 		{
-			PostMessage( m_hSelectedItem.Get(), new KeyValues("PanelSelected", "state", 0) );
+			PostMessage( m_hSelectedItem, new KeyValues("PanelSelected", "state", 0) );
 		}
 		if ( panel )
 		{

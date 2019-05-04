@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -12,7 +12,7 @@
 #endif
 
 #include <Color.h>
-#include "tier1/utlvector.h"
+#include "tier1/UtlVector.h"
 #include "vgui_controls/EditablePanel.h"
 #include "vgui_controls/Frame.h"
 #include "icvar.h"
@@ -58,7 +58,6 @@ public:
 	virtual void ColorPrint( const Color& clr, const char *pMessage );
 	virtual void Print( const char *pMessage );
 	virtual void DPrint( const char *pMessage );
-	virtual void GetConsoleText( char *pchText, size_t bufSize ) const;
 
 	// clears the console
 	void Clear();
@@ -72,8 +71,6 @@ public:
 	bool TextEntryHasFocus() const;
 	void TextEntryRequestFocus();
 
-
-
 private:
 	enum
 	{
@@ -85,7 +82,7 @@ private:
 	public:
 		CompletionItem( void );
 		CompletionItem( const CompletionItem& src );
-		CompletionItem& operator =( const CompletionItem& src );
+		CompletionItem& CompletionItem::operator =( const CompletionItem& src );
 		~CompletionItem( void );
 		const char *GetItemText( void );
 		const char *GetCommand( void ) const;
@@ -141,7 +138,6 @@ class CConsoleDialog : public vgui::Frame
 
 public:
 	CConsoleDialog( vgui::Panel *pParent, const char *pName, bool bStatusVersion );
-	virtual ~CConsoleDialog() {}
 
 	virtual void OnScreenSizeChanged( int iOldWide, int iOldTall );
 	virtual void Close();
@@ -160,8 +156,6 @@ public:
 	void ColorPrint( const Color& clr, const char *msg );
 	void Clear();
 	void DumpConsoleTextToFile();
-
-	virtual void OnKeyCodePressed( vgui::KeyCode code );
 
 protected:
 	CConsolePanel *m_pConsolePanel;

@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -31,7 +31,6 @@
 #endif
 
 class Color;
-class ITexture;
 
 namespace vgui
 {
@@ -84,10 +83,18 @@ enum FontDrawType_t
 // Refactor these two
 struct CharRenderInfo
 {
+	// In:
+	FontDrawType_t	drawType;
+	wchar_t			ch;
+
+	// Out
+	bool			valid;
+
+	// In/Out (true by default)
+	bool			shouldclip;
 	// Text pos
 	int				x, y;
 	// Top left and bottom right
-
 	Vertex_t		verts[ 2 ];
 	int				textureId;
 	int				abcA;
@@ -95,14 +102,6 @@ struct CharRenderInfo
 	int				abcC;
 	int				fontTall;
 	HFont			currentFont;
-	// In:
-	FontDrawType_t	drawType;
-	wchar_t			ch;
-
-	// Out
-	bool			valid;
-	// In/Out (true by default)
-	bool			shouldclip;
 };
 
 
@@ -158,13 +157,6 @@ public:
 	virtual void PaintHTMLWindow(vgui::IHTML *htmlwin) =0;
 	virtual void DeleteHTMLWindow(IHTML *htmlwin)=0;
 
-	enum ETextureFormat
-	{
-		eTextureFormat_RGBA,
-		eTextureFormat_BGRA,
-		eTextureFormat_BGRA_Opaque, // bgra format but alpha is always 255, CEF does this, we can use this fact for better perf on win32 gdi
-	};
-
 	virtual int	 DrawGetTextureId( char const *filename ) = 0;
 	virtual bool DrawGetTextureFile(int id, char *filename, int maxlen ) = 0;
 	virtual void DrawSetTextureFile(int id, const char *filename, int hardwareFilter, bool forceReload) = 0;
@@ -175,6 +167,10 @@ public:
 	virtual bool IsTextureIDValid(int id) = 0;
 
 	virtual int CreateNewTextureID( bool procedural = false ) = 0;
+#ifdef _X360
+	virtual void DestroyTextureID( int id ) = 0;
+	virtual void UncacheUnusedMaterials() = 0;
+#endif
 
 	virtual void GetScreenSize(int &wide, int &tall) = 0;
 	virtual void SetAsTopMost(VPANEL panel, bool state) = 0;
@@ -248,10 +244,10 @@ public:
 		FONTFLAG_BITMAP			= 0x800,		// compiled bitmap font - no fallbacks
 	};
 
-	virtual bool SetFontGlyphSet(HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int nRangeMin = 0, int nRangeMax = 0) = 0;
+	virtual bool SetFontGlyphSet(HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags) = 0;
 
 	// adds a custom font file (only supports true type font files (.ttf) for now)
-	virtual bool AddCustomFontFile(const char *fontName, const char *fontFileName) = 0;
+	virtual bool AddCustomFontFile(const char *fontFileName) = 0;
 
 	// returns the details about the font
 	virtual int GetFontTall(HFont font) = 0;
@@ -306,7 +302,7 @@ public:
 	virtual void DrawOutlinedCircle(int x, int y, int radius, int segments) = 0;
 	virtual void DrawTexturedPolyLine( const Vertex_t *p,int n ) = 0; // (Note: this connects the first and last points).
 	virtual void DrawTexturedSubRect( int x0, int y0, int x1, int y1, float texs0, float text0, float texs1, float text1 ) = 0;
-	virtual void DrawTexturedPolygon(int n, Vertex_t *pVertice, bool bClipVertices = true ) = 0;
+	virtual void DrawTexturedPolygon(int n, Vertex_t *pVertices) = 0;
 	virtual const wchar_t *GetTitle(VPANEL panel) = 0;
 	virtual bool IsCursorLocked( void ) const = 0;
 	virtual void SetWorkspaceInsets( int left, int top, int right, int bottom ) = 0;
@@ -351,7 +347,7 @@ public:
 
 	virtual IImage *GetIconImageForFullPath( char const *pFullPath ) = 0;
 	virtual void DrawUnicodeString( const wchar_t *pwString, FontDrawType_t drawType = FONT_DRAW_DEFAULT ) = 0;
-	virtual void PrecacheFontCharacters(HFont font, const wchar_t *pCharacters) = 0;
+	virtual void PrecacheFontCharacters(HFont font, wchar_t *pCharacters) = 0;
 	// Console-only.  Get the string to use for the current video mode for layout files.
 	virtual const char *GetResolutionKey( void ) const = 0;
 };

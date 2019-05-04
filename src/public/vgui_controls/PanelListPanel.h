@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -15,7 +15,7 @@
 #include <utllinkedlist.h>
 #include <utlvector.h>
 #include <vgui/VGUI.h>
-#include <vgui_controls/EditablePanel.h>
+#include <vgui_controls/Panel.h>
 
 class KeyValues;
 
@@ -24,10 +24,10 @@ namespace vgui
 
 //-----------------------------------------------------------------------------
 // Purpose: A list of variable height child panels
-// each list item consists of a label-panel pair. Height of the item is
-// determined from the label.
+//  each list item consists of a label-panel pair. Height of the item is
+// determined from the lable.
 //-----------------------------------------------------------------------------
-class PanelListPanel : public EditablePanel
+class PanelListPanel : public Panel
 {
 	DECLARE_CLASS_SIMPLE( PanelListPanel, Panel );
 
@@ -48,8 +48,6 @@ public:
 
 	virtual Panel *GetItemLabel(int itemID); 
 	virtual Panel *GetItemPanel(int itemID); 
-
-    ScrollBar*  GetScrollbar() { return m_vbar; }
 
 	virtual void RemoveItem(int itemID); // removes an item from the table (changing the indices of all following items)
 	virtual void DeleteAllItems(); // clears and deletes all the memory used by the data items
@@ -77,18 +75,6 @@ public:
 	void		SetVerticalBufferPixels( int buffer );
 
 	void		ScrollToItem( int itemNumber );
-	
-	// scrollbar
-	//void		SetShowScrollBar( bool bShow );
-	//bool		GetShowScrollbar() { return m_bShowScrollBar; }
-	ScrollBar	*GetScrollBar() { return m_vbar; }
-
-	CUtlVector< int > *GetSortedVector( void )
-	{
-		return &m_SortedItems;
-	}
-
-	int	ComputeVPixelsNeeded();
 
 protected:
 	// overrides
@@ -99,7 +85,7 @@ protected:
 	virtual void OnMouseWheeled(int delta);
 
 private:
-	
+	int	ComputeVPixelsNeeded();
 
 	enum { DEFAULT_HEIGHT = 24, PANELBUFFER = 5 };
 
@@ -123,8 +109,6 @@ private:
 	int						m_iNumColumns;
 	int						m_iDefaultHeight;
 	int						m_iPanelBuffer;
-
-	CPanelAnimationVar( bool, m_bAutoHideScrollbar, "autohide_scrollbar", "0" );
 };
 
 }

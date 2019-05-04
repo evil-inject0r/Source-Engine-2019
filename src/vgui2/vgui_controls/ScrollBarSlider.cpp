@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -117,9 +117,6 @@ void ScrollBarSlider::RecomputeNobPosFromValue()
 	float fvalue = (float)(_value - _range[0]);
 	float frangewindow = (float)(_rangeWindow);
 	float fper = ( frange != frangewindow ) ? fvalue / ( frange-frangewindow ) : 0;
-
-//	Msg( "fwide: %f  ftall: %f  frange: %f  fvalue: %f  frangewindow: %f  fper: %f\n",
-//		fwide, ftall, frange, fvalue, frangewindow, fper );
 
 	if ( frangewindow > 0 )
 	{
@@ -246,11 +243,6 @@ void ScrollBarSlider::RecomputeValueFromNobPos()
 
 	// Clamp final result
 	_value = ( _value < (_range[1] - _rangeWindow) ) ? _value : (_range[1] - _rangeWindow);
-
-	if (_value < _range[0])
-	{
-		_value = _range[0];
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -295,24 +287,6 @@ void ScrollBarSlider::SendScrollBarSliderMovedMessage()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Return true if this slider is actually drawing itself
-//-----------------------------------------------------------------------------
-bool ScrollBarSlider::IsSliderVisible( void )
-{
-	int itemRange = _range[1] - _range[0];
-
-	// Don't draw nob, no items in list
-	if ( itemRange <= 0 )
-		return false ;
-
-	// Not enough range
-	if ( itemRange <= _rangeWindow )
-		return false;
-
-	return true;
-}
-
-//-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void ScrollBarSlider::ApplySchemeSettings(IScheme *pScheme)
@@ -322,30 +296,7 @@ void ScrollBarSlider::ApplySchemeSettings(IScheme *pScheme)
 	SetFgColor(GetSchemeColor("ScrollBarSlider.FgColor", pScheme));
 	SetBgColor(GetSchemeColor("ScrollBarSlider.BgColor", pScheme));
 
-	IBorder *newBorder = pScheme->GetBorder("ScrollBarSliderBorder");
-
-	if ( newBorder )
-	{
-		_ScrollBarSliderBorder = newBorder;
-	}
-	else
-	{
-		_ScrollBarSliderBorder = pScheme->GetBorder("ButtonBorder");
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void ScrollBarSlider::ApplySettings( KeyValues *pInResourceData )
-{
-	BaseClass::ApplySettings( pInResourceData );
-
-	const char *pButtonBorderName = pInResourceData->GetString( "ButtonBorder", NULL );
-	if ( pButtonBorderName )
-	{
-		_ScrollBarSliderBorder = vgui::scheme()->GetIScheme( GetScheme() )->GetBorder( pButtonBorderName );
-	}
+	_ScrollBarSliderBorder = pScheme->GetBorder("ButtonBorder");
 }
 
 //-----------------------------------------------------------------------------
@@ -356,7 +307,14 @@ void ScrollBarSlider::Paint()
 	int wide,tall;
 	GetPaintSize(wide,tall);
 
-	if ( !IsSliderVisible() )	
+	int itemRange = _range[1] - _range[0];
+
+	// Don't draw nob, no items in list
+	if ( itemRange <= 0 )
+		return;
+
+	// Not enough range
+	if ( itemRange <= _rangeWindow )
 		return;
 
 	Color col = GetFgColor();
@@ -364,26 +322,19 @@ void ScrollBarSlider::Paint()
 
 	if (_vertical)
 	{
-		if ( GetPaintBackgroundType() == 2 )
-		{
-			DrawBox( 1, _nobPos[0], wide - 2, _nobPos[1] - _nobPos[0], col, 1.0f );
-		}
-		else
-		{
-			// Nob
-			surface()->DrawFilledRect(1, _nobPos[0], wide - 2, _nobPos[1]);
-		}
+		// Nob
+		surface()->DrawFilledRect(0, _nobPos[0], wide - 1, _nobPos[1]);
 
 		// border
 		if (_ScrollBarSliderBorder)
 		{
-			_ScrollBarSliderBorder->Paint(0, _nobPos[0], wide, _nobPos[1]);
+			_ScrollBarSliderBorder->Paint(0, _nobPos[0], wide - 1, _nobPos[1]);
 		}
 	}
 	else
 	{
 		// horizontal nob
-		surface()->DrawFilledRect(_nobPos[0], 1, _nobPos[1], tall - 2 );
+		surface()->DrawFilledRect(_nobPos[0], 0, _nobPos[1], tall );
 
 		// border
 		if (_ScrollBarSliderBorder)
@@ -454,6 +405,7 @@ void ScrollBarSlider::OnCursorMoved(int x,int y)
 
 	int wide, tall;
 	GetPaintSize(wide, tall);
+	tall;
 
 	if (_vertical)
 	{

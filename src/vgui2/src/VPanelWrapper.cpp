@@ -143,11 +143,6 @@ public:
 		return (VPANEL)((VPanel *)vguiPanel)->GetChild(index);
 	}
 
-	virtual CUtlVector< VPANEL > &GetChildren( VPANEL vguiPanel )
-	{
-		return (CUtlVector< VPANEL >&)((VPanel *)vguiPanel)->GetChildren();
-	}
-
 	virtual VPANEL GetParent(VPANEL vguiPanel)
 	{
 		return (VPANEL)((VPanel *)vguiPanel)->GetParent();

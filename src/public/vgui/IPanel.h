@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -14,7 +14,6 @@
 
 #include <vgui/VGUI.h>
 #include "tier1/interface.h"
-#include "tier1/utlvector.h"
 
 #ifdef SendMessage
 #undef SendMessage
@@ -59,7 +58,6 @@ public:
 	virtual void SetParent(VPANEL vguiPanel, VPANEL newParent) = 0;
 	virtual int GetChildCount(VPANEL vguiPanel) = 0;
 	virtual VPANEL GetChild(VPANEL vguiPanel, int index) = 0;
-	virtual CUtlVector< VPANEL > &GetChildren( VPANEL vguiPanel ) = 0;
 	virtual VPANEL GetParent(VPANEL vguiPanel) = 0;
 	virtual void MoveToFront(VPANEL vguiPanel) = 0;
 	virtual void MoveToBack(VPANEL vguiPanel) = 0;

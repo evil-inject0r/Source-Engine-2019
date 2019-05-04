@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -78,24 +78,6 @@ class Menu;
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: Macro to handle Colors that can be overridden in .res files
-//-----------------------------------------------------------------------------
-struct OverridableColorEntry
-{
-	char const *name() { return m_pszScriptName; }
-
-	char const	*m_pszScriptName;
-	Color		*m_pColor;
-	Color		m_colFromScript;
-	bool		m_bOverridden;
-};
-
-#define REGISTER_COLOR_AS_OVERRIDABLE( name, scriptname )			\
-	AddToOverridableColors( &name, scriptname );
-
-
-
-//-----------------------------------------------------------------------------
 // Purpose: For hudanimations.txt scripting of vars
 //-----------------------------------------------------------------------------
 class IPanelAnimationPropertyConverter
@@ -112,34 +94,14 @@ enum KeyBindingContextHandle_t
 	INVALID_KEYBINDINGCONTEXT_HANDLE = 0xffffffff,
 };
 #endif
-
-class IForceVirtualInheritancePanel
-{
-	// We need Panel to use virtual inheritance so that
-	// pointers to its members are max size.
-	// This is due to a limitation in C++ with ahead
-	// declarations of points to members as used in MessageMap.
-};
-
-//=============================================================================
-// HPE_BEGIN:
-// [tj] bitwise defines for rounded corners
-//=============================================================================
-#define PANEL_ROUND_CORNER_TOP_LEFT		(1 << 0)
-#define PANEL_ROUND_CORNER_TOP_RIGHT	(1 << 1)
-#define PANEL_ROUND_CORNER_BOTTOM_LEFT	(1 << 2)
-#define PANEL_ROUND_CORNER_BOTTOM_RIGHT (1 << 3)
-#define PANEL_ROUND_CORNER_ALL			PANEL_ROUND_CORNER_TOP_LEFT | PANEL_ROUND_CORNER_TOP_RIGHT | PANEL_ROUND_CORNER_BOTTOM_LEFT | PANEL_ROUND_CORNER_BOTTOM_RIGHT
-//=============================================================================
-// HPE_END
-//=============================================================================//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Purpose: Base interface to all vgui windows
 //			All vgui controls that receive message and/or have a physical presence
 //			on screen are be derived from Panel.
 //			This is designed as an easy-access to the vgui-functionality; for more
 //			low-level access to vgui functions use the IPanel/IClientPanel interfaces directly
 //-----------------------------------------------------------------------------
-class Panel : public IClientPanel, public virtual IForceVirtualInheritancePanel
+class Panel : public IClientPanel
 {
 	DECLARE_CLASS_SIMPLE_NOBASE( Panel );
 
@@ -162,9 +124,6 @@ public:
 
 	// returns pointer to Panel's vgui VPanel interface handle
 	virtual VPANEL GetVPanel() { return _vpanel; }
-	HPanel ToHandle() const;
-
-	virtual void Init( int x, int y, int wide, int tall );
 
 	//-----------------------------------------------------------------------------
 	// PANEL METHODS
@@ -180,8 +139,6 @@ public:
 	// all units are in pixels
 	void SetPos(int x,int y);		// sets position of panel, in local space (ie. relative to parent's position)
 	void GetPos(int &x,int &y);		// gets local position of panel
-	int GetXPos();
-	int GetYPos();
 	void SetSize(int wide,int tall);	// sets size of panel
 	void GetSize(int &wide, int &tall);	// gets size of panel
 	void SetBounds(int x, int y, int wide, int tall);		// combination of SetPos/SetSize
@@ -198,7 +155,6 @@ public:
 	void SetBuildModeDeletable(bool state);	// set buildModeDialog deletable
 	bool IsBuildModeActive();	// true if we're currently in edit mode
 	void SetZPos(int z);	// sets Z ordering - lower numbers are always behind higher z's
-	int  GetZPos( void );
 	void SetAlpha(int alpha);	// sets alpha modifier for panel and all child panels [0..255]
 	int GetAlpha();	// returns the current alpha
 
@@ -228,14 +184,10 @@ public:
 	
 	int GetChildCount();
 	Panel *GetChild(int index);
-	virtual CUtlVector< VPANEL > &GetChildren();
 	int FindChildIndexByName( const char *childName );
 	Panel *FindChildByName(const char *childName, bool recurseDown = false);
 	Panel *FindSiblingByName(const char *siblingName);
 	void CallParentFunction(KeyValues *message);
-
-	template < class T >
-	T *FindControl( const char *pszName, bool recurseDown = false ) { return dynamic_cast<T *>( FindChildByName( pszName, recurseDown ) ); }
 
 	virtual void SetAutoDelete(bool state);		// if set to true, panel automatically frees itself when parent is deleted
 	virtual bool IsAutoDeleteSet();
@@ -253,9 +205,6 @@ public:
 	virtual bool SetInfo(KeyValues *inputData);						// sets a specified value in the control - inverse of the above
 	virtual void SetSilentMode( bool bSilent );						//change the panel's silent mode; if silent, the panel will not post any action signals
 
-	// install a mouse handler
-	virtual void InstallMouseHandler( Panel *pHandler );	// mouse events will be send to handler panel instead of this panel
-
 	// drawing state
 	virtual void   SetEnabled(bool state);
 	virtual bool   IsEnabled();
@@ -270,14 +219,6 @@ public:
 		PIN_TOPRIGHT,
 		PIN_BOTTOMLEFT,
 		PIN_BOTTOMRIGHT,
-
-		// For sibling pinning
-		PIN_CENTER_TOP,
-		PIN_CENTER_RIGHT,
-		PIN_CENTER_BOTTOM,
-		PIN_CENTER_LEFT,
-
-		PIN_LAST
 	};
 
 	// specifies the auto-resize directions for the panel
@@ -302,7 +243,6 @@ public:
 	void GetPinOffset( int &dx, int &dy );
 	void GetResizeOffset( int &dx, int &dy );
 
-	void PinToSibling( const char *pszSibling, PinCorner_e pinOurCorner, PinCorner_e pinSibling );
 	// colors
 	virtual void SetBgColor(Color color);
 	virtual void SetFgColor(Color color);
@@ -311,7 +251,6 @@ public:
 
 	virtual void SetCursor(HCursor cursor);
 	virtual HCursor GetCursor();
-	virtual void SetCursorAlwaysVisible( bool visible );
 	virtual void RequestFocus(int direction = 0);
 	virtual bool HasFocus();
 	virtual void InvalidateLayout(bool layoutNow = false, bool reloadScheme = false);
@@ -391,7 +330,7 @@ public:
 	virtual void OnSizeChanged(int newWide, int newTall);	// called after the size of a panel has been changed
 	
 	// called every frame if ivgui()->AddTickSignal() is called
-	virtual void OnTick();
+	MESSAGE_FUNC( OnTick, "Tick" );
 
 	// input messages
 	MESSAGE_FUNC_INT_INT( OnCursorMoved, "OnCursorMoved", x, y );
@@ -400,7 +339,6 @@ public:
 	virtual void OnMousePressed(MouseCode code);
 	virtual void OnMouseDoublePressed(MouseCode code);
 	virtual void OnMouseReleased(MouseCode code);
-	virtual void OnMouseMismatchedRelease( MouseCode code, Panel* pPressedPanel );
 	virtual void OnMouseWheeled(int delta);
 
 	// Trip pressing (e.g., select all text in a TextEntry) requires this to be enabled
@@ -490,13 +428,7 @@ public:
 
 	// returns a pointer to the tooltip object associated with the panel
 	// creates a new one if none yet exists
-	BaseTooltip *GetTooltip();
-	void	SetTooltip( BaseTooltip *pToolTip, const char *pszText );
-
-	/// Returns the effective tooltip text to use, whether stored
-	/// locally in this panel, or in the tooltip object.  Returns
-	/// an empty string if no tooltip text
-	const char *GetEffectiveTooltipText() const;
+	Tooltip *GetTooltip();
 
 	// proportional mode settings
 	virtual bool IsProportional() { return _flags.IsFlagSet( IS_PROPORTIONAL ); }
@@ -512,31 +444,11 @@ public:
 	virtual void DrawBox(int x, int y, int wide, int tall, Color color, float normalizedAlpha, bool hollow = false );
 	virtual void DrawBoxFade(int x, int y, int wide, int tall, Color color, float normalizedAlpha, unsigned int alpha0, unsigned int alpha1, bool bHorizontal, bool hollow = false );
 	virtual void DrawHollowBox(int x, int y, int wide, int tall, Color color, float normalizedAlpha );
-	//=============================================================================
-	// HPE_BEGIN:
-	//=============================================================================
-	 
-	// [menglish] Draws a hollow box similar to the already existing draw hollow box function, but takes the indents as params
-	virtual void DrawHollowBox( int x, int y, int wide, int tall, Color color, float normalizedAlpha, int cornerWide, int cornerTall );
-
-	// [tj] Simple getters and setters to decide which corners to draw rounded
-    unsigned char GetRoundedCorners() { return m_roundedCorners; }
-	void SetRoundedCorners (unsigned char cornerFlags) { m_roundedCorners = cornerFlags; }
-	bool ShouldDrawTopLeftCornerRounded() { return ( m_roundedCorners & PANEL_ROUND_CORNER_TOP_LEFT ) != 0; }
-	bool ShouldDrawTopRightCornerRounded() { return ( m_roundedCorners & PANEL_ROUND_CORNER_TOP_RIGHT ) != 0; }
-	bool ShouldDrawBottomLeftCornerRounded() { return ( m_roundedCorners & PANEL_ROUND_CORNER_BOTTOM_LEFT ) != 0; }
-	bool ShouldDrawBottomRightCornerRounded() { return ( m_roundedCorners & PANEL_ROUND_CORNER_BOTTOM_RIGHT ) != 0; }
-	 
-	//=============================================================================
-	// HPE_END
-	//=============================================================================
 
 // Drag Drop Public interface
 
 	virtual void SetDragEnabled( bool enabled );
 	virtual bool IsDragEnabled() const;
-
-	virtual void SetShowDragHelper( bool enabled );
 
 	// Called if drag drop is started but not dropped on top of droppable panel...
 	virtual void OnDragFailed( CUtlVector< KeyValues * >& msglist );
@@ -595,7 +507,7 @@ public:
 	virtual bool	CanStartDragging( int startx, int starty, int mx, int my );
 
 	// Draws a filled rect of specified bounds, but omits the bounds of the skip panel from those bounds
-	virtual void FillRectSkippingPanel( const Color &clr, int x, int y, int w, int h, Panel *skipPanel );
+	virtual void FillRectSkippingPanel( Color& clr, int x, int y, int w, int h, Panel *skipPanel );
 
 	virtual int	GetPaintBackgroundType();
 	virtual void GetCornerTextureSize( int& w, int& h );
@@ -614,47 +526,6 @@ public:
 	void		DisableMouseInputForThisPanel( bool bDisable );
 	bool		IsMouseInputDisabledForThisPanel() const;
 
-	bool		GetForceStereoRenderToFrameBuffer() const { return m_bForceStereoRenderToFrameBuffer; }
-	void		SetForceStereoRenderToFrameBuffer( bool bForce ) { m_bForceStereoRenderToFrameBuffer = bForce; }
-
-	void		PostMessageToAllSiblings( KeyValues *msg, float delaySeconds = 0.0f );
-	template< class S >
-	void		PostMessageToAllSiblingsOfType( KeyValues *msg, float delaySeconds = 0.0f );
-
-	void		SetConsoleStylePanel( bool bConsoleStyle );
-	bool		IsConsoleStylePanel() const;
-
-	void		SetParentNeedsCursorMoveEvents( bool bNeedsEvents ) { m_bParentNeedsCursorMoveEvents = bNeedsEvents; }
-	bool		ParentNeedsCursorMoveEvents() const { return m_bParentNeedsCursorMoveEvents; }
-
-	int ComputePos( const char *pszInput, int &nPos, const int& nSize, const int& nParentSize, const bool& bX );
-
-	// For 360: support directional navigation between UI controls via dpad
-	enum NAV_DIRECTION { ND_UP, ND_DOWN, ND_LEFT, ND_RIGHT, ND_BACK, ND_NONE };
-	virtual Panel* NavigateUp();
-	virtual Panel* NavigateDown();
-	virtual Panel* NavigateLeft();
-	virtual Panel* NavigateRight();
-	virtual Panel* NavigateActivate();
-	virtual Panel* NavigateBack();
-	virtual void NavigateTo();
-	virtual void NavigateFrom();
-	virtual void NavigateToChild( Panel *pNavigateTo ); //mouse support
-	// if set, Panel gets PerformLayout called after the camera and the renderer's m_matrixWorldToScreen has been setup, so panels can be correctly attached to entities in the world
-	inline void SetWorldPositionCurrentFrame( bool bWorldPositionCurrentFrame ) { m_bWorldPositionCurrentFrame = bWorldPositionCurrentFrame; }
-	inline bool GetWorldPositionCurrentFrame() { return m_bWorldPositionCurrentFrame; }
-
-	Panel* SetNavUp( Panel* navUp );
-	Panel* SetNavDown( Panel* navDown );
-	Panel* SetNavLeft( Panel* navLeft );
-	Panel* SetNavRight( Panel* navRight );
-	Panel* SetNavToRelay( Panel* navToRelay );
-	Panel* SetNavActivate( Panel* navActivate );
-	Panel* SetNavBack( Panel* navBack );
-	NAV_DIRECTION GetLastNavDirection();
-	MESSAGE_FUNC_CHARPTR( OnNavigateTo, "OnNavigateTo", panelName );
-	MESSAGE_FUNC_CHARPTR( OnNavigateFrom, "OnNavigateFrom", panelName );
-
 // Drag Drop protected/internal interface
 protected:
 
@@ -667,88 +538,21 @@ protected:
 	virtual void GetDragData( CUtlVector< KeyValues * >& list );
 	virtual void CreateDragData();
 
-	virtual void PaintTraverse(bool Repaint, bool allowForce = true);
-
 protected:
-	virtual void OnChildSettingsApplied( KeyValues *pInResourceData, Panel *pChild );
-
 	MESSAGE_FUNC_ENUM_ENUM( OnRequestFocus, "OnRequestFocus", VPANEL, subFocus, VPANEL, defaultPanel);
 	MESSAGE_FUNC_INT_INT( OnScreenSizeChanged, "OnScreenSizeChanged", oldwide, oldtall );
 	virtual void *QueryInterface(EInterfaceID id);
 
-	void AddToOverridableColors( Color *pColor, char const *scriptname )
-	{
-		int iIdx = m_OverridableColorEntries.AddToTail();
-		m_OverridableColorEntries[iIdx].m_pszScriptName = scriptname;
-		m_OverridableColorEntries[iIdx].m_pColor = pColor;
-		m_OverridableColorEntries[iIdx].m_bOverridden = false;
-	}
-
-	void ApplyOverridableColors( void );
-	void SetOverridableColor( Color *pColor, const Color &newColor );
-
-public:
-	void SetNavUp( const char* controlName );
-	void SetNavDown( const char* controlName );
-	void SetNavLeft( const char* controlName );
-	void SetNavRight( const char* controlName );
-	void SetNavToRelay( const char* controlName );
-	void SetNavActivate( const char* controlName );
-	void SetNavBack( const char* controlName );
-
-	/*
-	Will recursively look for the next visible panel in the navigation chain, parameters are for internal use.
-	It will stop looking if first == nextpanel (to prevent infinite looping).
-	*/
-	Panel* GetNavUp( Panel *first = NULL ); 
-	Panel* GetNavDown( Panel *first = NULL );
-	Panel* GetNavLeft( Panel *first = NULL );
-	Panel* GetNavRight( Panel *first = NULL );
-	Panel* GetNavToRelay( Panel *first = NULL );
-	Panel* GetNavActivate( Panel *first = NULL );
-	Panel* GetNavBack( Panel *first = NULL );
-
-	const char* GetNavUpName( void ) const { return m_sNavUpName.String(); }
-	const char* GetNavDownName( void ) const { return m_sNavDownName.String(); }
-	const char* GetNavLeftName( void ) const { return m_sNavLeftName.String(); }
-	const char* GetNavRightName( void ) const { return m_sNavRightName.String(); }
-	const char* GetNavToRelayName( void ) const { return m_sNavToRelayName.String(); }
-	const char* GetNavActivateName( void ) const { return m_sNavActivateName.String(); }
-	const char* GetNavBackName( void ) const { return m_sNavBackName.String(); }
-
-protected:
-	//this will return m_NavDown and will not look for the next visible panel
-	Panel* GetNavUpPanel();
-	Panel* GetNavDownPanel();
-	Panel* GetNavLeftPanel();
-	Panel* GetNavRightPanel();
-	Panel* GetNavToRelayPanel();
-	Panel* GetNavActivatePanel();
-	Panel* GetNavBackPanel();
-
-	bool m_PassUnhandledInput;
-	NAV_DIRECTION m_LastNavDirection;
-
 private:
 	enum BuildModeFlags_t
 	{
-		BUILDMODE_EDITABLE						= 1 << 0,
-		BUILDMODE_DELETABLE						= 1 << 1,
-		BUILDMODE_SAVE_XPOS_RIGHTALIGNED		= 1 << 2,
-		BUILDMODE_SAVE_XPOS_CENTERALIGNED		= 1 << 3,
-		BUILDMODE_SAVE_YPOS_BOTTOMALIGNED		= 1 << 4,
-		BUILDMODE_SAVE_YPOS_CENTERALIGNED		= 1 << 5,
-		BUILDMODE_SAVE_WIDE_FULL				= 1 << 6,
-		BUILDMODE_SAVE_TALL_FULL				= 1 << 7,
-		BUILDMODE_SAVE_PROPORTIONAL_TO_PARENT	= 1 << 8,
-		BUILDMODE_SAVE_WIDE_PROPORTIONAL		= 1 << 9,
-		BUILDMODE_SAVE_TALL_PROPORTIONAL		= 1 << 10,
-		BUILDMODE_SAVE_XPOS_PROPORTIONAL_SELF	= 1 << 11,
-		BUILDMODE_SAVE_YPOS_PROPORTIONAL_SELF	= 1 << 12,
-		BUILDMODE_SAVE_WIDE_PROPORTIONAL_TALL	= 1 << 13,
-		BUILDMODE_SAVE_TALL_PROPORTIONAL_WIDE	= 1 << 14,
-		BUILDMODE_SAVE_XPOS_PROPORTIONAL_PARENT = 1 << 15,
-		BUILDMODE_SAVE_YPOS_PROPORTIONAL_PARENT = 1 << 16
+		BUILDMODE_EDITABLE					= 0x01,
+		BUILDMODE_DELETABLE					= 0x02,
+		BUILDMODE_SAVE_XPOS_RIGHTALIGNED	= 0x04,
+		BUILDMODE_SAVE_XPOS_CENTERALIGNED	= 0x08,
+		BUILDMODE_SAVE_YPOS_BOTTOMALIGNED	= 0x10,
+		BUILDMODE_SAVE_YPOS_CENTERALIGNED	= 0x20,
+		BUILDMODE_SAVE_WIDE_FULL			= 0x40,
 	};
 
 	enum PanelFlags_t
@@ -773,9 +577,6 @@ private:
 		IS_MOUSE_DISABLED_FOR_THIS_PANEL_ONLY = 0x8000,
 		ALL_FLAGS							= 0xFFFF,
 	};
-
-	int ComputeWide( KeyValues *inResourceData, int nParentWide, int nParentTall, bool bComputingForTall );
-	int ComputeTall( KeyValues *inResourceData, int nParentWide, int nParentTall, bool bComputingForWide );
 
 	// used to get the Panel * for users with only IClientPanel
 	virtual Panel *GetPanel() { return this; }
@@ -809,7 +610,9 @@ private:
 
 	MESSAGE_FUNC( InternalMove, "Move" );
 	virtual void InternalFocusChanged(bool lost);	// called when the focus gets changed
+	virtual void PaintTraverse(bool Repaint, bool allowForce = true);
 
+	void Init( int x, int y, int wide, int tall );
 	void PreparePanelMap( PanelMap_t *panelMap );
 
 	bool InternalRequestInfo( PanelAnimationMap *map, KeyValues *outputData );
@@ -827,16 +630,13 @@ private:
 	void FindDropTargetPanel_R( CUtlVector< VPANEL >& panelList, int x, int y, VPANEL check );
 	Panel *FindDropTargetPanel();
 
-	int GetProportionalScaledValue( int rootTall, int normalizedValue );
-
 #if defined( VGUI_USEDRAGDROP )
 	DragDrop_t		*m_pDragDrop;
 	Color			m_clrDragFrame;
 	Color			m_clrDropFrame;
 #endif
 
-	BaseTooltip		*m_pTooltips;
-	bool			m_bToolTipOverridden;
+	Tooltip			*m_pTooltips;
 
 	PHandle			m_SkipChild;
 	long			m_lLastDoublePressTime;
@@ -853,8 +653,6 @@ private:
 
 	CUtlFlags< unsigned short > _flags;	// see PanelFlags_t
 	Dar<HPanel>		_actionSignalTargetDar;	// the panel to direct notify messages to ("Command", "TextChanged", etc.)
-
-	CUtlVector<OverridableColorEntry>	m_OverridableColorEntries;
 
 	Color			_fgColor;		// foreground color
 	Color			_bgColor;		// background color
@@ -875,54 +673,9 @@ private:
 	unsigned char	_tabPosition;		// the panel's place in the tab ordering
 	HScheme			 m_iScheme; // handle to the scheme to use
 
-	bool			m_bIsDMXSerialized : 1; // Is this a DMX panel?
-	bool			m_bUseSchemeColors : 1; // Should we use colors from the scheme?
-	bool			m_bIsSilent : 1; // should this panel PostActionSignals?
-	bool			m_bIsConsoleStylePanel : 1;
-	bool			m_bParentNeedsCursorMoveEvents : 1;
+	bool			m_bIsSilent; // should this panel PostActionSignals?
 
-	// Sibling pinning
-	char			*_pinToSibling;				// string name of the sibling panel we're pinned to
-	byte			_pinToSiblingCorner;		// the corner of the sibling panel we're pinned to
-	byte			_pinCornerToSibling;		// the corner of our panel that we're pinning to our sibling
-	PHandle			m_pinSibling;
-
-	CUtlString	m_sNavUpName;
-	PHandle		m_NavUp;
-
-	CUtlString m_sNavDownName;
-	PHandle m_NavDown;
-
-	CUtlString m_sNavLeftName;
-	PHandle m_NavLeft;
-
-	CUtlString m_sNavRightName;
-	PHandle m_NavRight;
-
-	CUtlString m_sNavToRelayName;
-	PHandle m_NavToRelay;
-
-	CUtlString m_sNavActivateName;
-	PHandle m_NavActivate;
-
-	CUtlString m_sNavBackName;
-	PHandle m_NavBack;
 	
-protected:
-	static int s_NavLock;
-
-private:
-
-	char			*_tooltipText;		// Tool tip text for panels that share tooltip panels with other panels
-
-	PHandle			m_hMouseEventHandler;
-
-	bool			m_bWorldPositionCurrentFrame;		// if set, Panel gets PerformLayout called after the camera and the renderer's m_matrixWorldToScreen has been setup, so panels can be correctly attached to entities in the world
-
-	bool			m_bForceStereoRenderToFrameBuffer;
-
-	static Panel* m_sMousePressedPanels[ ( MOUSE_MIDDLE - MOUSE_LEFT ) + 1 ];
-
 	CPanelAnimationVar( float, m_flAlpha, "alpha", "255" );
 
 	// 1 == Textured (TextureId1 only)
@@ -932,15 +685,8 @@ private:
 	CPanelAnimationVarAliasType( int, m_nBgTextureId2, "Texture2", "vgui/hud/800corner2", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nBgTextureId3, "Texture3", "vgui/hud/800corner3", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nBgTextureId4, "Texture4", "vgui/hud/800corner4", "textureid" );
-
-	//=============================================================================
-	// HPE_BEGIN:
-	// [tj] A bitset of flags to determine which corners should be rounded
-	//=============================================================================
-	unsigned char m_roundedCorners;
-	//=============================================================================
-	// HPE_END
-	//=============================================================================	
+	
+	friend class Panel;
 	friend class BuildGroup;
 	friend class BuildModeDialog;
 	friend class PHandle;
@@ -958,72 +704,6 @@ inline bool	Panel::IsMouseInputDisabledForThisPanel() const
 {
 	return _flags.IsFlagSet( IS_MOUSE_DISABLED_FOR_THIS_PANEL_ONLY );
 }
-
-//#if 0
-//#ifdef GAMEUI_DLL
-// This function cannot be defined here because it requires on a full definition of
-// KeyValues (to call KeyValues::MakeCopy()) whereas the rest of this header file
-// assumes a forward declared definition of KeyValues.
-template< class S >
-inline void Panel::PostMessageToAllSiblingsOfType( KeyValues *msg, float delaySeconds /*= 0.0f*/ )
-{
-	Panel *parent = GetParent();
-	if ( parent )
-	{
-		int nChildCount = parent->GetChildCount();
-		for ( int i = 0; i < nChildCount; ++i )
-		{
-			Panel *sibling = parent->GetChild( i );
-			if ( sibling == this )
-				continue;
-			if ( dynamic_cast< S * >( sibling ) )
-			{
-				PostMessage( sibling->GetVPanel(), msg->MakeCopy(), delaySeconds );
-			}
-		}
-	}
-
-	msg->deleteThis();
-}
-//#endif
-
-class Button;
-
-struct SortedPanel_t
-{
-	SortedPanel_t( Panel *panel );
-
-	Panel *pPanel;
-	Button *pButton;
-};
-
-class CSortedPanelYLess
-{
-public:
-	bool Less( const SortedPanel_t &src1, const SortedPanel_t &src2, void *pCtx )
-	{
-		int nX1, nY1, nX2, nY2;
-		src1.pPanel->GetPos( nX1, nY1 );
-		src2.pPanel->GetPos( nX2, nY2 );
-
-		if ( nY1 == nY2 )
-		{
-			return ( nX1 < nX2 );
-		}
-
-		if ( nY1 < nY2 )
-		{
-			return true;
-		}
-
-		return false;
-	}
-};
-
-
-void VguiPanelGetSortedChildPanelList( Panel *pParentPanel, void *pSortedPanels );
-void VguiPanelGetSortedChildButtonList( Panel *pParentPanel, void *pSortedPanels, char *pchFilter = NULL, int nFilterType = 0 );
-int VguiPanelNavigateSortedChildButtonList( void *pSortedPanels, int nDir );
 
 
 } // namespace vgui

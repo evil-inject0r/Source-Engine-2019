@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -60,12 +60,6 @@ CBitmapImagePanel::CBitmapImagePanel( Panel *parent, char const *panelName,
 
 	m_bgColor = Color(255, 255, 255, 255);
 }
-CBitmapImagePanel::~CBitmapImagePanel()
-{
-	delete [] m_pszImageName;
-	delete [] m_pszColorName;
-}
-
 
 //-----------------------------------------------------------------------------
 // Purpose: 

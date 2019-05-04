@@ -292,8 +292,8 @@ CInputWin32::CInputWin32()
 {
 	m_nDebugMessages = -1;
 #ifndef _X360
-	_imeWnd = NULL;
-	_imeCandidates = NULL;
+	_imeWnd = null;
+	_imeCandidates = null;
 #endif
 	InitInputContext( &m_DefaultInputContext );
 	m_hContext = DEFAULT_INPUT_CONTEXT;
@@ -2674,7 +2674,7 @@ void CInputWin32::DestroyCandidateList()
 	if ( _imeCandidates )
 	{
 		delete[] (char *)_imeCandidates;
-		_imeCandidates = NULL;
+		_imeCandidates = null;
 	}
 #endif
 }

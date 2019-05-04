@@ -1,9 +1,8 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
 //
 // Purpose: 
 //
 //=============================================================================
-
 #include "vgui_controls/KeyBoardEditorDialog.h"
 #include "vgui_controls/ListPanel.h"
 #include "vgui_controls/Button.h"
@@ -14,11 +13,7 @@
 #include "vgui/ILocalize.h"
 #include "KeyValues.h"
 #include "vgui/Cursor.h"
-#include "tier1/utldict.h"
-
-// NOTE: This has to be the last file included!
-#include "tier0/memdbgon.h"
-
+#include "tier1/UtlDict.h"
 
 using namespace vgui;
 
@@ -96,7 +91,6 @@ public:
 	CInlineEditPanel() : vgui::Panel(NULL, "InlineEditPanel")
 	{
 	}
-	virtual ~CInlineEditPanel() {}
 
 	virtual void Paint()
 	{
@@ -426,8 +420,10 @@ void CKeyBoardEditorPage::BindKey( KeyCode code )
 			if ( binding && Q_stricmp( kbMap->bindingname, binding->bindingname ) )
 			{
 				// Key is already rebound!!!
-				Warning( "Can't bind to '%S', key is already bound to '%s'\n",
+				char warning[ 512 ];
+				Q_snprintf( warning, sizeof( warning ), "Can't bind to '%S', key is already bound to '%s'\n",
 					Panel::KeyCodeToDisplayString( code ), binding->bindingname );
+				Warning( warning );
 				return;
 			}
 
@@ -444,8 +440,10 @@ void CKeyBoardEditorPage::BindKey( KeyCode code )
 			if ( binding && Q_stricmp( bindingMap->bindingname, binding->bindingname ) )
 			{
 				// Key is already rebound!!!
-				Warning( "Can't bind to '%S', key is already bound to '%s'\n",
+				char warning[ 512 ];
+				Q_snprintf( warning, sizeof( warning ), "Can't bind to '%S', key is already bound to '%s'\n",
 					Panel::KeyCodeToDisplayString( code ), binding->bindingname );
+				Warning( warning );
 				return;
 			}
 

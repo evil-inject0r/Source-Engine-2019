@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -29,7 +29,6 @@ class ScrollBarSlider : public Panel
 
 public:
 	ScrollBarSlider(Panel *parent, const char *panelName, bool vertical);
-	virtual ~ScrollBarSlider() {}
 
 	// Set the ScrollBarSlider value of the nob.
 	virtual void SetValue(int value); 
@@ -61,11 +60,6 @@ public:
 	virtual void OnMousePressed(MouseCode code);
 	virtual void OnMouseDoublePressed(MouseCode code);
 	virtual void OnMouseReleased(MouseCode code);
-
-	// Return true if this slider is actually drawing itself
-	virtual bool IsSliderVisible( void );
-
-	virtual void ApplySettings( KeyValues *pInResourceData );
 
 protected:
 	virtual void Paint();

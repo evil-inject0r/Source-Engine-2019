@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -32,7 +32,7 @@ public:
 	// You can optionally pass in the panel to send the click message to and the name of the command to send to that panel.
 	Button(Panel *parent, const char *panelName, const char *text, Panel *pActionSignalTarget=NULL, const char *pCmd=NULL);
 	Button(Panel *parent, const char *panelName, const wchar_t *text, Panel *pActionSignalTarget=NULL, const char *pCmd=NULL);
-	virtual ~Button();
+	~Button();
 private:
 	void Init();
 public:
@@ -107,8 +107,6 @@ public:
 	virtual void SetDefaultColor(Color fgColor, Color bgColor);
 	// Set armed button colors
 	virtual void SetArmedColor(Color fgColor, Color bgColor);
-	// Set selected button colors
-	virtual void SetSelectedColor(Color fgColor, Color bgColor);
 	// Set depressed button colors
 	virtual void SetDepressedColor(Color fgColor, Color bgColor);
 	// Set blink button color
@@ -118,18 +116,6 @@ public:
 	virtual Color GetButtonFgColor();
 	// Get button background color
 	virtual Color GetButtonBgColor();
-
-	Color		  GetButtonDefaultFgColor() { return _defaultFgColor; }
-	Color		  GetButtonDefaultBgColor() { return _defaultBgColor; }
-
-	Color		  GetButtonArmedFgColor() { return _armedFgColor; }
-	Color		  GetButtonArmedBgColor() { return _armedBgColor; }
-
-	Color		  GetButtonSelectedFgColor() { return _selectedFgColor; }
-	Color		  GetButtonSelectedBgColor() { return _selectedBgColor; }
-
-	Color		  GetButtonDepressedFgColor() { return _depressedFgColor; }
-	Color		  GetButtonDepressedBgColor() { return _depressedBgColor; }
 
 	// Set default button border attributes.
 	virtual void SetDefaultBorder(IBorder *border);
@@ -166,10 +152,6 @@ public:
 	bool ShouldPaint(){ return _paint; }
 	void SetShouldPaint( bool paint ){ _paint = paint; }
 
-	virtual void ApplySettings( KeyValues *inResourceData );
-	virtual void NavigateTo();
-	virtual void NavigateFrom();
-
 protected:
 	virtual void DrawFocusBorder(int tx0, int ty0, int tx1, int ty1);
 
@@ -189,12 +171,13 @@ protected:
 
 	// Get control settings for editing
 	virtual void GetSettings( KeyValues *outResourceData );
+	virtual void ApplySettings( KeyValues *inResourceData );
 	virtual const char *GetDescription( void );
 
 	KeyValues *GetActionMessage();
 	void PlayButtonReleasedSound();
 
-protected:
+private:
 	enum ButtonFlags_t
 	{
 		ARMED					= 0x0001,
@@ -221,7 +204,6 @@ protected:
 
 	Color			   _defaultFgColor, _defaultBgColor;
 	Color			   _armedFgColor, _armedBgColor;
-	Color			   _selectedFgColor, _selectedBgColor;
 	Color              _depressedFgColor, _depressedBgColor;
 	Color              _keyboardFocusColor;
 	Color			   _blinkFgColor;
@@ -230,7 +212,6 @@ protected:
 
 	unsigned short	   m_sArmedSoundName, m_sDepressedSoundName, m_sReleasedSoundName;
 	bool m_bSelectionStateSaved;
-	bool m_bStaySelectedOnClick;
 };
 
 } // namespace vgui

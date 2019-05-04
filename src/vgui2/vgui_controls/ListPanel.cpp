@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -64,7 +64,6 @@ class ColumnButton : public Button
 {
 public:
 	ColumnButton(vgui::Panel *parent, const char *name, const char *text);
-	virtual ~ColumnButton() {}
 
 	// Inherited from Button
 	virtual void ApplySchemeSettings(IScheme *pScheme);
@@ -129,7 +128,6 @@ class Dragger : public Panel
 {
 public:
 	Dragger(int column);
-	virtual ~Dragger() {}
 
 	// Inherited from Panel
 	virtual void OnMousePressed(MouseCode code);
@@ -353,8 +351,8 @@ static int __cdecl DefaultSortFunc(
 	}
 	else    // its an imagePanel column
 	{
-	   	const ImagePanel *s1 = (const ImagePanel *)p1->kv->GetPtr(col, NULL);
-		const ImagePanel *s2 = (const ImagePanel *)p2->kv->GetPtr(col, NULL);
+	   	const ImagePanel *s1 = (ImagePanel *)p1->kv->GetPtr(col, "");
+		const ImagePanel *s2 = (ImagePanel *)p2->kv->GetPtr(col, "");
 
 		if (s1 < s2)
 		{
@@ -441,7 +439,7 @@ DECLARE_BUILD_FACTORY( ListPanel );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-ListPanel::ListPanel(Panel *parent, const char *panelName) : BaseClass(parent, panelName)
+ListPanel::ListPanel(Panel *parent, const char *panelName) : Panel(parent, panelName)
 {
 	m_bIgnoreDoubleClick = false;
 	m_bMultiselectEnabled = true;
@@ -483,8 +481,6 @@ ListPanel::ListPanel(Panel *parent, const char *panelName) : BaseClass(parent, p
 	m_pImageList = NULL;
 	m_bDeleteImageListWhenDone = false;
 	m_pEmptyListText = new TextImage("");
-
-	m_nUserConfigFileVersion = 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -1179,21 +1175,6 @@ void ListPanel::CleanupItem( FastSortListPanelItem *data )
 //-----------------------------------------------------------------------------
 void ListPanel::RemoveItem(int itemID)
 {
-#ifdef _X360
-	bool renavigate = false;
-	if(HasFocus())
-	{
-		for(int i = 0; i < GetSelectedItemsCount(); ++i)
-		{
-			if(itemID == GetSelectedItem(i))
-			{
-				renavigate = true;
-				break;
-			}
-		}
-	}
-#endif
-
 	FastSortListPanelItem *data = (FastSortListPanelItem*) m_DataItems[itemID];
 	if (!data)
 		return;
@@ -1221,12 +1202,6 @@ void ListPanel::RemoveItem(int itemID)
 	CleanupItem( data );
 	InvalidateLayout();
 
-#ifdef _X360
-	if(renavigate)
-	{
-		NavigateTo();
-	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1251,13 +1226,6 @@ void ListPanel::RemoveAll()
 	ClearSelectedItems();
 
 	InvalidateLayout();
-
-#ifdef _X360
-	if(HasFocus())
-	{
-		NavigateTo();
-	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1387,9 +1355,9 @@ void ListPanel::SetSelectedCell(int itemID, int col)
 //-----------------------------------------------------------------------------
 // Purpose: returns the data held by a specific cell
 //-----------------------------------------------------------------------------
-void ListPanel::GetCellText(int itemID, int col, wchar_t *wbuffer, int bufferSizeInBytes)
+void ListPanel::GetCellText(int itemID, int col, wchar_t *wbuffer, int bufferSize)
 {
-	if ( !wbuffer || !bufferSizeInBytes )
+	if ( !wbuffer || !bufferSize )
 		return;
 
 	wcscpy( wbuffer, L"" );
@@ -1421,7 +1389,7 @@ void ListPanel::GetCellText(int itemID, int col, wchar_t *wbuffer, int bufferSiz
 	if ( val[ 0 ] == '#' )
 	{
 		StringIndex_t si = g_pVGuiLocalize->FindIndex( val + 1 );
-		if ( si != INVALID_LOCALIZE_STRING_INDEX )
+		if ( si != INVALID_STRING_INDEX )
 		{
 			wval = g_pVGuiLocalize->GetValueByIndex( si );
 		}
@@ -1432,8 +1400,8 @@ void ListPanel::GetCellText(int itemID, int col, wchar_t *wbuffer, int bufferSiz
 		wval = itemData->GetWString( key, L"" );
 	}
 
-	wcsncpy( wbuffer, wval, bufferSizeInBytes/sizeof(wchar_t) );
-	wbuffer[ (bufferSizeInBytes/sizeof(wchar_t)) - 1 ] = 0;
+	wcsncpy( wbuffer, wval, bufferSize/sizeof(wchar_t) );
+	wbuffer[ (bufferSize/sizeof(wchar_t)) - 1 ] = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -2271,147 +2239,22 @@ void ListPanel::OnMouseDoublePressed(MouseCode code)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-#ifdef _X360
-void ListPanel::OnKeyCodePressed(KeyCode code)
-{
-	int nTotalRows = m_VisibleItems.Count();
-	int nTotalColumns = m_CurrentColumns.Count();
-	if ( nTotalRows == 0 )
-		return;
-
-	// calculate info for adjusting scrolling
-	int nStartItem = GetStartItem();
-	int nRowsPerPage = (int)GetRowsPerPage();
-
-	int nSelectedRow = 0;
-	if ( m_DataItems.IsValidIndex( m_LastItemSelected ) )
-	{
-		nSelectedRow = m_VisibleItems.Find( m_LastItemSelected );
-	}
- 	int nSelectedColumn = m_iSelectedColumn;
-
-	switch(code)
-	{
-	case KEY_XBUTTON_UP:
-	case KEY_XSTICK1_UP:
-	case KEY_XSTICK2_UP:
-		if(GetItemCount() < 1 || nSelectedRow == nStartItem)
-		{
-			ClearSelectedItems();
-			BaseClass::OnKeyCodePressed(code);
-			return;
-		}
-		else
-		{
-			nSelectedRow -= 1;
-		}
-		break;
-	case KEY_XBUTTON_DOWN:
-	case KEY_XSTICK1_DOWN:
-	case KEY_XSTICK2_DOWN:
-		{
-			int itemId = GetSelectedItem(0);
-			if(itemId != -1 && GetItemCurrentRow(itemId) == (nTotalRows - 1))
-			{
-				ClearSelectedItems();
-				BaseClass::OnKeyCodePressed(code);
-				return;
-			}
-			else
-			{
-				nSelectedRow += 1;
-			}
-		}
-		break;
-	case KEY_XBUTTON_LEFT:
-	case KEY_XSTICK1_LEFT:
-	case KEY_XSTICK2_LEFT:
-		if (m_bCanSelectIndividualCells && (GetSelectedItemsCount() == 1) && (nSelectedColumn >= 0) )
-		{
-			nSelectedColumn--;
-			if (nSelectedColumn < 0)
-			{
-				nSelectedColumn = 0;
-			}
-			break;
-		}
-		break;
-	case KEY_XBUTTON_RIGHT:
-	case KEY_XSTICK1_RIGHT:
-	case KEY_XSTICK2_RIGHT:
-		if (m_bCanSelectIndividualCells && (GetSelectedItemsCount() == 1) && (nSelectedColumn >= 0) )
-		{
-			nSelectedColumn++;
-			if (nSelectedColumn >= nTotalColumns)
-			{
-				nSelectedColumn = nTotalColumns - 1;
-			}
-			break;
-		}
-		break;
-	case KEY_XBUTTON_A:
-		PostActionSignal( new KeyValues("ListPanelItemChosen", "itemID", m_SelectedItems[0] ));
-		break;
-	default:
-		BaseClass::OnKeyCodePressed(code);
-		break;
-	}
-
-	// make sure newly selected item is a valid range
-	nSelectedRow = clamp(nSelectedRow, 0, nTotalRows - 1);
-
-	int row = m_VisibleItems[ nSelectedRow ];
-
-	// This will select the cell if in single select mode, or the row in multiselect mode
-	if ( ( row != m_LastItemSelected ) || ( nSelectedColumn != m_iSelectedColumn ) || ( m_SelectedItems.Count() > 1 ) )
-	{
-		SetSelectedCell( row, nSelectedColumn );
-	}
-
-	// move the newly selected item to within the visible range
-	if ( nRowsPerPage < nTotalRows )
-	{
-		int nStartItem = m_vbar->GetValue();
-		if ( nSelectedRow < nStartItem )
-		{
-			// move the list back to match
-			m_vbar->SetValue( nSelectedRow );
-		}
-		else if ( nSelectedRow >= nStartItem + nRowsPerPage )
-		{
-			// move list forward to match
-			m_vbar->SetValue( nSelectedRow - nRowsPerPage + 1);
-		}
-	}
-
-	// redraw
-	InvalidateLayout();
-}
-
-#else
-
-//-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void ListPanel::OnKeyCodePressed(KeyCode code)
+void ListPanel::OnKeyCodeTyped(KeyCode code)
 {
 	if (m_hEditModePanel.Get())
 	{
 		// ignore arrow keys in edit mode
 		// forward right up to parent so that tab focus change doesn't occur
-		CallParentFunction(new KeyValues("KeyCodePressed", "code", code));
+		CallParentFunction(new KeyValues("KeyCodeTyped", "code", code));
 		return;
 	}
 
 	int nTotalRows = m_VisibleItems.Count();
 	int nTotalColumns = m_CurrentColumns.Count();
 	if ( nTotalRows == 0 )
-	{
-		BaseClass::OnKeyCodePressed(code);
 		return;
-	}
 
 	// calculate info for adjusting scrolling
 	int nStartItem = GetStartItem();
@@ -2461,31 +2304,14 @@ void ListPanel::OnKeyCodePressed(KeyCode code)
 		break;
 
 	case KEY_UP:
-	case KEY_XBUTTON_UP:
-	case KEY_XSTICK1_UP:
-	case KEY_XSTICK2_UP:
-		if ( nTotalRows > 0 )
-		{
-			nSelectedRow--;
-			break;
-		}
-		// fall through
+		nSelectedRow -= 1;
+		break;
 
 	case KEY_DOWN:
-	case KEY_XBUTTON_DOWN:
-	case KEY_XSTICK1_DOWN:
-	case KEY_XSTICK2_DOWN:
-		if ( nTotalRows > 0 )
-		{
-			nSelectedRow++;
-			break;
-		}
-		// fall through
+		nSelectedRow += 1;
+		break;
 
 	case KEY_LEFT:
-	case KEY_XBUTTON_LEFT:
-	case KEY_XSTICK1_LEFT:
-	case KEY_XSTICK2_LEFT:
 		if (m_bCanSelectIndividualCells && (GetSelectedItemsCount() == 1) && (nSelectedColumn >= 0) )
 		{
 			nSelectedColumn--;
@@ -2498,9 +2324,6 @@ void ListPanel::OnKeyCodePressed(KeyCode code)
 		// fall through
 
 	case KEY_RIGHT:
-	case KEY_XBUTTON_RIGHT:
-	case KEY_XSTICK1_RIGHT:
-	case KEY_XSTICK2_RIGHT:
 		if (m_bCanSelectIndividualCells && (GetSelectedItemsCount() == 1) && (nSelectedColumn >= 0) )
 		{
 			nSelectedColumn++;
@@ -2514,7 +2337,7 @@ void ListPanel::OnKeyCodePressed(KeyCode code)
 
 	default:
 		// chain back
-		BaseClass::OnKeyCodePressed(code);
+		BaseClass::OnKeyCodeTyped(code);
 		return;
 	};
 
@@ -2549,7 +2372,6 @@ void ListPanel::OnKeyCodePressed(KeyCode code)
 	InvalidateLayout();
 }
 
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -3138,13 +2960,6 @@ void ListPanel::OnToggleColumnVisible(int col)
 //-----------------------------------------------------------------------------
 void ListPanel::ApplyUserConfigSettings(KeyValues *userConfig)
 {
-	// Check for version mismatch, then don't load settings.  (Just revert to the defaults.)
-	int version = userConfig->GetInt( "configVersion", 1 );
-	if ( version != m_nUserConfigFileVersion )
-	{
-		return;
-	}
-
 	// We save/restore m_lastBarWidth because all of the column widths are saved relative to that size.
 	// If we don't save it, you can run into this case:
 	//    - Window width is 500, load sizes setup relative to a 1000-width window
@@ -3184,11 +2999,6 @@ void ListPanel::ApplyUserConfigSettings(KeyValues *userConfig)
 //-----------------------------------------------------------------------------
 void ListPanel::GetUserConfigSettings(KeyValues *userConfig)
 {
-	if ( m_nUserConfigFileVersion != 1 )
-	{
-		userConfig->SetInt( "configVersion", m_nUserConfigFileVersion );
-	}
-
 	userConfig->SetInt( "lastBarWidth", m_lastBarWidth );
 
 	// save which columns are hidden
@@ -3261,25 +3071,3 @@ bool ListPanel::IsInEditMode()
 {
 	return (m_hEditModePanel.Get() != NULL);
 }
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-#ifdef _X360
-void ListPanel::NavigateTo()
-{
-	BaseClass::NavigateTo();
-	// attempt to select the first item in the list when we get focus
-	if(GetItemCount())
-	{
-		SetSingleSelectedItem(FirstItem());
-	}
-	else // if we have no items, change focus
-	{
-		if(!NavigateDown())
-		{
-			NavigateUp();
-		}
-	}
-}
-#endif

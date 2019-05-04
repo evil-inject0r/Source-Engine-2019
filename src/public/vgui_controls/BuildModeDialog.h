@@ -74,7 +74,7 @@ private:
 	MESSAGE_FUNC( ShutdownBuildMode, "Close" );
 	MESSAGE_FUNC( OnPanelMoved, "PanelMoved" );
 	MESSAGE_FUNC( OnTextKillFocus, "TextKillFocus" );
-	MESSAGE_FUNC( OnReloadLocalization, "ReloadLocalization" );
+	//MESSAGE_FUNC( OnReloadLocalization, "ReloadLocalization" );
 	MESSAGE_FUNC_CHARPTR( OnCreateNewControl, "CreateNewControl", text );
 
 	MESSAGE_FUNC_CHARPTR( OnSetClipboardText, "SetClipboardText", text );

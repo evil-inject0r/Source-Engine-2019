@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -6,7 +6,7 @@
 //=============================================================================//
 
 #include "vgui_controls/pch_vgui_controls.h"
-#include <vgui_controls/KeyRepeat.h>
+#include <vgui_controls/keyrepeat.h>
 
 // memdbgon must be the last include file in a .cpp file
 #include "tier0/memdbgon.h"

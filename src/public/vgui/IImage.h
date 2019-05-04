@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -18,16 +18,6 @@ class Color;
 
 namespace vgui
 {
-
-typedef unsigned long HTexture;
-
-enum iimage_rotation_t
-{
-	ROTATED_UNROTATED = 0,
-	ROTATED_CLOCKWISE_90,
-	ROTATED_ANTICLOCKWISE_90,
-	ROTATED_FLIPPED,
-};
 
 //-----------------------------------------------------------------------------
 // Purpose: Interface to drawing an image

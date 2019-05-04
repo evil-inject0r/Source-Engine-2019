@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -26,14 +26,12 @@
 
 using namespace vgui;
 
-DECLARE_BUILD_FACTORY( Slider );
-
 static const float NOB_SIZE = 8.0f;
 
 //-----------------------------------------------------------------------------
 // Purpose: Create a slider bar with ticks underneath it
 //-----------------------------------------------------------------------------
-Slider::Slider(Panel *parent, const char *panelName ) : BaseClass(parent, panelName)
+Slider::Slider(Panel *parent, const char *panelName ) : Panel(parent, panelName)
 {
 	m_bIsDragOnRepositionNob = false;
 	_dragging = false;
@@ -47,15 +45,15 @@ Slider::Slider(Panel *parent, const char *panelName ) : BaseClass(parent, panelN
 	_leftCaption = NULL;
 	_rightCaption = NULL;
 
-	_subrange[ 0 ] = 0;
-	_subrange[ 1 ] = 0;
-	m_bUseSubRange = false;
-	m_bInverted = false;
-
 	SetThumbWidth( 8 );
 	RecomputeNobPosFromValue();
 	AddActionSignalTarget(this);
 	SetBlockDragChaining( true );
+
+	_subrange[ 0 ] = 0;
+	_subrange[ 1 ] = 0;
+	m_bUseSubRange = false;
+	m_bInverted = false;
 }
 
 // This allows the slider to behave like it's larger than what's actually being drawn
@@ -237,9 +235,7 @@ void Slider::SetInverted( bool bInverted )
 void Slider::SendSliderMovedMessage()
 {	
 	// send a changed message
-	KeyValues *pParams = new KeyValues("SliderMoved", "position", _value);
-	pParams->SetPtr( "panel", this );
-	PostActionSignal( pParams );
+	PostActionSignal(new KeyValues("SliderMoved", "position", _value));
 }
 
 //-----------------------------------------------------------------------------
@@ -248,9 +244,7 @@ void Slider::SendSliderMovedMessage()
 void Slider::SendSliderDragStartMessage()
 {	
 	// send a message
-	KeyValues *pParams = new KeyValues("SliderDragStart", "position", _value);
-	pParams->SetPtr( "panel", this );
-	PostActionSignal( pParams );
+	PostActionSignal(new KeyValues("SliderDragStart", "position", _value));
 }
 
 //-----------------------------------------------------------------------------
@@ -259,9 +253,7 @@ void Slider::SendSliderDragStartMessage()
 void Slider::SendSliderDragEndMessage()
 {	
 	// send a message
-	KeyValues *pParams = new KeyValues("SliderDragEnd", "position", _value);
-	pParams->SetPtr( "panel", this );
-	PostActionSignal( pParams );
+	PostActionSignal(new KeyValues("SliderDragEnd", "position", _value));
 }
 
 
@@ -278,10 +270,6 @@ void Slider::ApplySchemeSettings(IScheme *pScheme)
 
 	m_TickColor = pScheme->GetColor( "Slider.TextColor", GetFgColor() );
 	m_TrackColor = pScheme->GetColor( "Slider.TrackColor", GetFgColor() );
-
-#ifdef _X360
-	m_DepressedBgColor = GetSchemeColor("Slider.NobFocusColor", pScheme);
-#endif
 
 	m_DisabledTextColor1 = pScheme->GetColor( "Slider.DisabledTextColor1", GetFgColor() );
 	m_DisabledTextColor2 = pScheme->GetColor( "Slider.DisabledTextColor2", GetFgColor() );
@@ -338,33 +326,6 @@ void Slider::ApplySettings(KeyValues *inResourceData)
 	}
 
 	SetTickCaptions(left, right);
-
-	int nNumTicks = inResourceData->GetInt( "numTicks", -1 );
-	if ( nNumTicks >= 0 )
-	{
-		SetNumTicks( nNumTicks );
-	}
-
-	int nCurrentRange[2];
-	GetRange( nCurrentRange[0], nCurrentRange[1] );
-	KeyValues *pRangeMin = inResourceData->FindKey( "rangeMin", false );
-	KeyValues *pRangeMax = inResourceData->FindKey( "rangeMax", false );
-	bool bDoClamp = false;
-	if ( pRangeMin )
-	{
-		_range[0] = inResourceData->GetInt( "rangeMin" );
-		bDoClamp = true;
-	}
-	if ( pRangeMax )
-	{
-		_range[1] = inResourceData->GetInt( "rangeMax" );
-		bDoClamp = true;
-	}
-
-	if ( bDoClamp )
-	{
-		ClampRange();
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -516,12 +477,6 @@ void Slider::DrawNob()
 	int wide,tall;
 	GetTrackRect( x, y, wide, tall );
 	Color col = GetFgColor();
-#ifdef _X360
-	if(HasFocus())
-	{
-		col = m_DepressedBgColor;
-	}
-#endif
 	surface()->DrawSetColor(col);
 
 	int nobheight = 16;
@@ -630,34 +585,26 @@ void Slider::SetRange(int min,int max)
 	_range[0]=min;
 	_range[1]=max;
 
-	ClampRange();
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Sanity check and clamp the range if necessary.
-//-----------------------------------------------------------------------------
-void Slider::ClampRange()
-{
 	if ( _range[0] < _range[1] )
 	{
 		if(_value<_range[0])
 		{
-			SetValue( _range[0], false );
+			SetValue( _range[0] );
 		}
 		else if( _value>_range[1])
 		{
-			SetValue( _range[1], false );
+			SetValue( _range[1] );
 		}
 	}
 	else
 	{
 		if(_value<_range[1])
 		{
-			SetValue( _range[1], false );
+			SetValue( _range[1] );
 		}
 		else if( _value>_range[0])
 		{
-			SetValue( _range[0], false );
+			SetValue( _range[0] );
 		}
 	}
 }
@@ -819,31 +766,6 @@ void Slider::OnMouseDoublePressed(MouseCode code)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-#ifdef _X360
-void Slider::OnKeyCodePressed(KeyCode code)
-{
-	switch ( GetBaseButtonCode( code ) )
-	{
-	case KEY_XBUTTON_LEFT:
-	case KEY_XSTICK1_LEFT:
-	case KEY_XSTICK2_LEFT:
-		SetValue(GetValue() - 1);
-		break;
-	case KEY_XBUTTON_RIGHT:
-	case KEY_XSTICK1_RIGHT:
-	case KEY_XSTICK2_RIGHT:
-		SetValue(GetValue() + 1);
-		break;
-	default:
-		BaseClass::OnKeyCodePressed(code);
-		break;
-	}
-}
-#endif
-
-//-----------------------------------------------------------------------------
 // Purpose: Handle key presses
 //-----------------------------------------------------------------------------
 void Slider::OnKeyCodeTyped(KeyCode code)
@@ -914,10 +836,6 @@ void Slider::OnMouseReleased(MouseCode code)
 	{
 		_dragging=false;
 		input()->SetMouseCapture(NULL);
-	}
-
-	if ( IsEnabled() )
-	{
 		SendSliderDragEndMessage();
 	}
 }

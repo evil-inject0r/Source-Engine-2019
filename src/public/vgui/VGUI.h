@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Basic header for using vgui
 //
@@ -12,7 +12,15 @@
 #pragma once
 #endif
 
-#include "tier0/platform.h"
+#define null 0L
+
+#ifndef NULL
+#ifdef __cplusplus
+#define NULL    0
+#else
+#define NULL    ((void *)0)
+#endif
+#endif
 
 #pragma warning( disable: 4800 )	// disables 'performance warning converting int to bool'
 #pragma warning( disable: 4786 )	// disables 'identifier truncated in browser information' warning
@@ -42,12 +50,11 @@ namespace vgui
 {
 // handle to an internal vgui panel
 // this is the only handle to a panel that is valid across dll boundaries
-typedef uintp VPANEL;
+typedef unsigned int VPANEL;
 
 // handles to vgui objects
 // NULL values signify an invalid value
 typedef unsigned long HScheme;
-// Both -1 and 0 are used for invalid textures. Be careful.
 typedef unsigned long HTexture;
 typedef unsigned long HCursor;
 typedef unsigned long HPanel;

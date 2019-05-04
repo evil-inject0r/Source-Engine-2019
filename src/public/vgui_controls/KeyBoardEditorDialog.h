@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
 //
 // Purpose: 
 //
@@ -93,7 +93,6 @@ class CKeyBoardEditorSheet : public PropertySheet
 
 public:
 	CKeyBoardEditorSheet( Panel *parent, Panel *panelToEdit, KeyBindingContextHandle_t handle );
-	virtual ~CKeyBoardEditorSheet() {}
 
 	void	SetKeybindingsSaveFile( char const *filename, char const *pathID = 0 );
 
@@ -120,7 +119,6 @@ class CKeyBoardEditorDialog : public Frame
 
 public:
 	CKeyBoardEditorDialog( Panel *parent, Panel *panelToEdit, KeyBindingContextHandle_t handle );
-	virtual ~CKeyBoardEditorDialog() {}
 
 	void			SetKeybindingsSaveFile( char const *filename, char const *pathID = 0 );
 

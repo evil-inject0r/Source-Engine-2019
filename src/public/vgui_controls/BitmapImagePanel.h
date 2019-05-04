@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -19,7 +19,6 @@ class CBitmapImagePanel : public vgui::Panel
 {
 public:
 	CBitmapImagePanel( vgui::Panel *parent, char const *panelName, char const *filename = NULL );
-	~CBitmapImagePanel();
 
 	virtual void	PaintBackground();
 

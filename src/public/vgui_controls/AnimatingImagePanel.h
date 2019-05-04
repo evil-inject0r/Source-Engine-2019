@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -12,7 +12,7 @@
 #pragma once
 #endif
 
-#include <utlvector.h>
+#include <UtlVector.h>
 #include <vgui_controls/Panel.h>
 
 namespace vgui
@@ -27,7 +27,6 @@ class AnimatingImagePanel : public Panel
 
 public:
 	AnimatingImagePanel(Panel *parent, const char *name);
-	virtual ~AnimatingImagePanel() {}
 
 	// Add an image to the end of the list of animations
 	// image - pointer to the image to add to the end of the list

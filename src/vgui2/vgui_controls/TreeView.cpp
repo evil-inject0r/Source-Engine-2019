@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -15,7 +15,7 @@
 #include <vgui/IPanel.h>
 #include <vgui/ISurface.h>
 #include <vgui/ISystem.h>
-#include <vgui/IVGui.h>
+#include <vgui/IVgui.h>
 #include <vgui/KeyCode.h>
 #include <KeyValues.h>
 #include <vgui/MouseCode.h>
@@ -29,7 +29,7 @@
 #include <vgui_controls/ImageList.h>
 #include <vgui_controls/ImagePanel.h>
 
-#include "tier1/utlstring.h"
+#include "tier1/UtlString.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -69,7 +69,6 @@ public:
 		m_lArmingTime = 0L;
 		SetAllowKeyBindingChainToParent( true );
     }
-	virtual ~TreeNodeText() {}
 
 	MESSAGE_FUNC( OnTextChanged, "TextChanged" )
 	{
@@ -345,7 +344,6 @@ public:
 	{
 		SetBlockDragChaining( true );
 	}
-	virtual ~TreeNodeImage() {}
 
  	//!! this could possibly be changed to just disallow mouse input on the image panel
     virtual void OnMousePressed(MouseCode code)
@@ -380,7 +378,6 @@ class TreeViewSubPanel : public Panel
 {
 public:
     TreeViewSubPanel(Panel *parent) : Panel(parent) {}
-	virtual ~TreeViewSubPanel() {}
 
     virtual void ApplySchemeSettings(IScheme *pScheme)
     {
@@ -784,8 +781,7 @@ int TreeNode::FindChild( TreeNode *pChild )
 {
 	if ( !m_pTreeView->m_pSortFunc )
 	{
-		AssertMsg( 0, "This code has never been tested. Is it correct?" );
-		for ( int i = 0; i < GetChildrenCount(); ++i )
+		for ( int i = 0; i < GetChildrenCount(); --i )
 		{
 			if ( m_Children[i] == pChild )
 				return i;

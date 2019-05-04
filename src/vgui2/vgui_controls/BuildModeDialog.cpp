@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -7,7 +7,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include <utlvector.h>
+#include <UtlVector.h>
 
 #include <vgui/IInput.h>
 #include <vgui/ILocalize.h>
@@ -57,7 +57,6 @@ public:
 		BaseClass( parent, panelName )
 	{
 	}
-	virtual ~CSmallTextEntry() {}
 
 	virtual void ApplySchemeSettings( IScheme *scheme )
 	{
@@ -134,8 +133,6 @@ public:
 			m_pFileCombo->AddItem(g_pVGuiLocalize->GetLocalizationFileName(i), NULL);
 		}
 	}
-
-	virtual ~BuildModeLocalizedStringEditDialog() {}
 #pragma warning( default : 4355 )
 
 	virtual void DoModal(const char *token)
@@ -147,7 +144,7 @@ public:
 
 		// lookup the value
 		StringIndex_t val = g_pVGuiLocalize->FindIndex(token);
-		if (val != INVALID_LOCALIZE_STRING_INDEX)
+		if (val != INVALID_STRING_INDEX)
 		{
 			m_pValueEntry->SetText(g_pVGuiLocalize->GetValueByIndex(val));
 
@@ -191,43 +188,6 @@ private:
 	vgui::Button *m_pCancelButton;
 };
 
-class CBuildModeDialogMgr
-{
-public:
-	
-	void Add( BuildModeDialog *pDlg );
-	void Remove( BuildModeDialog *pDlg );
-
-	int Count() const;
-
-private:
-	CUtlVector< BuildModeDialog * > m_vecBuildDialogs;
-};
-
-static CBuildModeDialogMgr g_BuildModeDialogMgr;
-
-void CBuildModeDialogMgr::Add( BuildModeDialog *pDlg )
-{
-	if ( m_vecBuildDialogs.Find( pDlg ) == m_vecBuildDialogs.InvalidIndex() )
-	{
-		m_vecBuildDialogs.AddToTail( pDlg );
-	}
-}
-
-void CBuildModeDialogMgr::Remove( BuildModeDialog *pDlg )
-{
-	m_vecBuildDialogs.FindAndRemove( pDlg );
-}
-
-int CBuildModeDialogMgr::Count() const
-{
-	return m_vecBuildDialogs.Count();
-}
-
-int GetBuildModeDialogCount()
-{
-	return g_BuildModeDialogMgr.Count();
-}
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -250,8 +210,6 @@ BuildModeDialog::BuildModeDialog(BuildGroup *buildGroup) : Frame(buildGroup->Get
 
 	CreateControls();
 	LoadUserConfig("BuildModeDialog");
-
-	g_BuildModeDialogMgr.Add( this );
 }
 
 //-----------------------------------------------------------------------------
@@ -259,8 +217,6 @@ BuildModeDialog::BuildModeDialog(BuildGroup *buildGroup) : Frame(buildGroup->Get
 //-----------------------------------------------------------------------------
 BuildModeDialog::~BuildModeDialog()
 {
-	g_BuildModeDialogMgr.Remove( this );
-
 	m_pPanelList->m_pResourceData->deleteThis();
 	m_pPanelList->m_pControls->DeleteAllItems();
 	if (_undoSettings)
@@ -296,7 +252,6 @@ public:
 	{
 		m_hContext = context;
 	}
-	virtual ~CBuildModeNavCombo() {}
 	
 	virtual void OnShowMenu(Menu *menu)
 	{
@@ -552,19 +507,6 @@ void BuildModeDialog::PerformLayout()
 	m_pEditableParents->SetPos( xpos, ypos );
 	m_pEditableChildren->SetPos( xpos + 150, ypos );
 
-	ypos -= (YGAP_LARGE + 18 );
-	xpos = BORDER_GAP;
-	m_pReloadLocalization->SetPos( xpos, ypos );
-
-	xpos += ( XGAP ) + m_pReloadLocalization->GetWide();
-	
-	m_pPrevChild->SetPos( xpos, ypos );
-	m_pPrevChild->SetSize( 64, m_pReloadLocalization->GetTall() );
-	xpos += ( XGAP ) + m_pPrevChild->GetWide();
-
-	m_pNextChild->SetPos( xpos, ypos );
-	m_pNextChild->SetSize( 64, m_pReloadLocalization->GetTall() );
-
 	ypos -= (YGAP_LARGE  + m_pVarsButton->GetTall());
 	xpos = BORDER_GAP;
 
@@ -598,14 +540,14 @@ const char *ParseTokenFromString( const char **string )
 
 	// find the first alnum character
 	const char *tok = *string;
-	while ( !V_isalnum(*tok) && *tok != 0 )
+	while ( !isalnum(*tok) && *tok != 0 )
 	{
 		tok++;
 	}
 
 	// read in all the alnum characters
 	int pos = 0;
-	while ( V_isalnum(tok[pos]) )
+	while ( isalnum(tok[pos]) )
 	{
 		buf[pos] = tok[pos];
 		pos++;
@@ -977,7 +919,7 @@ void BuildModeDialog::ApplyDataToControls()
 		{
 			char messageString[255];
 			Q_snprintf(messageString, sizeof( messageString ), "Fieldname is not unique: %s\nRename it and try again.", fieldName);
-			MessageBox *errorBox = new MessageBox("Cannot Apply", messageString);
+			MessageBox *errorBox = new MessageBox("Cannot Apply", messageString , false);
 			errorBox->DoModal();
 			UpdateControlData(m_pCurrentPanel);
 			m_pApplyButton->SetEnabled(false);
@@ -1370,12 +1312,6 @@ void BuildModeDialog::OnShowNewControlMenu()
 	}
 
 	Menu::PlaceContextMenu( this, m_hContextMenu );
-}
-
-void BuildModeDialog::OnReloadLocalization()
-{
-	// reload localization files
-	g_pVGuiLocalize->ReloadLocalizationFiles( );
 }
 
 bool BuildModeDialog::IsBuildGroupEnabled()

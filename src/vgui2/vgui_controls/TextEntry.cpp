@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
-#include <utlvector.h>
+#include <UtlVector.h>
 
 #include <vgui/Cursor.h>
 #include <vgui/IInput.h>
@@ -44,7 +44,7 @@ DECLARE_BUILD_FACTORY( TextEntry );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-TextEntry::TextEntry(Panel *parent, const char *panelName) : BaseClass(parent, panelName)
+TextEntry::TextEntry(Panel *parent, const char *panelName) : Panel(parent, panelName)
 {
 	SetTriplePressAllowed( true );
 
@@ -107,12 +107,6 @@ TextEntry::TextEntry(Panel *parent, const char *panelName) : BaseClass(parent, p
 
 	// If keyboard focus is in an edit control, don't chain keyboard mappings up to parents since it could mess with typing in text.
 	SetAllowKeyBindingChainToParent( false );
-
-	REGISTER_COLOR_AS_OVERRIDABLE( _disabledFgColor, "disabledFgColor_override" );
-	REGISTER_COLOR_AS_OVERRIDABLE( _disabledBgColor, "disabledBgColor_override" );
-	REGISTER_COLOR_AS_OVERRIDABLE( _selectionColor, "selectionColor_override" );
-	REGISTER_COLOR_AS_OVERRIDABLE( _selectionTextColor, "selectionTextColor_override" );
-	REGISTER_COLOR_AS_OVERRIDABLE( _defaultSelectionBG2Color, "defaultSelectionBG2Color_override" );
 }
 
 
@@ -143,8 +137,8 @@ void TextEntry::ApplySchemeSettings(IScheme *pScheme)
 
 	SetBorder( pScheme->GetBorder("ButtonDepressedBorder"));
 
-	if ( _font == INVALID_FONT ) _font = pScheme->GetFont("Default", IsProportional() );
-	if ( _smallfont == INVALID_FONT ) _smallfont = pScheme->GetFont( "DefaultVerySmall", IsProportional() );
+	_font = pScheme->GetFont("Default", IsProportional() );
+	_smallfont = pScheme->GetFont( "DefaultVerySmall", IsProportional() );
 
 	SetFont( _font );
 }
@@ -634,8 +628,6 @@ bool TextEntry::NeedsEllipses( HFont font, int *pIndex )
 //-----------------------------------------------------------------------------
 void TextEntry::PaintBackground()
 {
-	BaseClass::PaintBackground();
-
 	// draw background
 	Color col;
 	if (IsEnabled())
@@ -648,11 +640,10 @@ void TextEntry::PaintBackground()
 	}
 	Color saveBgColor = col;
 
+	surface()->DrawSetColor(col);
 	int wide, tall;
 	GetSize( wide, tall );
-
-//	surface()->DrawSetColor(col);
-//	surface()->DrawFilledRect(0, 0, wide, tall);
+	surface()->DrawFilledRect(0, 0, wide, tall);
 
 	// where to Start drawing
 	int x = DRAW_OFFSET_X + _pixelsIndent, y = GetYStart();
@@ -1282,7 +1273,6 @@ void TextEntry::CreateEditMenu()
 		delete m_pEditMenu;
 	m_pEditMenu = new Menu(this, "EditMenu");
 	
-	m_pEditMenu->SetFont( _font );
 	
 	// add cut/copy/paste drop down options if its editable, just copy if it is not
 	if (_editable && !_hideText)
@@ -1314,8 +1304,6 @@ void TextEntry::CreateEditMenu()
 			// Create a submenu
 			Menu *subMenu = new Menu( this, "LanguageMenu" );
 
-			subMenu->SetFont( _font );
-
 			for ( int i = 0; i < count; ++i )
 			{
 				int id = subMenu->AddCheckableMenuItem( "Language", UnlocalizeUnicode( langs[ i ].menuname ), new KeyValues( "DoLanguageChanged", "handle", langs[ i ].handleValue ), this );
@@ -1342,8 +1330,6 @@ void TextEntry::CreateEditMenu()
 			// Create a submenu
 			Menu *subMenu = new Menu( this, "ConversionModeMenu" );
 
-			subMenu->SetFont( _font );
-
 			for ( int i = 0; i < count; ++i )
 			{
 				int id = subMenu->AddCheckableMenuItem( "ConversionMode", UnlocalizeUnicode( modes[ i ].menuname ), new KeyValues( "DoConversionModeChanged", "handle", modes[ i ].handleValue ), this );
@@ -1369,8 +1355,6 @@ void TextEntry::CreateEditMenu()
 
 			// Create a submenu
 			Menu *subMenu = new Menu( this, "SentenceModeMenu" );
-
-			subMenu->SetFont( _font );
 
 			for ( int i = 0; i < count; ++i )
 			{
@@ -1599,54 +1583,6 @@ void TextEntry::OnMouseCaptureLost()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Only pass some keys upwards 
-// everything else we don't relay to the parent
-//-----------------------------------------------------------------------------
-void TextEntry::OnKeyCodePressed(KeyCode code)
-{
-	// Pass enter on only if _catchEnterKey isn't set
-	if ( code == KEY_ENTER )
-	{
-		if ( !_catchEnterKey )
-		{
-			Panel::OnKeyCodePressed( code );
-			return;
-		}
-	}
-	
-	// Forward on just a few key codes, everything else can be handled by TextEntry itself
-	switch ( code )
-	{
-		case KEY_F1:
-		case KEY_F2:
-		case KEY_F3:
-		case KEY_F4:
-		case KEY_F5:
-		case KEY_F6:
-		case KEY_F7:
-		case KEY_F8:
-		case KEY_F9:
-		case KEY_F10:
-		case KEY_F11:
-		case KEY_F12:
-		case KEY_ESCAPE:
-		case KEY_APP:
-			Panel::OnKeyCodePressed( code );
-			return;
-	}
-	
-	// Pass on the joystick and mouse codes
-	if ( IsMouseCode(code) || IsJoystickCode(code) || IsJoystickButtonCode(code) ||
-	     IsJoystickPOVCode(code) || IsJoystickAxisCode(code) )
-	{
-		Panel::OnKeyCodePressed( code );
-		return;
-	}
-	    
-}
-
-
-//-----------------------------------------------------------------------------
 // Purpose: Masks which keys get chained up
 //			Maps keyboard input to text window functions.
 //-----------------------------------------------------------------------------
@@ -1658,10 +1594,9 @@ void TextEntry::OnKeyCodeTyped(KeyCode code)
 	bool shift = (input()->IsKeyDown(KEY_LSHIFT) || input()->IsKeyDown(KEY_RSHIFT));
 	bool ctrl = (input()->IsKeyDown(KEY_LCONTROL) || input()->IsKeyDown(KEY_RCONTROL));
 	bool alt = (input()->IsKeyDown(KEY_LALT) || input()->IsKeyDown(KEY_RALT));
-	bool winkey = (input()->IsKeyDown(KEY_LWIN) || input()->IsKeyDown(KEY_RWIN));
 	bool fallThrough = false;
 	
-	if ( ( ctrl || ( winkey && IsOSX() ) ) && !alt)
+	if (ctrl)
 	{
 		switch(code)
 		{
@@ -3006,7 +2941,7 @@ void TextEntry::CalcBreakIndex()
 // Purpose: Insert a string into the text buffer, this is just a series
 //			of char inserts because we have to check each char is ok to insert
 //-----------------------------------------------------------------------------
-void TextEntry::InsertString(const wchar_t *wszText)
+void TextEntry::InsertString(wchar_t *wszText)
 {
 	SaveUndoState();
 
@@ -3355,7 +3290,7 @@ void TextEntry::CopySelected()
 			buf.AddToTail(m_TextStream[i]);
 		}
 		buf.AddToTail('\0');
-		system()->SetClipboardText(buf.Base(), buf.Count());
+		system()->SetClipboardText(buf.Base(), x1 - x0);
 	}
 	
 	// have to request focus if we used the menu
@@ -3373,6 +3308,9 @@ void TextEntry::CopySelected()
 //-----------------------------------------------------------------------------
 void TextEntry::Paste()
 {
+	if (_hideText)
+		return;
+	
 	if (!IsEditable())
 		return;
 
@@ -3602,16 +3540,15 @@ int TextEntry::GetValueAsInt()
 //-----------------------------------------------------------------------------
 // Purpose: Get a string from text buffer
 // Input:	offset - index to Start reading from 
-//			bufLenInBytes - length of string
+//			bufLen - length of string
 //-----------------------------------------------------------------------------
-void TextEntry::GetText(OUT_Z_BYTECAP(bufLenInBytes) char *buf, int bufLenInBytes)
+void TextEntry::GetText(char *buf, int bufLen)
 {
-	Assert(bufLenInBytes >= sizeof(buf[0]));
 	if (m_TextStream.Count())
 	{
 		// temporarily null terminate the text stream so we can use the conversion function
 		int nullTerminatorIndex = m_TextStream.AddToTail((wchar_t)0);
-		g_pVGuiLocalize->ConvertUnicodeToANSI(m_TextStream.Base(), buf, bufLenInBytes);
+		g_pVGuiLocalize->ConvertUnicodeToANSI(m_TextStream.Base(), buf, bufLen);
 		m_TextStream.FastRemove(nullTerminatorIndex);
 	}
 	else
@@ -3626,9 +3563,8 @@ void TextEntry::GetText(OUT_Z_BYTECAP(bufLenInBytes) char *buf, int bufLenInByte
 // Input:	offset - index to Start reading from 
 //			bufLen - length of string
 //-----------------------------------------------------------------------------
-void TextEntry::GetText(OUT_Z_BYTECAP(bufLenInBytes) wchar_t *wbuf, int bufLenInBytes)
+void TextEntry::GetText(wchar_t *wbuf, int bufLenInBytes)
 {
-	Assert(bufLenInBytes >= sizeof(wbuf[0]));
 	int len = m_TextStream.Count();
 	if (m_TextStream.Count())
 	{
@@ -3703,9 +3639,9 @@ bool TextEntry::RequestInfo(KeyValues *outputData)
 	}
 	else if (!stricmp(outputData->GetName(), "GetState"))
 	{
-		char buf[64];
-		GetText(buf, sizeof(buf));
-		outputData->SetInt("state", atoi(buf));
+		wchar_t wbuf[64];
+		GetText(wbuf, sizeof(wbuf));
+		outputData->SetInt("state", _wtoi(wbuf));
 		return true;
 	}
 	return BaseClass::RequestInfo(outputData);
@@ -3735,16 +3671,14 @@ void TextEntry::OnSetState(int state)
 void TextEntry::ApplySettings( KeyValues *inResourceData )
 {
 	BaseClass::ApplySettings( inResourceData );
-
-	_font = scheme()->GetIScheme( GetScheme() )->GetFont( inResourceData->GetString( "font", "Default" ), IsProportional() );
-	SetFont( _font );
+//	_font = scheme()->GetFont(GetScheme(), "Default", IsProportional() );
+//	SetFont( _font );
 
 	SetTextHidden((bool)inResourceData->GetInt("textHidden", 0));
 	SetEditable((bool)inResourceData->GetInt("editable", 1));
 	SetMaximumCharCount(inResourceData->GetInt("maxchars", -1));
 	SetAllowNumericInputOnly(inResourceData->GetInt("NumericInputOnly", 0));
 	SetAllowNonAsciiCharacters(inResourceData->GetInt("unicode", 0));
-	SelectAllOnFirstFocus(inResourceData->GetInt("selectallonfirstfocus", 0));
 }
 
 //-----------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -43,15 +43,8 @@ public:
 
 	void SetFgImage(const char *imageName) { SetImage( imageName, PROGRESS_TEXTURE_FG ); }
 	void SetBgImage(const char *imageName) { SetImage( imageName, PROGRESS_TEXTURE_BG ); }
-
-	enum CircularProgressDir_e
-	{
-		PROGRESS_CW,
-		PROGRESS_CCW
-	};
 	int GetProgressDirection() const { return m_iProgressDirection; }
 	void SetProgressDirection( int val ) { m_iProgressDirection = val; }
-	void SetStartSegment( int val ) { m_iStartSegment = val; }
 
 protected:
 	virtual void Paint();
@@ -61,8 +54,13 @@ protected:
 	void SetImage(const char *imageName, progress_textures_t iPos);
 
 private:
+	enum CircularProgressDir_e
+	{
+		PROGRESS_CW,
+		PROGRESS_CCW
+	};
+
 	int m_iProgressDirection;
-	int m_iStartSegment;
 
 	int m_nTextureId[NUM_PROGRESS_TEXTURES];
 	char *m_pszImageName[NUM_PROGRESS_TEXTURES];

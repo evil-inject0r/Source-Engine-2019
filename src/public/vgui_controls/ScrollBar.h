@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -31,7 +31,6 @@ class ScrollBar : public Panel
 
 public:
 	ScrollBar(Panel *parent, const char *panelName, bool vertical);
-	virtual ~ScrollBar() {}
 
 	// Set the value of the scroll bar slider.
 	virtual void    SetValue(int value);
@@ -86,18 +85,10 @@ public:
 	// Sets the scrollbar buttons visible or not
 	virtual void    SetScrollbarButtonsVisible(bool visible);
 
-	void			SetAutohideButtons( bool bAutohide ) { m_bAutoHideButtons = bAutohide; }
-
-	void			UseImages( const char *pszUpArrow, const char *pszDownArrow, const char *pszLine, const char *pszBox );
-
 	/* MESSAGES SENT:
 		"ScrollBarSliderMoved"
 			"position" - new value of the slider
 	*/
-
-	void			SetOverriddenButtons( Button *pB1, Button *pB2 ) { m_pOverriddenButtons[0] = pB1; m_pOverriddenButtons[1] = pB2; }
-
-	virtual void	ApplySettings( KeyValues *pInResourceData );
 
 protected:
 
@@ -109,24 +100,12 @@ protected:
 	MESSAGE_FUNC_INT( OnSliderMoved, "ScrollBarSliderMoved", position );
 	virtual void RespondToScrollArrow(int const direction);
 
-	virtual void UpdateButtonsForImages( void );
-	virtual void UpdateSliderImages( void );
-	Button		 *GetDepressedButton( int iIndex );
-
 private:
 	Button* _button[2];
 	ScrollBarSlider* _slider;
 	int     _buttonPressedScrollValue;
 	int		_scrollDelay; // used to control delays in scrolling
 	bool	_respond;
-	bool	m_bNoButtons;
-	CPanelAnimationVar( bool, m_bAutoHideButtons, "autohide_buttons", "0" );
-
-	vgui::ImagePanel	*m_pUpArrow;
-	vgui::ImagePanel	*m_pLine;
-	vgui::ImagePanel	*m_pDownArrow;
-	vgui::ImagePanel	*m_pBox;
-	Button	*m_pOverriddenButtons[2];
 };
 
 }

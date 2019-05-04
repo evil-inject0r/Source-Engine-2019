@@ -254,7 +254,6 @@ void AnalogBar::ApplySchemeSettings(IScheme *pScheme)
 //-----------------------------------------------------------------------------
 bool AnalogBar::ConstructTimeRemainingString(wchar_t *output, int outputBufferSizeInBytes, float startTime, float currentTime, float currentAnalogValue, float lastAnalogValueUpdateTime, bool addRemainingSuffix)
 {
-	Assert( outputBufferSizeInBytes >= sizeof(output[0]) );
 	Assert(lastAnalogValueUpdateTime <= currentTime);
 	output[0] = 0;
 

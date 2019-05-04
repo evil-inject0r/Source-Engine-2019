@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -28,7 +28,6 @@ public:
 		SetPaintBackgroundEnabled( true );
 		SetPaintBorderEnabled( false );
 	}
-	virtual ~MenuSeparator() {}
 
 	virtual void Paint()
 	{
@@ -69,7 +68,6 @@ Menu::Menu(Panel *parent, const char *panelName) : Panel(parent, panelName)
 	MakePopup(false);
 	SetParent(parent);
 	_recalculateWidth = true;
-	m_bUseMenuManager = true;
 	m_iInputMode = MOUSE;
 	m_iCheckImageWidth = 0;
 	m_iActivatedItem = 0;
@@ -86,12 +84,6 @@ Menu::Menu(Panel *parent, const char *panelName) : Panel(parent, panelName)
 		m_iMenuItemHeight =  DEFAULT_MENU_ITEM_HEIGHT;
 	}
 	m_hItemFont = INVALID_FONT;
-
-
-	m_eTypeAheadMode = COMPAT_MODE;
-	m_szTypeAheadBuf[0] = '\0';
-	m_iNumTypeAheadChars = 0;
-	m_fLastTypeAheadTime = 0.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -150,12 +142,6 @@ int Menu::AddMenuItem( MenuItem *panel )
 			ti->SetUseFallbackFont( m_bUseFallbackFont, m_hFallbackItemFont );
 		}
 	}
-
-	if ( panel->GetHotKey() )
-	{
-		SetTypeAheadMode( HOT_KEY_MODE );
-	}
-
 	return itemID;
 }
 
@@ -1183,14 +1169,6 @@ void Menu::SetNumberOfVisibleItems( int numItems )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Menu::EnableUseMenuManager( bool bUseMenuManager )
-{
-	m_bUseMenuManager = bUseMenuManager;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
 MenuItem *Menu::GetMenuItem(int itemID)
 {
 	if ( !m_MenuItems.IsValidIndex(itemID) )
@@ -1246,10 +1224,8 @@ void Menu::OnCommand( const char *command )
 //-----------------------------------------------------------------------------
 // Purpose: Handle key presses, Activate shortcuts
 //-----------------------------------------------------------------------------
-void Menu::OnKeyCodeTyped(KeyCode keycode)
+void Menu::OnKeyCodeTyped(KeyCode code)
 {
-	vgui::KeyCode code = GetBaseButtonCode( keycode );
-
 	// Don't allow key inputs when disabled!
 	if ( !IsEnabled() )
 		return;
@@ -1257,12 +1233,8 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 	bool alt = (input()->IsKeyDown(KEY_LALT) || input()->IsKeyDown(KEY_RALT));
 	if (alt)
 	{
-		BaseClass::OnKeyCodeTyped( keycode );
-		// Ignore alt when in combobox mode
-		if (m_eTypeAheadMode != TYPE_AHEAD_MODE)
-		{
-			PostActionSignal(new KeyValues("MenuClose"));
-		}
+		BaseClass::OnKeyCodeTyped( code );
+		PostActionSignal(new KeyValues("MenuClose"));
 	}
 
 	switch (code)
@@ -1285,10 +1257,6 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			{
 				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();
 			}
-			else
-			{
-				BaseClass::OnKeyCodeTyped( keycode ); // chain up
-			}
 			break;
 		}
 	case KEY_DOWN:
@@ -1299,10 +1267,6 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 			{
 				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();	
-			}
-			else
-			{
-				BaseClass::OnKeyCodeTyped( keycode ); // chain up
 			}
 			break;
 		}
@@ -1320,12 +1284,12 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 				}
 				else
 				{
-					BaseClass::OnKeyCodeTyped( keycode );
+					BaseClass::OnKeyCodeTyped( code );
 				}
 			}
 			else
 			{
-				BaseClass::OnKeyCodeTyped( keycode );
+				BaseClass::OnKeyCodeTyped( code );
 			}
 			break;
 		}
@@ -1340,7 +1304,7 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			}
 			else
 			{
-				BaseClass::OnKeyCodeTyped( keycode );
+				BaseClass::OnKeyCodeTyped( code );
 			}
 			break;
 		}
@@ -1354,79 +1318,7 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			}
 			else
 			{
-				BaseClass::OnKeyCodeTyped( keycode ); // chain up
-			}
-			break;
-		}
-
-	case KEY_PAGEUP:
-		{
-			if ( m_iNumVisibleLines > 1 )
-			{
-				if ( m_iCurrentlySelectedItemID < m_iNumVisibleLines )
-				{
-					MoveAlongMenuItemList( MENU_UP * m_iCurrentlySelectedItemID, 0 );
-				}
-				else
-				{
-					MoveAlongMenuItemList(MENU_UP * m_iNumVisibleLines - 1, 0);
-				}
-			}
-			else
-			{
-				MoveAlongMenuItemList(MENU_UP, 0);
-			}
-
-			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
-			{
-				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();	
-			}
-			break;
-		}
-
-
-	case KEY_PAGEDOWN:
-		{
-			if ( m_iNumVisibleLines > 1 )
-			{
-				if ( m_iCurrentlySelectedItemID + m_iNumVisibleLines >= GetItemCount() )
-				{
-					MoveAlongMenuItemList(MENU_DOWN * ( GetItemCount() - m_iCurrentlySelectedItemID - 1), 0);
-				}
-				else
-				{
-					MoveAlongMenuItemList(MENU_DOWN * m_iNumVisibleLines - 1, 0);
-				}
-			}
-			else
-			{
-				MoveAlongMenuItemList(MENU_DOWN, 0);
-			}
-
-			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
-			{
-				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();	
-			}
-			break;
-		}
-
-	case KEY_HOME:
-		{
-			MoveAlongMenuItemList( MENU_UP * m_iCurrentlySelectedItemID, 0 );
-			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
-			{
-				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();	
-			}
-			break;
-		}
-
-
-	case KEY_END:
-		{
-			MoveAlongMenuItemList(MENU_DOWN * ( GetItemCount() - m_iCurrentlySelectedItemID - 1), 0);
-			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
-			{
-				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();	
+				BaseClass::OnKeyCodeTyped( code ); // chain up
 			}
 			break;
 		}
@@ -1435,81 +1327,6 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 	// don't chain back
 }
 
-void Menu::OnHotKey(wchar_t unichar)
-{
-	// iterate the menu items looking for one with the matching hotkey
-	FOR_EACH_LL( m_MenuItems, i )
-	{
-		MenuItem *panel = m_MenuItems[i];
-		if (panel->IsVisible())
-		{
-			Panel *hot = panel->HasHotkey(unichar);
-			if (hot)
-			{
-				// post a message to the menuitem telling it it's hotkey was pressed
-				PostMessage(hot, new KeyValues("Hotkey"));
-				return;
-			}
-			// if the menuitem is a cascading menuitem and it is open, check its hotkeys too
-			Menu *cascadingMenu = panel->GetMenu();
-			if (cascadingMenu && cascadingMenu->IsVisible())
-			{
-				cascadingMenu->OnKeyTyped(unichar);
-			}
-		}
-	}
-}
-
-void Menu::OnTypeAhead(wchar_t unichar)
-{
-	// Don't do anything if the menu is empty since there cannot be a selected item.
-	if ( m_MenuItems.Count() <= 0)
-		return;
-
-	// expire the type ahead buffer after 0.5 seconds
-	double tCurrentTime = Sys_FloatTime();
-	if ( (tCurrentTime - m_fLastTypeAheadTime) > 0.5f )
-	{
-		m_iNumTypeAheadChars = 0;
-		m_szTypeAheadBuf[0] = '\0';
-	}
-	m_fLastTypeAheadTime = tCurrentTime;
-
-	// add current character to the type ahead buffer
-	if ( m_iNumTypeAheadChars+1 < TYPEAHEAD_BUFSIZE )
-	{
-		m_szTypeAheadBuf[m_iNumTypeAheadChars++] = unichar;
-	}
-
-	int itemToSelect = m_iCurrentlySelectedItemID;
-	if ( itemToSelect < 0 || itemToSelect >= m_MenuItems.Count())
-	{
-		itemToSelect = 0;
-	}
-
-	int i = itemToSelect;
-	do
-	{
-		wchar_t menuItemName[255];
-		m_MenuItems[i]->GetText(menuItemName, 254);
-
-		// This is supposed to be case insensitive but we don't have a portable case
-		// insensitive wide-character routine.
-		if ( wcsncmp( m_szTypeAheadBuf, menuItemName, m_iNumTypeAheadChars) == 0 )			
-		{
-			itemToSelect = i;
-			break;			
-		}
-
-		i = (i+1) % m_MenuItems.Count();
-	} while ( i != itemToSelect );
-
-	if ( itemToSelect >= 0 )
-	{
-		SetCurrentlyHighlightedItem( itemToSelect );
-		InvalidateLayout();
-	}
-}
 
 //-----------------------------------------------------------------------------
 // Purpose: Handle key presses, Activate shortcuts
@@ -1517,25 +1334,36 @@ void Menu::OnTypeAhead(wchar_t unichar)
 //-----------------------------------------------------------------------------
 void Menu::OnKeyTyped(wchar_t unichar)
 {
-	if (! unichar)
+	//
+	// NOTE - if hotkeys are ever enabled you need to work out a way to differentiate between
+	// combo box menus (which can't have hot keys) and system style menus (which do have hot keys).
+	//
+	//
+/*	if (unichar)
 	{
-		return;
+		// iterate the menu items looking for one with the matching hotkey
+		FOR_EACH_LL( m_MenuItems, i )
+		{
+			MenuItem *panel = m_MenuItems[i];
+			if (panel->IsVisible())
+			{
+				Panel *hot = panel->HasHotkey(unichar);
+				if (hot)
+				{
+					// post a message to the menuitem telling it it's hotkey was pressed
+					PostMessage(hot, new KeyValues("Hotkey"));
+					return;
+				}
+				// if the menuitem is a cascading menuitem and it is open, check its hotkeys too
+				Menu *cascadingMenu = panel->GetMenu();
+				if (cascadingMenu && cascadingMenu->IsVisible())
+				{
+					cascadingMenu->OnKeyTyped(unichar);
+				}
+			}
+		}
 	}
-
-	switch( m_eTypeAheadMode )
-	{
-	case HOT_KEY_MODE:
-		OnHotKey(unichar);
-		return;		
-
-	case TYPE_AHEAD_MODE:
-		OnTypeAhead(unichar);
-		return;		
-
-	case COMPAT_MODE:
-	default:
-		break;
-	}
+*/
 
 	int itemToSelect = m_iCurrentlySelectedItemID;
 	if ( itemToSelect < 0 )
@@ -1556,7 +1384,7 @@ void Menu::OnKeyTyped(wchar_t unichar)
 	{
 		 m_MenuItems[i]->GetText(menuItemName, 254);
 
-		if ( tolower( unichar ) == tolower( menuItemName[0] ) )
+		if ( towlower(menuItemName[0]) == towlower(unichar) )
 		{
 			itemToSelect = i;
 			break;			
@@ -1576,17 +1404,6 @@ void Menu::OnKeyTyped(wchar_t unichar)
 	}
 
 	// don't chain back
-}
-
-
-void Menu::SetTypeAheadMode(MenuTypeAheadMode mode)
-{
-	m_eTypeAheadMode = mode;
-}
-
-int Menu::GetTypeAheadMode()
-{
-	return m_eTypeAheadMode;
 }
 
 //-----------------------------------------------------------------------------
@@ -1857,11 +1674,7 @@ void Menu::SetVisible(bool state)
 		MoveToFront();
 		RequestFocus();
 
-		// Add to menu manager?
-		if ( m_bUseMenuManager )
-		{
-			g_MenuMgr.AddMenu( this );
-		}
+		g_MenuMgr.AddMenu( this );
 	}
 	
 	// must be after movetofront()
@@ -2081,22 +1894,6 @@ void Menu::ActivateItem(int itemID)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Menu::SilentActivateItem(int itemID)
-{
-	if ( m_MenuItems.IsValidIndex( itemID ) )
-	{
-		MenuItem *menuItem = dynamic_cast<MenuItem *>(m_MenuItems[itemID]);
-		// make sure its enabled since disabled items get highlighted.
-		if (menuItem && menuItem->IsEnabled())
-		{
-			m_iActivatedItem = itemID;
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
 void Menu::ActivateItemByRow(int row)
 {
 	if (m_SortedItems.IsValidIndex(row))
@@ -2108,7 +1905,7 @@ void Menu::ActivateItemByRow(int row)
 //-----------------------------------------------------------------------------
 // Purpose: Return the number of items currently in the menu list
 //-----------------------------------------------------------------------------
-int Menu::GetItemCount() const
+int Menu::GetItemCount()
 {
 	return m_MenuItems.Count();
 }
@@ -2253,8 +2050,6 @@ void Menu::OnKeyCodePressed(KeyCode code)
 	{
 		ivgui()->PostMessage(GetVParent(), new KeyValues("KeyModeSet"), GetVPanel());
 	}
-
-	BaseClass::OnKeyCodePressed( code );
 }
 
 //-----------------------------------------------------------------------------
@@ -2319,10 +2114,7 @@ void Menu::SetCurrentlyHighlightedItem(int itemID)
 {
 	SetCurrentlySelectedItem(itemID);
 	int row = m_SortedItems.Find(itemID);
-	// If we have no items, then row will be -1. The dev console, for example...
-	Assert( ( m_SortedItems.Count() == 0 ) || ( row != -1 ) );
-	if ( row == -1 )
-		return;
+	Assert(row != -1);
 
 	// if there is a scroll bar, and we scroll off lets move it.
 	if ( m_pScroller->IsVisible() )
@@ -2397,10 +2189,6 @@ void Menu::OnCursorExitedMenuItem(int VPanel)
 //-----------------------------------------------------------------------------
 void Menu::MoveAlongMenuItemList(int direction, int loopCount)
 {
-	// Early out if no menu items to scroll through
-	if (m_MenuItems.Count() <= 0)
-		return;
-
 	int itemID = m_iCurrentlySelectedItemID;
 	int row = m_SortedItems.Find(itemID);
 	row += direction;
@@ -2702,33 +2490,3 @@ void Menu::Validate( CValidator &validator, char *pchName )
 	validator.Pop();
 }
 #endif // DBGFLAG_VALIDATE
-
-
-MenuBuilder::MenuBuilder( Menu *pMenu, Panel *pActionTarget )
-	: m_pMenu( pMenu )
-	, m_pActionTarget( pActionTarget )
-	, m_pszLastCategory( NULL )
-{}
-
-MenuItem* MenuBuilder::AddMenuItem( const char *pszButtonText, const char *pszCommand, const char *pszCategoryName )
-{
-	AddSepratorIfNeeded( pszCategoryName );
-	return m_pMenu->GetMenuItem( m_pMenu->AddMenuItem( pszButtonText, new KeyValues( pszCommand ), m_pActionTarget ) );
-}
-
-MenuItem* MenuBuilder::AddCascadingMenuItem( const char *pszButtonText, Menu *pSubMenu, const char *pszCategoryName )
-{
-	AddSepratorIfNeeded( pszCategoryName );
-	return m_pMenu->GetMenuItem( m_pMenu->AddCascadingMenuItem( pszButtonText, m_pActionTarget, pSubMenu ) );
-}
-
-void MenuBuilder::AddSepratorIfNeeded( const char *pszCategoryName )
-{
-	// Add a separator if the categories are different
-	if ( m_pszLastCategory && V_stricmp( pszCategoryName, m_pszLastCategory ) != 0 )
-	{
-		m_pMenu->AddSeparator();
-	}
-
-	m_pszLastCategory = pszCategoryName;
-}

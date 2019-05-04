@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
 //
 // Purpose: 
 //
@@ -6,19 +6,12 @@
 
 #include "vgui_controls/subrectimage.h"
 #include "tier0/dbg.h"
-#include "vgui/ISurface.h"
-#include "vgui_controls/Controls.h"
-
-// NOTE: This has to be the last file included!
-#include "tier0/memdbgon.h"
+#include "vgui/isurface.h"
+#include "vgui_controls/controls.h"
 
 
 using namespace vgui;
 
-// Officially the invalid texture ID is zero, but -1 is used in many
-// places, and changing it carries some risk. Adding a named constant
-// for this file avoids warnings and makes future changes easier.
-const HTexture SUBRECT_INVALID_TEXTURE = (HTexture)-1;
 
 //-----------------------------------------------------------------------------
 // Constructor, destructor
@@ -41,7 +34,7 @@ CSubRectImage::CSubRectImage( const char *filename, bool hardwareFiltered, int s
 
 	Q_snprintf( _filename, size, "vgui/%s", filename );
 
-	_id = SUBRECT_INVALID_TEXTURE;
+	_id = 0;
 	_uploaded = false;
 	_color = Color(255, 255, 255, 255);
 	_pos[0] = _pos[1] = 0;
@@ -53,12 +46,6 @@ CSubRectImage::CSubRectImage( const char *filename, bool hardwareFiltered, int s
 
 CSubRectImage::~CSubRectImage()
 {
-	if ( vgui::surface() && _id != SUBRECT_INVALID_TEXTURE )
-	{
-		vgui::surface()->DestroyTextureID( _id );
-		_id = SUBRECT_INVALID_TEXTURE;
-	}
-
 	if ( _filename )
 	{
 		free( _filename );
@@ -85,10 +72,7 @@ void CSubRectImage::GetContentSize(int &wide, int &tall)
 	if (!_valid)
 		return;
 
-	if ( _id != SUBRECT_INVALID_TEXTURE )
-	{
-		surface()->DrawGetTextureSize(_id, wide, tall);
-	}
+	surface()->DrawGetTextureSize(_id, wide, tall);
 }
 
 //-----------------------------------------------------------------------------
@@ -135,7 +119,7 @@ void CSubRectImage::Paint()
 		return;
 
 	// if we don't have an _id then lets make one
-	if ( _id == SUBRECT_INVALID_TEXTURE )
+	if ( !_id )
 	{
 		_id = surface()->CreateNewTextureID();
 	}
@@ -184,7 +168,7 @@ void CSubRectImage::ForceUpload()
 	if ( !_valid || _uploaded )
 		return;
 
-	if ( _id == SUBRECT_INVALID_TEXTURE )
+	if ( !_id )
 	{
 		_id = surface()->CreateNewTextureID( false );
 	}

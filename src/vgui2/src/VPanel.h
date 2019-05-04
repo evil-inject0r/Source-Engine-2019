@@ -70,7 +70,6 @@ public:
 	virtual void SetParent(VPanel *newParent);
 	virtual int GetChildCount();
 	virtual VPanel *GetChild(int index);
-	virtual CUtlVector<VPanel*> &GetChildren();
 	virtual VPanel *GetParent();
 	virtual void MoveToFront();
 	virtual void MoveToBack();

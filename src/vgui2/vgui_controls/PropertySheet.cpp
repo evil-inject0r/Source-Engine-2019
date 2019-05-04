@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -46,7 +46,6 @@ public:
 	{
 		SetBlockDragChaining( true );
 	}
-	virtual ~ContextLabel() {}
 
 	virtual void OnMousePressed( MouseCode code )
 	{
@@ -155,9 +154,6 @@ public:
 		}
 		SetMouseClickEnabled( MOUSE_RIGHT, true );
 		m_pContextLabel = m_bShowContextLabel ? new ContextLabel( this, "Context", "9" ) : NULL;
-
-		REGISTER_COLOR_AS_OVERRIDABLE( _textColor, "selectedcolor" );
-		REGISTER_COLOR_AS_OVERRIDABLE( _dimTextColor, "unselectedcolor" );
 	}
 
 	~PageTab()
@@ -350,21 +346,6 @@ public:
 		}
 	}
 
-	virtual void ApplySettings( KeyValues *inResourceData )
-	{
-		const char *pBorder = inResourceData->GetString("activeborder_override", "");
-		if (*pBorder)
-		{
-			m_pActiveBorder = scheme()->GetIScheme(GetScheme())->GetBorder( pBorder );
-		}
-		pBorder = inResourceData->GetString("normalborder_override", "");
-		if (*pBorder)
-		{
-			m_pNormalBorder = scheme()->GetIScheme(GetScheme())->GetBorder( pBorder );
-		}
-		BaseClass::ApplySettings(inResourceData);
-	}
-
 	virtual void OnCommand( char const *cmd )
 	{
 		if ( !Q_stricmp( cmd, "ShowContextMenu" ) )
@@ -402,15 +383,8 @@ public:
 	virtual void SetActive(bool state)
 	{
 		_active = state;
-		SetZPos( state ? 100 : 0 );
 		InvalidateLayout();
 		Repaint();
-	}
-
-	virtual void SetTabWidth( int iWidth )
-	{
-		m_bMaxTabWidth = iWidth;
-		InvalidateLayout();
 	}
 
     virtual bool CanBeDefaultButton(void)
@@ -476,7 +450,6 @@ public:
 	}
 };
 
-
 }; // namespace vgui
 
 //-----------------------------------------------------------------------------
@@ -498,9 +471,6 @@ PropertySheet::PropertySheet(
 	m_bSmallTabs = false;
 	m_tabFont = 0;
 	m_bDraggableTabs = draggableTabs;
-	m_pTabKV = NULL;
-	m_iTabHeight = 0;
-    m_iTabHeightSmall = 0;
 
 	if ( m_bDraggableTabs )
 	{
@@ -527,9 +497,6 @@ PropertySheet::PropertySheet(Panel *parent, const char *panelName, ComboBox *com
 	m_bSmallTabs = false;
 	m_tabFont = 0;
 	m_bDraggableTabs = false;
-	m_pTabKV = NULL;
-	m_iTabHeight = 0;
-    m_iTabHeightSmall = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -640,12 +607,6 @@ void PropertySheet::AddPage(Panel *page, const char *title, char const *imageNam
 	{
 		_combo->AddItem(title, NULL);
 	}
-
-	if ( m_pTabKV )
-	{
-		tab->ApplySettings( m_pTabKV );
-	}
-
 	m_PageTabs.AddToTail(tab);
 
 	Page_t info;
@@ -691,18 +652,6 @@ void PropertySheet::SetActivePage(Panel *page)
 //-----------------------------------------------------------------------------
 void PropertySheet::SetTabWidth(int pixels)
 {
-	if ( pixels < 0 )
-	{
-		if( !_activeTab )
-			return;
-
-		int nTall;
-		_activeTab->GetContentSize( pixels, nTall );
-	}
-
-	if ( _tabWidth == pixels )
-		return;
-
 	_tabWidth = pixels;
 	InvalidateLayout();
 }
@@ -759,7 +708,7 @@ int PropertySheet::GetNumPages()
 // Purpose: returns the name contained in the active tab
 // Input  : a text buffer to contain the output 
 //-----------------------------------------------------------------------------
-void PropertySheet::GetActiveTabTitle (char *textOut, int bufferLen )
+void PropertySheet::GetActiveTabTitle(char *textOut, int bufferLen)
 {
 	if(_activeTab) _activeTab->GetText(textOut, bufferLen);
 }
@@ -768,25 +717,14 @@ void PropertySheet::GetActiveTabTitle (char *textOut, int bufferLen )
 // Purpose: returns the name contained in the active tab
 // Input  : a text buffer to contain the output 
 //-----------------------------------------------------------------------------
-bool PropertySheet::GetTabTitle( int i, char *textOut, int bufferLen )
+bool PropertySheet::GetTabTitle(int i, char *textOut, int bufferLen)
 {
-	if ( i < 0 || i >= m_PageTabs.Count() ) 
+	if (i < 0 && i > m_PageTabs.Count()) 
 	{
 		return false;
 	}
 
 	m_PageTabs[i]->GetText(textOut, bufferLen);
-	return true;
-}
-
-bool PropertySheet::SetTabTitle( int i, char *pchTitle )
-{
-	if ( i < 0 || i >= m_PageTabs.Count() ) 
-	{
-		return false;
-	}
-
-	m_PageTabs[ i ]->SetText( pchTitle );
 	return true;
 }
 
@@ -898,70 +836,6 @@ void PropertySheet::ApplySchemeSettings(IScheme *pScheme)
 	m_flPageTransitionEffectTime = atof(pScheme->GetResourceString("PropertySheet.TransitionEffectTime"));
 
 	m_tabFont = pScheme->GetFont( m_bSmallTabs ? "DefaultVerySmall" : "Default" );
-
-	if ( m_pTabKV )
-	{
-		for (int i = 0; i < m_PageTabs.Count(); i++)
-		{
-			m_PageTabs[i]->ApplySettings( m_pTabKV );
-		}
-	}
-
-
-	//=============================================================================
-	// HPE_BEGIN:
-	// [tj] Here, we used to use a single size variable and overwrite it when we scaled.
-	//		This led to problems when we changes resolutions, so now we recalcuate the absolute 
-	//      size from the relative size each time (based on proportionality)
-	//=============================================================================
-	if ( IsProportional() )
-	{
-		m_iTabHeight = scheme()->GetProportionalScaledValueEx( GetScheme(), m_iSpecifiedTabHeight );
-		m_iTabHeightSmall = scheme()->GetProportionalScaledValueEx( GetScheme(), m_iSpecifiedTabHeightSmall );
-	}
-	else
-	{
-		m_iTabHeight = m_iSpecifiedTabHeight;
-		m_iTabHeightSmall = m_iSpecifiedTabHeightSmall;
-	}
-	//=============================================================================
-	// HPE_END
-	//=============================================================================
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void PropertySheet::ApplySettings(KeyValues *inResourceData)
-{
-	BaseClass::ApplySettings(inResourceData);
-
-	KeyValues *pTabKV = inResourceData->FindKey( "tabskv" );
-	if ( pTabKV )
-	{
-		if ( m_pTabKV )
-		{
-			m_pTabKV->deleteThis();
-		}
-		m_pTabKV = new KeyValues("tabkv");
-		pTabKV->CopySubkeys( m_pTabKV );
-	}
-
-	KeyValues *pTabWidthKV = inResourceData->FindKey( "tabwidth" );
-	if ( pTabWidthKV )
-	{
-		_tabWidth = scheme()->GetProportionalScaledValueEx(GetScheme(), pTabWidthKV->GetInt());
-		for (int i = 0; i < m_PageTabs.Count(); i++)
-		{
-			m_PageTabs[i]->SetTabWidth( _tabWidth );
-		}
-	}
-
-	KeyValues *pTransitionKV = inResourceData->FindKey( "transition_time" );
-	if ( pTransitionKV )
-	{
-		m_flPageTransitionEffectTime = pTransitionKV->GetFloat();
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -998,7 +872,7 @@ void PropertySheet::PerformLayout()
 	GetBounds(x, y, wide, tall);
 	if (_activePage)
 	{
-		int tabHeight = IsSmallTabs() ? m_iTabHeightSmall : m_iTabHeight;
+		int tabHeight = IsSmallTabs() ? 14 : 28;
 
 		if(_showTabs)
 		{
@@ -1015,28 +889,17 @@ void PropertySheet::PerformLayout()
 	int xtab;
 	int limit = m_PageTabs.Count();
 
-	xtab = m_iTabXIndent;
+	xtab = 0;
 
 	// draw the visible tabs
 	if (_showTabs)
 	{
 		for (int i = 0; i < limit; i++)
 		{
-			int tabHeight = IsSmallTabs() ? (m_iTabHeightSmall-1) : (m_iTabHeight-1);
+			int tabHeight = IsSmallTabs() ? 13 : 27;
 
             int width, tall;
             m_PageTabs[i]->GetSize(width, tall);
-
-			if ( m_bTabFitText )
-			{
-				m_PageTabs[i]->SizeToContents();
-				width = m_PageTabs[i]->GetWide();
-
-				int iXInset, iYInset;
-				m_PageTabs[i]->GetTextInset( &iXInset, &iYInset );
-				width += (iXInset * 2);
-			}
-
 			if (m_PageTabs[i] == _activeTab)
 			{
 				// active tab is taller
@@ -1047,7 +910,7 @@ void PropertySheet::PerformLayout()
 				m_PageTabs[i]->SetBounds(xtab, 4, width, tabHeight - 2);
 			}
 			m_PageTabs[i]->SetVisible(true);
-			xtab += (width + 1) + m_iTabXDelta;
+			xtab += (width + 1);
 		}
 	}
 	else
@@ -1094,7 +957,7 @@ void PropertySheet::OnTabPressed(Panel *panel)
 //-----------------------------------------------------------------------------
 Panel *PropertySheet::GetPage(int i) 
 {
-	if(i<0 || i>=m_Pages.Count()) 
+	if(i<0 && i>m_Pages.Count()) 
 	{
 		return NULL;
 	}
@@ -1148,15 +1011,6 @@ void PropertySheet::RemoveAllPages()
 	for ( int i = c - 1; i >= 0 ; --i )
 	{
 		RemovePage( m_Pages[ i ].page );
-	}
-}
-
-void PropertySheet::DeleteAllPages()
-{
-	int c = m_Pages.Count();
-	for ( int i = c - 1; i >= 0 ; --i )
-	{
-		DeletePage( m_Pages[ i ].page );
 	}
 }
 
@@ -1223,15 +1077,7 @@ void PropertySheet::ChangeActiveTab( int index )
 		if ( m_Pages.Count() > 0 )
 		{
 			_activePage = NULL;
-
-			if ( index < 0 )
-			{
-				ChangeActiveTab( m_Pages.Count() - 1 );
-			}
-			else
-			{
-				ChangeActiveTab( 0 );
-			}
+			ChangeActiveTab( 0 );
 		}
 		return;
 	}
@@ -1380,13 +1226,13 @@ void PropertySheet::OnOpenContextMenu( KeyValues *params )
 //-----------------------------------------------------------------------------
 // Purpose: Handle key presses, through tabs.
 //-----------------------------------------------------------------------------
-void PropertySheet::OnKeyCodePressed(KeyCode code)
+void PropertySheet::OnKeyCodeTyped(KeyCode code)
 {
 	bool shift = (input()->IsKeyDown(KEY_LSHIFT) || input()->IsKeyDown(KEY_RSHIFT));
 	bool ctrl = (input()->IsKeyDown(KEY_LCONTROL) || input()->IsKeyDown(KEY_RCONTROL));
 	bool alt = (input()->IsKeyDown(KEY_LALT) || input()->IsKeyDown(KEY_RALT));
 	
-	if ( ctrl && shift && alt && code == KEY_B )
+	if ( ctrl && shift && alt && code == KEY_B)
 	{
 		// enable build mode
 		EditablePanel *ep = dynamic_cast< EditablePanel * >( GetActivePage() );
@@ -1399,35 +1245,27 @@ void PropertySheet::OnKeyCodePressed(KeyCode code)
 
 	if ( IsKBNavigationEnabled() )
 	{
-		ButtonCode_t nButtonCode = GetBaseButtonCode( code );
-
-		switch ( nButtonCode )
+		switch (code)
 		{
 			// for now left and right arrows just open or close submenus if they are there.
 		case KEY_RIGHT:
-		case KEY_XBUTTON_RIGHT:
-		case KEY_XSTICK1_RIGHT:
-		case KEY_XSTICK2_RIGHT:
 			{
 				ChangeActiveTab(_activeTabIndex+1);
 				break;
 			}
 		case KEY_LEFT:
-		case KEY_XBUTTON_LEFT:
-		case KEY_XSTICK1_LEFT:
-		case KEY_XSTICK2_LEFT:
 			{
 				ChangeActiveTab(_activeTabIndex-1);
 				break;
 			}
 		default:
-			BaseClass::OnKeyCodePressed(code);
+			BaseClass::OnKeyCodeTyped(code);
 			break;
 		}
 	}
 	else
 	{
-		BaseClass::OnKeyCodePressed(code);
+		BaseClass::OnKeyCodeTyped(code);
 	}
 }
 
@@ -1475,13 +1313,13 @@ void PropertySheet::OnApplyButtonEnable()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void PropertySheet::OnCurrentDefaultButtonSet( vgui::VPANEL defaultButton )
+void PropertySheet::OnCurrentDefaultButtonSet(Panel *defaultButton)
 {
 	// forward the message up
 	if (GetVParent())
 	{
 		KeyValues *msg = new KeyValues("CurrentDefaultButtonSet");
-		msg->SetInt("button", ivgui()->PanelToHandle( defaultButton ) );
+		msg->SetPtr("button", defaultButton);
 		PostMessage(GetVParent(), msg);
 	}
 }
@@ -1489,13 +1327,13 @@ void PropertySheet::OnCurrentDefaultButtonSet( vgui::VPANEL defaultButton )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void PropertySheet::OnDefaultButtonSet( VPANEL defaultButton )
+void PropertySheet::OnDefaultButtonSet(Panel *defaultButton)
 {
 	// forward the message up
 	if (GetVParent())
 	{
 		KeyValues *msg = new KeyValues("DefaultButtonSet");
-		msg->SetInt("button", ivgui()->PanelToHandle( defaultButton ) );
+		msg->SetPtr("button", defaultButton);
 		PostMessage(GetVParent(), msg);
 	}
 }
@@ -1578,7 +1416,7 @@ bool PropertySheet::IsDroppable( CUtlVector< KeyValues * >& msglist )
 	input()->GetCursorPos( mx, my );
 	ScreenToLocal( mx, my );
 
-	int tabHeight = IsSmallTabs() ? m_iTabHeightSmall : m_iTabHeight;
+	int tabHeight = IsSmallTabs() ? 14 : 28;
 	if ( my > tabHeight )
 		return false;
 
@@ -1602,7 +1440,7 @@ void PropertySheet::OnDroppablePanelPaint( CUtlVector< KeyValues * >& msglist, C
 
 	GetSize( w, h );
 
-	int tabHeight = IsSmallTabs() ? m_iTabHeightSmall : m_iTabHeight;
+	int tabHeight = IsSmallTabs() ? 14 : 28;
 	h = tabHeight + 4;
 
 	x = y = 0;

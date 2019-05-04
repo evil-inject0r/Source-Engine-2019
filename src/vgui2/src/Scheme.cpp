@@ -150,7 +150,7 @@ public:
 	virtual int GetProportionalScaledValueEx( HScheme scheme, int normalizedValue );
 	virtual int GetProportionalNormalizedValueEx( HScheme scheme, int scaledValue );
 
-	virtual bool DeleteImage( const char *pImageName );
+	virtual void DeleteImage( const char *pImageName );
 
 	// gets the proportional coordinates for doing screen-size independant panel layouts
 	// use these for font, image and panel size scaling (they all use the pixel height of the display for scaling)
@@ -603,7 +603,7 @@ void CScheme::LoadFonts()
 		const char *fontFile = kv->GetString();
 		if (fontFile && *fontFile)
 		{
-			g_pSurface->AddCustomFontFile( kv->GetName(), fontFile );
+			g_pSurface->AddCustomFontFile( fontFile );
 		}
 	}
 
@@ -1048,10 +1048,10 @@ HTexture CSchemeManager::GetImageID(const char *imageName, bool hardwareFiltered
 //-----------------------------------------------------------------------------
 // Delete a managed image
 //-----------------------------------------------------------------------------
-bool CSchemeManager::DeleteImage( const char *pImageName )
+void CSchemeManager::DeleteImage( const char *pImageName )
 {
 	if ( !pImageName )
-		return false;
+		return;
 
 	// set up to search for the bitmap
 	CachedBitmapHandle_t searchBitmap;
@@ -1063,9 +1063,7 @@ bool CSchemeManager::DeleteImage( const char *pImageName )
 	{
 		delete m_Bitmaps[i].bitmap;	
 		m_Bitmaps.RemoveAt( i );
-		return true;
 	}
-	return false;
 }
 
 //-----------------------------------------------------------------------------

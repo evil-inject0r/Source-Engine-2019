@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -34,7 +34,6 @@ class CTreeViewListControl : public vgui::Panel
 public:
 
 	CTreeViewListControl( vgui::Panel *pParent, const char *pName );
-	virtual ~CTreeViewListControl() {}
 
 	// Set the tree view to be displayed on the left. If this isn't set, then nothing displays in here.
 	virtual void SetTreeView( vgui::TreeView *pTree );

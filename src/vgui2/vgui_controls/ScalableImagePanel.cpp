@@ -54,7 +54,6 @@ ScalableImagePanel::~ScalableImagePanel()
 
 	if ( vgui::surface() && m_iTextureID != -1 )
 	{
-		vgui::surface()->DestroyTextureID( m_iTextureID );
 		m_iTextureID = -1;
 	}
 }
