@@ -333,7 +333,7 @@ static bool FileSystem_GetBaseDir( char *baseDir, int baseDirLen )
 {
 	if ( FileSystem_GetExecutableDir( baseDir, baseDirLen ) )
 	{
-		V_strncpy(baseDir, baseDir, strlen(baseDir) - strlen("bin\\" PLATFORM_SUBDIR));
+		V_strncpy(baseDir, baseDir, V_strlen(baseDir) - V_strlen("bin\\" PLATFORM_SUBDIR));
 		return true;
 	}
 	
