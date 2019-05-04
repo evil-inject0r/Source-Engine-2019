@@ -39,7 +39,7 @@ public:
 
 private:
 	DECLARE_MESSAGE_MAP()
-	afx_msg LONG OnStartIdle(UINT, LONG);
+	afx_msg LONG OnStartIdle(UINT_PTR, LONG);
 
 	CWinIdle m_cWinIdle;
 };
