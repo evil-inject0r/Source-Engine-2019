@@ -86,7 +86,7 @@ $Project "ServerBrowser"
 
 	$Folder "Link Libraries"
 	{
-        $Lib    steam
+        $Lib    steam_api
 		$Lib	tier2
 		$Lib	tier3
 		$Lib	vgui_controls
