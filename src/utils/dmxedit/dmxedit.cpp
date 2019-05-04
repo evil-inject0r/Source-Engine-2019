@@ -60,6 +60,9 @@
 // Local includes
 #include "dmxedit.h"
 
+// https://stackoverflow.com/a/33830712
+FILE _iob[] = { *stdin, *stdout, *stderr };
+extern "C" FILE* __cdecl __iob_func(void) { return _iob; }
 
 //-----------------------------------------------------------------------------
 // Standard spew functions
