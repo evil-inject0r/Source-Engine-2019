@@ -535,9 +535,7 @@ public:
 		int nAAQuality = pKeyValues->GetInt( "ConVar.mat_aaquality", 0 );
 		int nRenderToTextureShadows = pKeyValues->GetInt( "ConVar.r_shadowrendertotexture", 0 );
 		int nShadowDepthTextureShadows = pKeyValues->GetInt( "ConVar.r_flashlightdepthtexture", 0 );
-#ifndef _X360
 		int nWaterUseRealtimeReflection = pKeyValues->GetInt( "ConVar.r_waterforceexpensive", 0 );
-#endif
 		int nWaterUseEntityReflection = pKeyValues->GetInt( "ConVar.r_waterforcereflectentities", 0 );
 		int nMatVSync = pKeyValues->GetInt( "ConVar.mat_vsync", 1 );
 		int nRootLOD = pKeyValues->GetInt( "ConVar.r_rootlod", 0 );
@@ -603,9 +601,7 @@ public:
 
 		SetComboItemAsRecommended( m_pShaderDetail, nReduceFillRate ? 0 : 1 );
 		
-#ifndef _X360
 		if ( nWaterUseRealtimeReflection )
-#endif
 		{
 			if ( nWaterUseEntityReflection )
 			{
@@ -616,12 +612,10 @@ public:
 				SetComboItemAsRecommended( m_pWaterDetail, 1 );
 			}
 		}
-#ifndef _X360
 		else
 		{
 			SetComboItemAsRecommended( m_pWaterDetail, 0 );
 		}
-#endif
 
 		SetComboItemAsRecommended( m_pVSync, nMatVSync != 0 );
 
@@ -709,21 +703,15 @@ public:
 		{
 		default:
 		case 0:
-#ifndef _X360
 			ApplyChangesToConVar( "r_waterforceexpensive", false );
-#endif
 			ApplyChangesToConVar( "r_waterforcereflectentities", false );
 			break;
 		case 1:
-#ifndef _X360
 			ApplyChangesToConVar( "r_waterforceexpensive", true );
-#endif
 			ApplyChangesToConVar( "r_waterforcereflectentities", false );
 			break;
 		case 2:
-#ifndef _X360
 			ApplyChangesToConVar( "r_waterforceexpensive", true );
-#endif
 			ApplyChangesToConVar( "r_waterforcereflectentities", true );
 			break;
 		}
@@ -746,9 +734,7 @@ public:
 		ConVarRef mat_aaquality( "mat_aaquality" );
 		ConVarRef mat_vsync( "mat_vsync" );
 		ConVarRef r_flashlightdepthtexture( "r_flashlightdepthtexture" );
-#ifndef _X360
 		ConVarRef r_waterforceexpensive( "r_waterforceexpensive" );
-#endif
 		ConVarRef r_waterforcereflectentities( "r_waterforcereflectentities" );
 		ConVarRef mat_reducefillrate("mat_reducefillrate" );
 		ConVarRef mat_hdr_level( "mat_hdr_level" );
@@ -811,9 +797,7 @@ public:
 		int nMSAAMode = FindMSAAMode( nAASamples, nAAQuality );
 		m_pAntialiasingMode->ActivateItem( nMSAAMode );
 		
-#ifndef _X360
 		if ( r_waterforceexpensive.GetBool() )
-#endif
 		{
 			if ( r_waterforcereflectentities.GetBool() )
 			{
@@ -824,12 +808,10 @@ public:
 				m_pWaterDetail->ActivateItem( 1 );
 			}
 		}
-#ifndef _X360
 		else
 		{
 			m_pWaterDetail->ActivateItem( 0 );
 		}
-#endif
 
 		m_pVSync->ActivateItem( mat_vsync.GetInt() );
 

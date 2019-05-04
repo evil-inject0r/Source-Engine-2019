@@ -19,12 +19,6 @@
 #include "UtlVector.h"
 #include "tier1/CommandBuffer.h"
 
-#include "ixboxsystem.h"
-
-#if !defined( _X360 )
-#include "xbox/xboxstubs.h"
-#endif
-
 enum
 {
 	DIALOG_STACK_IDX_STANDARD,
@@ -213,9 +207,7 @@ public:
 	void OnOpenNewGameDialog( const char *chapter = NULL );
 	void OnOpenBonusMapsDialog();
 	void OnOpenLoadGameDialog();
-	void OnOpenLoadGameDialog_Xbox();
 	void OnOpenSaveGameDialog();
-	void OnOpenSaveGameDialog_Xbox();
 	void OnOpenServerBrowser();
 	void OnOpenFriendsDialog();
 	void OnOpenDemoDialog();
@@ -226,12 +218,9 @@ public:
 	void OnOpenPlayerListDialog();
 	void OnOpenBenchmarkDialog();
 	void OnOpenOptionsDialog();
-	void OnOpenOptionsDialog_Xbox();
 	void OnOpenLoadCommentaryDialog();
 	void OpenLoadSingleplayerCommentaryDialog();
 	void OnOpenAchievementsDialog();
-	void OnOpenAchievementsDialog_Xbox();
-	void OnOpenControllerDialog();
 
 	// Xbox 360
 	CMatchmakingBasePanel* GetMatchmakingBasePanel();
@@ -347,11 +336,8 @@ private:
 	vgui::DHANDLE<vgui::Frame> m_hNewGameDialog;
 	vgui::DHANDLE<vgui::Frame> m_hBonusMapsDialog;
 	vgui::DHANDLE<vgui::Frame> m_hLoadGameDialog;
-	vgui::DHANDLE<vgui::Frame> m_hLoadGameDialog_Xbox;
 	vgui::DHANDLE<vgui::Frame> m_hSaveGameDialog;
-	vgui::DHANDLE<vgui::Frame> m_hSaveGameDialog_Xbox;
 	vgui::DHANDLE<vgui::PropertyDialog> m_hOptionsDialog;
-	vgui::DHANDLE<vgui::Frame> m_hOptionsDialog_Xbox;
 	vgui::DHANDLE<vgui::Frame> m_hCreateMultiplayerGameDialog;
 	//vgui::DHANDLE<vgui::Frame> m_hDemoPlayerDialog;
 	vgui::DHANDLE<vgui::Frame> m_hChangeGameDialog;
@@ -362,7 +348,6 @@ private:
 
 	// Xbox 360
 	vgui::DHANDLE<vgui::Frame> m_hMatchmakingBasePanel;
-	vgui::DHANDLE<vgui::Frame> m_hControllerDialog;
 
 	EBackgroundState m_eBackgroundState;
 
@@ -397,7 +382,6 @@ private:
 	// Storage device changing vars
 	bool			m_bWaitingForStorageDeviceHandle;
 	bool			m_bNeedStorageDeviceHandle;
-	AsyncHandle_t	m_hStorageDeviceChangeHandle;
 	uint			m_iStorageID;
 	int				*m_pStorageDeviceValidatedNotify;
 

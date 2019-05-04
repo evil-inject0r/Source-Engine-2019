@@ -54,7 +54,6 @@ using namespace vgui;
 #include "PlayerListDialog.h"
 #include "BenchmarkDialog.h"
 #include "LoadCommentaryDialog.h"
-#include "ControllerDialog.h"
 #include "BonusMapsDatabase.h"
 #include "engine/IEngineSound.h"
 #include "bitbuf.h"
@@ -66,11 +65,6 @@ using namespace vgui;
 #include "OptionsSubAudio.h"
 #include "hl2orange.spa.h"
 #include "iachievementmgr.h"
-#if defined( _X360 )
-#include "xbox/xbox_launch.h"
-#else
-#include "xbox/xboxstubs.h"
-#endif
 
 #include "../engine/imatchmaking.h"
 #include "tier1/UtlString.h"
@@ -597,44 +591,9 @@ CBasePanel::CBasePanel() : Panel(NULL, "BaseGameUIPanel")
 		m_hNewGameDialog = new CNewGameDialog( this, false );
 		m_hNewGameDialog->MarkForDeletion();
 		g_bIsCreatingNewGameMenuForPreFetching = false;
-
-		m_hOptionsDialog_Xbox = new COptionsDialogXbox( this );
-		m_hOptionsDialog_Xbox->MarkForDeletion();
-
-		m_hControllerDialog = new CControllerDialog( this );
-		m_hControllerDialog->MarkForDeletion();
-		
+				
 		ArmFirstMenuItem();
 		m_pConsoleAnimationController->StartAnimationSequence( "InitializeUILayout" );
-	}
-
-	// Record data used for rich presence updates
-	if ( IsX360() )
-	{
-		// Get our active mod directory name
-		const char *pGameName = CommandLine()->ParmValue( "-game", "hl2" );;
-
-		// Set the game we're playing
-		m_iGameID = CONTEXT_GAME_GAME_HALF_LIFE_2;
-		m_bSinglePlayer = true;
-		if ( Q_stristr( pGameName, "episodic" ) )
-		{
-			m_iGameID = CONTEXT_GAME_GAME_EPISODE_ONE;
-		}
-		else if ( Q_stristr( pGameName, "ep2" ) )
-		{
-			m_iGameID = CONTEXT_GAME_GAME_EPISODE_TWO;
-		}
-		else if ( Q_stristr( pGameName, "portal" ) )
-		{
-			m_iGameID = CONTEXT_GAME_GAME_PORTAL;
-		}
-		else if ( Q_stristr( pGameName, "tf" ) )
-		{
-			m_iGameID = CONTEXT_GAME_GAME_TEAM_FORTRESS;
-			m_bSinglePlayer = false;
-		}
-
 	}
 }
 
@@ -1329,50 +1288,6 @@ void CBasePanel::RunFrame()
 	}
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Tells XBox Live our user is in the current game's menu
-//-----------------------------------------------------------------------------
-void CBasePanel::UpdateRichPresenceInfo()
-{
-#if defined( _X360 )
-	// For all other users logged into this console (not primary), set to idle to satisfy cert
-	for( uint i = 0; i < XUSER_MAX_COUNT; ++i )
-	{
-		XUSER_SIGNIN_STATE State = XUserGetSigninState( i );
-
-		if( State != eXUserSigninState_NotSignedIn )
-		{
-			if ( i != XBX_GetPrimaryUserId() )
-			{
-				// Set rich presence as 'idle' for users logged in that can't participate in orange box.
-				if ( !xboxsystem->UserSetContext( i, X_CONTEXT_PRESENCE, CONTEXT_PRESENCE_IDLE, true ) )
-				{
-					Warning( "BasePanel: UserSetContext failed.\n" );
-				}
-			}
-		}
-	}
-
-	if ( !GameUI().IsInLevel() )
-	{
-		if ( !xboxsystem->UserSetContext( XBX_GetPrimaryUserId(), CONTEXT_GAME, m_iGameID, true ) )
-		{
-			Warning( "BasePanel: UserSetContext failed.\n" );
-		}
-		if ( !xboxsystem->UserSetContext( XBX_GetPrimaryUserId(), X_CONTEXT_PRESENCE, CONTEXT_PRESENCE_MENU, true ) )
-		{
-			Warning( "BasePanel: UserSetContext failed.\n" );
-		}
-		if ( m_bSinglePlayer )
-		{
-			if ( !xboxsystem->UserSetContext( XBX_GetPrimaryUserId(), X_CONTEXT_GAME_MODE, CONTEXT_GAME_MODE_SINGLEPLAYER, true ) )
-			{
-				Warning( "BasePanel: UserSetContext failed.\n" );
-			}
-		}
-	}
-#endif
-}
 
 //-----------------------------------------------------------------------------
 // Purpose: Lays out the position of the taskbar
@@ -1666,20 +1581,12 @@ void CBasePanel::RunMenuCommand(const char *command)
 		{
 			OnOpenLoadGameDialog();
 		}
-		else
-		{
-			OnOpenLoadGameDialog_Xbox();
-		}
 	}
 	else if ( !Q_stricmp( command, "OpenSaveGameDialog" ) )
 	{
 		if ( !GameUI().IsConsoleUI() )
 		{
 			OnOpenSaveGameDialog();
-		}
-		else
-		{
-			OnOpenSaveGameDialog_Xbox();
 		}
 	}
 	else if ( !Q_stricmp( command, "OpenBonusMapsDialog" ) )
@@ -1691,17 +1598,6 @@ void CBasePanel::RunMenuCommand(const char *command)
 		if ( !GameUI().IsConsoleUI() )
 		{
 			OnOpenOptionsDialog();
-		}
-		else
-		{
-			OnOpenOptionsDialog_Xbox();
-		}
-	}
-	else if ( !Q_stricmp( command, "OpenControllerDialog" ) )
-	{
-		if ( GameUI().IsConsoleUI() )
-		{
-			OnOpenControllerDialog();
 		}
 	}
 	else if ( !Q_stricmp( command, "OpenBenchmarkDialog" ) )
@@ -1756,20 +1652,6 @@ void CBasePanel::RunMenuCommand(const char *command)
 			return;
 #endif
 		}
-		else
-		{
-			OnOpenAchievementsDialog_Xbox();
-		}
-	}
-	else if ( !Q_stricmp( command, "AchievementsDialogClosing" ) )
-	{
-		if ( IsX360() )
-		{
-			if ( m_hAchievementsDialog.Get() )
-			{
-				m_hAchievementsDialog->Close();
-			}
-		}
 	}
 	else if ( !Q_stricmp( command, "Quit" ) )
 	{
@@ -1777,42 +1659,18 @@ void CBasePanel::RunMenuCommand(const char *command)
 	}
 	else if ( !Q_stricmp( command, "QuitNoConfirm" ) )
 	{
-		if ( IsX360() )
-		{
-			// start the shutdown process
-			StartExitingProcess();
-		}
-		else
-		{		
-			// hide everything while we quit
-			SetVisible( false );
-			vgui::surface()->RestrictPaintToSinglePanel( GetVPanel() );
-			engine->ClientCmd_Unrestricted( "quit\n" );
-		}
-	}
-	else if ( !Q_stricmp( command, "QuitRestartNoConfirm" ) )
-	{
-		if ( IsX360() )
-		{
-			// start the shutdown process
-			m_bRestartSameGame = true;
-			StartExitingProcess();
-		}
+		// hide everything while we quit
+		SetVisible( false );
+		vgui::surface()->RestrictPaintToSinglePanel( GetVPanel() );
+		engine->ClientCmd_Unrestricted( "quit\n" );
 	}
 	else if ( !Q_stricmp( command, "ResumeGame" ) )
 	{
 		GameUI().HideGameUI();
 	}
 	else if ( !Q_stricmp( command, "Disconnect" ) )
-	{
-		if ( IsX360() )
-		{
-			OnOpenDisconnectConfirmationDialog();
-		}
-		else
-		{
-			engine->ClientCmd_Unrestricted( "disconnect" );
-		}
+	{		
+		engine->ClientCmd_Unrestricted( "disconnect" );
 	}
 	else if ( !Q_stricmp( command, "DisconnectNoConfirm" ) )
 	{
@@ -1871,26 +1729,6 @@ void CBasePanel::RunMenuCommand(const char *command)
 	else if ( !Q_stricmp( command, "RequiredStorageDenied" ) )
 	{
 		m_strPostPromptCommand = "";
-	}
-	else if ( !Q_stricmp( command, "StorageDeviceDenied" ) )
-	{
-		// The user doesn't care, so re-send the command they wanted and mark that we want to skip checking
-		m_bUserRefusedStorageDevice = true;
-		IssuePostPromptCommand();
-
-		// Set us as declined
-		XBX_SetStorageDeviceId( XBX_STORAGE_DECLINED );
-		m_iStorageID = XBX_INVALID_STORAGE_ID;
-
-		if ( m_pStorageDeviceValidatedNotify )
-		{
-			*m_pStorageDeviceValidatedNotify = 2;
-			m_pStorageDeviceValidatedNotify = NULL;
-		}
-	}
-	else if ( !Q_stricmp( command, "clear_storage_deviceID" ) )
-	{
-		XBX_SetStorageDeviceId( XBX_STORAGE_DECLINED );
 	}
 	else if ( !Q_stricmp( command, "RestartWithNewLanguage" ) )
 	{
@@ -2156,24 +1994,6 @@ void CBasePanel::OnCompletedAsyncDeviceAttached( CAsyncCtxOnDeviceAttached *job 
 
 	BonusMapsDatabase()->ReadBonusMapSaveData();
 
-	if ( m_hSaveGameDialog_Xbox.Get() )
-	{
-		m_hSaveGameDialog_Xbox->OnCommand( "RefreshSaveGames" );
-	}
-	if ( m_hLoadGameDialog_Xbox.Get() )
-	{
-		m_hLoadGameDialog_Xbox->OnCommand( "RefreshSaveGames" );
-	}
-	if ( m_hOptionsDialog_Xbox.Get() )
-	{
-		m_hOptionsDialog_Xbox->OnCommand( "RefreshOptions" );
-	}
-	if ( m_pStorageDeviceValidatedNotify )
-	{
-		*m_pStorageDeviceValidatedNotify = 1;
-		m_pStorageDeviceValidatedNotify = NULL;
-	}
-
 	// Finish their command
 	IssuePostPromptCommand();
 }
@@ -2183,29 +2003,6 @@ void CBasePanel::OnCompletedAsyncDeviceAttached( CAsyncCtxOnDeviceAttached *job 
 //-----------------------------------------------------------------------------
 bool CBasePanel::ValidateStorageDevice( void )
 {
-	if ( m_bUserRefusedStorageDevice == false )
-	{
-#if defined( _X360 )
-		if ( XBX_GetStorageDeviceId() == XBX_INVALID_STORAGE_ID )
-		{
-			// Try to discover content on the user's storage devices
-			DWORD nFoundDevice = xboxsystem->DiscoverUserData( XBX_GetPrimaryUserId(), COM_GetModDirectory() );
-			if ( nFoundDevice == XBX_INVALID_STORAGE_ID )
-			{
-				// They don't have a device, so ask for one
-				ShowMessageDialog( MD_PROMPT_STORAGE_DEVICE );
-				return false;
-			}
-			else
-			{
-				// Take this device
-				XBX_SetStorageDeviceId( nFoundDevice );
-				OnDeviceAttached();
-			}
-			// Fall through
-		}
-#endif
-	}
 	return true;
 }
 
@@ -2686,19 +2483,6 @@ void CBasePanel::OnOpenLoadGameDialog()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CBasePanel::OnOpenLoadGameDialog_Xbox()
-{
-	if ( !m_hLoadGameDialog_Xbox.Get() )
-	{
-		m_hLoadGameDialog_Xbox = new CLoadGameDialogXbox(this);
-		PositionDialog( m_hLoadGameDialog_Xbox );
-	}
-	m_hLoadGameDialog_Xbox->Activate();
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
 void CBasePanel::OnOpenSaveGameDialog()
 {
 	if ( !m_hSaveGameDialog.Get() )
@@ -2707,19 +2491,6 @@ void CBasePanel::OnOpenSaveGameDialog()
 		PositionDialog( m_hSaveGameDialog );
 	}
 	m_hSaveGameDialog->Activate();
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CBasePanel::OnOpenSaveGameDialog_Xbox()
-{
-	if ( !m_hSaveGameDialog_Xbox.Get() )
-	{
-		m_hSaveGameDialog_Xbox = new CSaveGameDialogXbox(this);
-		PositionDialog( m_hSaveGameDialog_Xbox );
-	}
-	m_hSaveGameDialog_Xbox->Activate();
 }
 
 //-----------------------------------------------------------------------------
@@ -2737,20 +2508,6 @@ void CBasePanel::OnOpenOptionsDialog()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CBasePanel::OnOpenOptionsDialog_Xbox()
-{
-	if ( !m_hOptionsDialog_Xbox.Get() )
-	{
-		m_hOptionsDialog_Xbox = new COptionsDialogXbox( this );
-		PositionDialog( m_hOptionsDialog_Xbox );
-	}
-
-	m_hOptionsDialog_Xbox->Activate();
-}
-
-//-----------------------------------------------------------------------------
 // Purpose: forces any changed options dialog settings to be applied immediately, if it's open
 //-----------------------------------------------------------------------------
 void CBasePanel::ApplyOptionsDialogSettings()
@@ -2759,20 +2516,6 @@ void CBasePanel::ApplyOptionsDialogSettings()
 	{
 		m_hOptionsDialog->ApplyChanges();
 	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CBasePanel::OnOpenControllerDialog()
-{
-	if ( !m_hControllerDialog.Get() )
-	{
-		m_hControllerDialog = new CControllerDialog( this );
-		PositionDialog( m_hControllerDialog );
-	}
-
-	m_hControllerDialog->Activate();
 }
 
 //-----------------------------------------------------------------------------
@@ -2894,16 +2637,6 @@ void CBasePanel::OnOpenAchievementsDialog()
 	m_hAchievementsDialog->Activate();
 }
 
-void CBasePanel::OnOpenAchievementsDialog_Xbox()
-{
-	if (!m_hAchievementsDialog.Get())
-	{
-		m_hAchievementsDialog = new CAchievementsDialog_XBox( this );
-		PositionDialog(m_hAchievementsDialog);
-	}
-	m_hAchievementsDialog->Activate();
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -3012,40 +2745,10 @@ void CBasePanel::SystemNotification( const int notification )
 
 	if ( notification == SYSTEMNOTIFY_USER_SIGNEDIN )
 	{
-#if defined( _X360 )
-		// See if it was the active user who signed in
-		uint state = XUserGetSigninState( XBX_GetPrimaryUserId() );
-		if ( state != eXUserSigninState_NotSignedIn )
-		{
-			// Reset a bunch of state
-			m_bUserRefusedSignIn = false;
-			m_bUserRefusedStorageDevice = false;
-			m_bStorageBladeShown = false;
-		}	
-		UpdateRichPresenceInfo();
-		engine->GetAchievementMgr()->DownloadUserData();
-		engine->GetAchievementMgr()->EnsureGlobalStateLoaded();
-#endif
+
 	}
 	else if ( notification == SYSTEMNOTIFY_USER_SIGNEDOUT  )
 	{
-#if defined( _X360 )
-		// See if it was the active user who signed out
-		uint state = XUserGetSigninState( XBX_GetPrimaryUserId() );
-		if ( state != eXUserSigninState_NotSignedIn )
-		{
-			return;
-		}
-
-		// Invalidate their storage ID
-		engine->OnStorageDeviceDetached();
-		m_bUserRefusedStorageDevice = false;
-		m_bUserRefusedSignIn = false;
-		m_iStorageID = XBX_INVALID_STORAGE_ID;
-		engine->GetAchievementMgr()->InitializeAchievements();
-		m_MessageDialogHandler.CloseAllMessageDialogs();
-
-#endif
 		if ( GameUI().IsInLevel() )
 		{
 			if ( m_pGameLogo )
@@ -3073,11 +2776,6 @@ void CBasePanel::SystemNotification( const int notification )
 	}
 	else if ( notification == SYSTEMNOTIFY_STORAGEDEVICES_CHANGED )
 	{
-		if ( m_hSaveGameDialog_Xbox.Get() )
-			m_hSaveGameDialog_Xbox->OnCommand( "RefreshSaveGames" );
-		if ( m_hLoadGameDialog_Xbox.Get() )
-			m_hLoadGameDialog_Xbox->OnCommand( "RefreshSaveGames" );
-
 		// FIXME: This code is incorrect, they do NOT need a storage device, it is only recommended that they do
 		if ( GameUI().IsInLevel() )
 		{
@@ -3098,57 +2796,6 @@ void CBasePanel::SystemNotification( const int notification )
 	else if ( notification == SYSTEMNOTIFY_XUICLOSED )
 	{
 		m_bXUIVisible = false;
-
-		if ( m_bWaitingForStorageDeviceHandle )
-		{
-			DWORD ret = xboxsystem->GetOverlappedResult( m_hStorageDeviceChangeHandle, NULL, true );
-			if ( ret != ERROR_IO_INCOMPLETE )
-			{
-				// Done waiting
-				xboxsystem->ReleaseAsyncHandle( m_hStorageDeviceChangeHandle );
-				
-				m_bWaitingForStorageDeviceHandle = false;
-				
-				// If we selected something, validate it
-				if ( m_iStorageID != XBX_INVALID_STORAGE_ID )
-				{
-					// Check to see if there is enough room on this storage device
-					if ( xboxsystem->DeviceCapacityAdequate( m_iStorageID, COM_GetModDirectory() ) == false )
-					{
-						ShowMessageDialog( MD_STORAGE_DEVICES_TOO_FULL, this );
-						m_bStorageBladeShown = false; // Show the blade again next time
-						m_strPostPromptCommand = ""; // Clear the buffer, we can't return
-					}
-					else
-					{
-						m_bNeedStorageDeviceHandle = false;
-
-						// Set the storage device
-						XBX_SetStorageDeviceId( m_iStorageID );
-						OnDeviceAttached();
-					}
-				}
-				else
-				{
-					if ( m_pStorageDeviceValidatedNotify )
-					{
-						*m_pStorageDeviceValidatedNotify = 2;
-						m_pStorageDeviceValidatedNotify = NULL;
-					}
-					else if ( m_bNeedStorageDeviceHandle )
-					{
-						// They didn't select a storage device!
-						// Remind them that they must pick one or the game will shut down
-						ShowMessageDialog( MD_STORAGE_DEVICES_NEEDED, this );
-					}
-					else
-					{
-						// Start off the command we queued up
-						IssuePostPromptCommand();
-					}
-				}
-			}
-		}
 		
 		// If we're waiting for the user to sign in, and check if they selected a usable profile
 		if ( m_bWaitingForUserSignIn )
@@ -3193,13 +2840,6 @@ void CBasePanel::UpdatePlayerInfo( uint64 nPlayerId, const char *pName, int nTea
 //-----------------------------------------------------------------------------
 void CBasePanel::OnChangeStorageDevice( void )
 {
-	if ( m_bWaitingForStorageDeviceHandle == false )
-	{
-		m_bWaitingForStorageDeviceHandle = true;
-		m_hStorageDeviceChangeHandle = xboxsystem->CreateAsyncHandle();
-		m_iStorageID = XBX_INVALID_STORAGE_ID;
-		xboxsystem->ShowDeviceSelector( true, &m_iStorageID, &m_hStorageDeviceChangeHandle );
-	}
 }
 
 void CBasePanel::OnCreditsFinished( void )
@@ -4336,18 +3976,6 @@ void CBasePanel::CloseBaseDialogs( void )
 	if ( m_hBonusMapsDialog.Get() )
 		m_hBonusMapsDialog->Close();
 	
-	if ( m_hControllerDialog.Get() )
-		m_hControllerDialog->Close();
-
-	if ( m_hLoadGameDialog_Xbox.Get() )
-		m_hLoadGameDialog_Xbox->Close();
-
-	if ( m_hOptionsDialog_Xbox.Get() )
-		m_hOptionsDialog_Xbox->Close();
-
-	if ( m_hSaveGameDialog_Xbox.Get() )
-		m_hSaveGameDialog_Xbox->Close();
-
 	if ( m_hLoadCommentaryDialog.Get() )
 		m_hLoadCommentaryDialog->Close();
 

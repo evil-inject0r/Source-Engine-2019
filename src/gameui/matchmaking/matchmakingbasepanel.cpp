@@ -586,13 +586,7 @@ bool CMatchmakingBasePanel::ValidateSigninAndStorage( bool bOnlineRequired, cons
 		GameUI().ShowMessageDialog( MD_NOT_ONLINE_SIGNEDIN );
 		return false;
 	}
-	else if ( !bSignedIn )
-	{
-		// Eat the input and make the user sign in
-		xboxsystem->ShowSigninUI( 1, 0 ); // One user, no special flags
-		return false;
-	}
-
+	
 	// Handle the storage device selection
 	if ( !BasePanel()->HandleStorageDeviceRequest( pIssuingCommand ) )
 		return false;
