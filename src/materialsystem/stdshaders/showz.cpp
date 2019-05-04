@@ -10,7 +10,6 @@
 #include "convar.h"
 #include "BaseVSShader.h"
 
-//#include "showz_vs11.inc"
 #include "showz_vs20.inc"
 #include "showz_ps20.inc"
 #include "showz_ps20b.inc"
