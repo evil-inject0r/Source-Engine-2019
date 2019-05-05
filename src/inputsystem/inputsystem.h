@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -16,7 +16,7 @@
 #include <windows.h>
 #include <zmouse.h>
 #include "xbox/xboxstubs.h"
-#include "../../dx9sdk/include/XInput.h"
+#include "XInput.h"
 #endif
 
 #include "inputsystem/iinputsystem.h"
@@ -27,11 +27,6 @@
 #include "bitvec.h"
 #include "tier1/utlvector.h"
 #include "tier1/utlflags.h"
-
-#if defined( _X360 )
-#include "xbox/xbox_win32stubs.h"
-#include "xbox/xbox_console.h"
-#endif
 
 //-----------------------------------------------------------------------------
 // Implementation of the input system

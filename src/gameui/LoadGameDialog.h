@@ -31,24 +31,4 @@ public:
 	virtual void OnCommand( const char *command );
 };
 
-//
-//
-//
-
-class CLoadGameDialogXbox : public CSaveGameBrowserDialog
-{
-	DECLARE_CLASS_SIMPLE( CLoadGameDialogXbox, CSaveGameBrowserDialog );
-
-public:
-					CLoadGameDialogXbox( vgui::Panel *parent );
-	virtual void	ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void	OnCommand(const char *command);
-	virtual void	PerformSelectedAction( void );
-	virtual void	PerformDeletion( void );
-	virtual void	UpdateFooterOptions( void );
-
-private:
-	void			DeleteSaveGame( const SaveGameDescription_t *pSaveDesc );
-};
-
 #endif // LOADGAMEDIALOG_H
