@@ -9086,9 +9086,6 @@ void CShaderAPIDx8::CommitVertexShaderTransforms()
 
 void CShaderAPIDx8::UpdateFixedFunctionMatrix( int iMatrix )
 {
-	if ( IsX360() )
-		return;
-
 	int matrix = MATERIAL_MODEL + iMatrix;
 	if ( FixedFunctionTransformChanged( matrix ) )
 	{
@@ -9102,9 +9099,6 @@ void CShaderAPIDx8::UpdateFixedFunctionMatrix( int iMatrix )
 
 void CShaderAPIDx8::SetFixedFunctionStateSkinningMatrices()
 {
-	if ( IsX360() )
-		return;
-
 	for( int i=1; i < g_pHardwareConfig->MaxBlendMatrices(); i++ )
 	{
 		UpdateFixedFunctionMatrix( i );
@@ -9116,9 +9110,6 @@ void CShaderAPIDx8::SetFixedFunctionStateSkinningMatrices()
 //-----------------------------------------------------------------------------
 void CShaderAPIDx8::CommitPerPassFixedFunctionTransforms()
 {
-	if ( IsX360() )
-		return;
-
 	// Update projection
 	if ( FixedFunctionTransformChanged( MATERIAL_PROJECTION ) )
 	{
@@ -9137,9 +9128,6 @@ void CShaderAPIDx8::CommitPerPassFixedFunctionTransforms()
 
 void CShaderAPIDx8::CommitFixedFunctionTransforms()
 {
-	if ( IsX360() )
-		return;
-
 	// Update view + projection
 	int i;
 	for ( i = MATERIAL_VIEW; i <= MATERIAL_PROJECTION; ++i)
@@ -9513,7 +9501,6 @@ D3DXMATRIX& CShaderAPIDx8::GetUserClipTransform( )
 
 	return m_DynamicState.m_UserClipTransform;
 }
-
 
 //-----------------------------------------------------------------------------
 // Commits user clip planes
