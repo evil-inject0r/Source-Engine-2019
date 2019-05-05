@@ -16,10 +16,9 @@ $Configuration
 	{
 		$AdditionalIncludeDirectories	"$BASE;..\include"
 		$PreprocessorDefinitions		"$BASE;DONT_PROTECT_FILEIO_FUNCTIONS"
-//		$TreatWchar_tAsBuiltinType		"No"
 	}
 
-	$Linker [$WIN32]
+	$Linker [$WINDOWS]
 	{
 		$AdditionalDependencies			"$BASE Imm32.lib Shlwapi.lib odbc32.lib odbccp32.lib winmm.lib"
 	}

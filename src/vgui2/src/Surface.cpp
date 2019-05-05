@@ -2208,11 +2208,11 @@ void CWin32Surface::SetAsToolBar(VPANEL panel, bool state)
 	{
 		if (state)
 		{
-			::SetWindowLong(PLAT(panel)->hwnd, GWL_EXSTYLE, ::GetWindowLong(PLAT(panel)->hwnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW);
+			::SetWindowLongPtr(PLAT(panel)->hwnd, GWL_EXSTYLE, ::GetWindowLong(PLAT(panel)->hwnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW);
 		}
 		else
 		{
-			::SetWindowLong(PLAT(panel)->hwnd, GWL_EXSTYLE, ::GetWindowLong(PLAT(panel)->hwnd, GWL_EXSTYLE) & ~WS_EX_TOOLWINDOW);
+			::SetWindowLongPtr(PLAT(panel)->hwnd, GWL_EXSTYLE, ::GetWindowLong(PLAT(panel)->hwnd, GWL_EXSTYLE) & ~WS_EX_TOOLWINDOW);
 		}
 	}
 }
@@ -2318,7 +2318,7 @@ void CWin32Surface::CreatePopup(VPANEL panel, bool minimised, bool showTaskbarIc
 	plat->textureDC = NULL;
 
 	::SetBkMode(plat->hdc, TRANSPARENT);
-	::SetWindowLong(plat->hwnd, GWL_USERDATA, (LONG)g_pIVgui->PanelToHandle(panel));
+	::SetWindowLongPtr(plat->hwnd, GWLP_USERDATA, (LONG)g_pIVgui->PanelToHandle(panel));
 	::SetTextAlign(plat->hdc, TA_LEFT | TA_TOP | TA_UPDATECP);
 	
 	if (!((VPanel *)panel)->IsVisible() || panel == _embeddedPanel)
@@ -2339,7 +2339,7 @@ void CWin32Surface::CreatePopup(VPANEL panel, bool minimised, bool showTaskbarIc
 	else
 	{
 		// somehow getting added twice, fundamental problem
-		_asm int 3;
+		DebugBreak();
 	}
 
 	// hack, force a windows sound to be played
@@ -2396,7 +2396,7 @@ void CWin32Surface::ReleasePanel(VPANEL panel)
 		SetPanelVisible(panel, false);
 
 		// free all the windows/bitmap/DC handles we are using
-		::SetWindowLong(plat->hwnd, GWL_USERDATA, (LONG)-1);
+		::SetWindowLongPtr(plat->hwnd, GWLP_USERDATA, (LONG)-1);
 		::SetWindowPos(plat->hwnd, HWND_BOTTOM, 0, 0, 1, 1, SWP_NOREDRAW|SWP_HIDEWINDOW);
 
 		// free the window context
@@ -3515,7 +3515,7 @@ static LRESULT CALLBACK staticProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lpara
 
 	if (staticSurfaceAvailable)
 	{
-		panel = g_pIVgui->HandleToPanel(::GetWindowLong(hwnd, GWL_USERDATA));
+		panel = g_pIVgui->HandleToPanel(::GetWindowLong(hwnd, GWLP_USERDATA));
 
 		if (panel)
 		{

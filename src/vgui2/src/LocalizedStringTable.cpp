@@ -965,6 +965,11 @@ int CLocalizedStringTable::ConvertUnicodeToANSI(const wchar_t *unicode, char *an
 	return result;
 }
 
+#if defined (PLATFORM_64BITS)
+#define _INTSIZEOF(n)\
+  ( (sizeof(n) + sizeof(int) - 1) / sizeof(int) * sizeof(int) )
+#endif // PLATFORM_64BITS
+
 #define va_argByIndex(ap,t,i)    ( *(t *)(ap + i * _INTSIZEOF(t)) )
 
 //-----------------------------------------------------------------------------
