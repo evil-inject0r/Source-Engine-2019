@@ -5,7 +5,7 @@
 // $NoKeywords: $
 // This is what all vs/ps (dx8+) shaders inherit from.
 //===========================================================================//
-#if !defined(_STATIC_LINKED) || defined(STDSHADER_DX9_DLL_EXPORT)
+#if !defined(_STATIC_LINKED)
 
 #include "basevsshader.h"
 #include "mathlib/vmatrix.h"
@@ -826,7 +826,6 @@ void CBaseVSShader::SetFlashlightVertexShaderConstants( bool bBump, int bumpTran
 	}
 }
 
-#ifdef STDSHADER_DX9_DLL_EXPORT
 void CBaseVSShader::DrawFlashlight_dx90( IMaterialVar** params, IShaderDynamicAPI *pShaderAPI, 
 										IShaderShadow* pShaderShadow, DrawFlashlight_dx90_Vars_t &vars )
 {
@@ -1134,7 +1133,6 @@ void CBaseVSShader::HashShadow2DJitter( const float fJitterSeed, float *fU, floa
 	*fU = nRow / (float) nTexRes;	// Row
 	*fV = nCol / (float) nTexRes;	// Column
 }
-#endif
 
 #endif // !_STATIC_LINKED || STDSHADER_DX8_DLL_EXPORT
 
