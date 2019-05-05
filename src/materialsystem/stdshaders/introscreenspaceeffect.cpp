@@ -7,9 +7,8 @@
 
 #include "BaseVSShader.h"
 
-#include "ScreenSpaceEffect_vs20.inc"
-#include "IntroScreenSpaceEffect_ps20.inc"
-#include "IntroScreenSpaceEffect_ps20b.inc"
+#include "ScreenSpaceEffect_vs30.inc"
+#include "IntroScreenSpaceEffect_ps30.inc"
 
 BEGIN_VS_SHADER_FLAGS( IntroScreenSpaceEffect, "Help for IntroScreenSpaceEffect", SHADER_NOT_EDITABLE )
 	BEGIN_SHADER_PARAMS
@@ -56,19 +55,11 @@ BEGIN_VS_SHADER_FLAGS( IntroScreenSpaceEffect, "Help for IntroScreenSpaceEffect"
 			int fmt = VERTEX_POSITION;
 			pShaderShadow->VertexShaderVertexFormat( fmt, 1, 0, 0 );
 
-			DECLARE_STATIC_VERTEX_SHADER( screenspaceeffect_vs20 );
-			SET_STATIC_VERTEX_SHADER( screenspaceeffect_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( screenspaceeffect_vs30 );
+			SET_STATIC_VERTEX_SHADER( screenspaceeffect_vs30 );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( introscreenspaceeffect_ps20b );
-				SET_STATIC_PIXEL_SHADER( introscreenspaceeffect_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( introscreenspaceeffect_ps20 );
-				SET_STATIC_PIXEL_SHADER( introscreenspaceeffect_ps20 );
-			}
+			DECLARE_STATIC_PIXEL_SHADER( introscreenspaceeffect_ps30 );
+			SET_STATIC_PIXEL_SHADER( introscreenspaceeffect_ps30 );
 
 			pShaderShadow->EnableBlending( true );
 			pShaderShadow->BlendFunc( SHADER_BLEND_SRC_ALPHA, SHADER_BLEND_ONE );
@@ -77,21 +68,12 @@ BEGIN_VS_SHADER_FLAGS( IntroScreenSpaceEffect, "Help for IntroScreenSpaceEffect"
 		{
 			pShaderAPI->BindStandardTexture( SHADER_SAMPLER0, TEXTURE_FRAME_BUFFER_FULL_TEXTURE_0 );
 			pShaderAPI->BindStandardTexture( SHADER_SAMPLER1, TEXTURE_FRAME_BUFFER_FULL_TEXTURE_1 );
-			DECLARE_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs20 );
-			SET_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs20 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs30 );
+			SET_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs30 );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( introscreenspaceeffect_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( MODE,  params[MODE]->GetIntValue() );
-				SET_DYNAMIC_PIXEL_SHADER( introscreenspaceeffect_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( introscreenspaceeffect_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( MODE,  params[MODE]->GetIntValue() );
-				SET_DYNAMIC_PIXEL_SHADER( introscreenspaceeffect_ps20 );
-			}
+			DECLARE_DYNAMIC_PIXEL_SHADER( introscreenspaceeffect_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( MODE,  params[MODE]->GetIntValue() );
+			SET_DYNAMIC_PIXEL_SHADER( introscreenspaceeffect_ps30 );
 
 			SetPixelShaderConstant( 0, ALPHA );
 		}

@@ -8,8 +8,7 @@
 #include "common_hlsl_cpp_consts.h"
 #include "convar.h"
 
-#include "downsample_nohdr_ps20.inc"
-#include "downsample_nohdr_ps20b.inc"
+#include "downsample_nohdr_ps30.inc"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -51,18 +50,10 @@ BEGIN_VS_SHADER_FLAGS( Downsample_nohdr, "Help for Downsample_nohdr", SHADER_NOT
 
 			pShaderShadow->VertexShaderVertexFormat( VERTEX_POSITION, 1, 0, 0 );
 
-			pShaderShadow->SetVertexShader( "Downsample_vs20", 0 );
+			pShaderShadow->SetVertexShader( "Downsample_vs30", 0 );
 			
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( downsample_nohdr_ps20b );
-				SET_STATIC_PIXEL_SHADER( downsample_nohdr_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( downsample_nohdr_ps20 );
-				SET_STATIC_PIXEL_SHADER( downsample_nohdr_ps20 );
-			}
+			DECLARE_STATIC_PIXEL_SHADER( downsample_nohdr_ps30 );
+			SET_STATIC_PIXEL_SHADER( downsample_nohdr_ps30 );
 		}
 
 		DYNAMIC_STATE
@@ -95,16 +86,8 @@ BEGIN_VS_SHADER_FLAGS( Downsample_nohdr, "Help for Downsample_nohdr", SHADER_NOT
 			pShaderAPI->SetPixelShaderConstant( 0, flPixelShaderParams, 1 );
 
 			
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( downsample_nohdr_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER( downsample_nohdr_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( downsample_nohdr_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER( downsample_nohdr_ps20 );
-			}
+			DECLARE_DYNAMIC_PIXEL_SHADER( downsample_nohdr_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER( downsample_nohdr_ps30 );
 		}
 		Draw();
 	}

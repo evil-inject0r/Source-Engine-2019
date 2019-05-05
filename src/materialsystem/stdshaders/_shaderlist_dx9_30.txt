@@ -103,6 +103,9 @@ lightmappedgeneric_vs20.fxc
 lightmappedadv_flashlight_ps2x.fxc
 lightmappedadv_flashlight_vs20.fxc
 
+lightmappedreflective_ps2x.fxc
+lightmappedreflective_vs20.fxc
+
 sprite_ps2x.fxc
 sprite_vs20.fxc
 spritecard_ps2x.fxc

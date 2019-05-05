@@ -10,11 +10,9 @@
 
 #include "lightmappedgeneric_vs30.inc"
 
-#include "lightmappedgeneric_decal_vs20.inc"
-#include "lightmappedgeneric_decal_ps20.inc"
-#include "lightmappedgeneric_decal_ps20b.inc"
-#include "decalbasetimeslightmapalphablendselfillum2_ps20.inc"
-#include "decalbasetimeslightmapalphablendselfillum2_ps20b.inc"
+#include "lightmappedgeneric_decal_vs30.inc"
+#include "lightmappedgeneric_decal_ps30.inc"
+#include "decalbasetimeslightmapalphablendselfillum2_ps30.inc"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -81,19 +79,11 @@ BEGIN_VS_SHADER( DecalBaseTimesLightmapAlphaBlendSelfIllum_DX9, "" )
 			int pTexCoords[3] = { 2, 2, 1 };
 			pShaderShadow->VertexShaderVertexFormat( VERTEX_POSITION | VERTEX_COLOR, 3, pTexCoords, 0 );
 
-			DECLARE_STATIC_VERTEX_SHADER( lightmappedgeneric_decal_vs20 );
-			SET_STATIC_VERTEX_SHADER( lightmappedgeneric_decal_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( lightmappedgeneric_decal_vs30 );
+			SET_STATIC_VERTEX_SHADER( lightmappedgeneric_decal_vs30 );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( lightmappedgeneric_decal_ps20b );
-				SET_STATIC_PIXEL_SHADER( lightmappedgeneric_decal_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( lightmappedgeneric_decal_ps20 );
-				SET_STATIC_PIXEL_SHADER( lightmappedgeneric_decal_ps20 );
-			}
+			DECLARE_STATIC_PIXEL_SHADER( lightmappedgeneric_decal_ps30 );
+			SET_STATIC_PIXEL_SHADER( lightmappedgeneric_decal_ps30 );
 
 			FogToFogColor();
 		}
@@ -116,9 +106,9 @@ BEGIN_VS_SHADER( DecalBaseTimesLightmapAlphaBlendSelfIllum_DX9, "" )
 			SetVertexShaderTextureTransform( VERTEX_SHADER_SHADER_SPECIFIC_CONST_0, BASETEXTURETRANSFORM );
 			SetModulationPixelShaderDynamicState( 3 );
 
-			DECLARE_DYNAMIC_VERTEX_SHADER( lightmappedgeneric_decal_vs20 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( lightmappedgeneric_decal_vs30 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
-			SET_DYNAMIC_VERTEX_SHADER( lightmappedgeneric_decal_vs20 );
+			SET_DYNAMIC_VERTEX_SHADER( lightmappedgeneric_decal_vs30 );
 
 			pShaderAPI->SetPixelShaderFogParams( PSREG_FOG_PARAMS );			
 
@@ -127,18 +117,9 @@ BEGIN_VS_SHADER( DecalBaseTimesLightmapAlphaBlendSelfIllum_DX9, "" )
 			vEyePos_SpecExponent[3] = 0.0f;
 			pShaderAPI->SetPixelShaderConstant( PSREG_EYEPOS_SPEC_EXPONENT, vEyePos_SpecExponent, 1 );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( lightmappedgeneric_decal_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER( lightmappedgeneric_decal_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( lightmappedgeneric_decal_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER( lightmappedgeneric_decal_ps20 );
-			}
+			DECLARE_DYNAMIC_PIXEL_SHADER( lightmappedgeneric_decal_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
+			SET_DYNAMIC_PIXEL_SHADER( lightmappedgeneric_decal_ps30 );
 		}
 		Draw();
 
@@ -164,22 +145,11 @@ BEGIN_VS_SHADER( DecalBaseTimesLightmapAlphaBlendSelfIllum_DX9, "" )
 			SET_STATIC_VERTEX_SHADER_COMBO( RELIEF_MAPPING,  false );
 			SET_STATIC_VERTEX_SHADER_COMBO( SEAMLESS,  false );
 			SET_STATIC_VERTEX_SHADER_COMBO( BUMPMASK,  false );
-#ifdef _X360
-			SET_STATIC_VERTEX_SHADER_COMBO( FLASHLIGHT,  0 );
-#endif
 			SET_STATIC_VERTEX_SHADER( lightmappedgeneric_vs30 );
-
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps20b );
-				SET_STATIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps20 );
-				SET_STATIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps20 );
-			}
-
+			
+			DECLARE_STATIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps30 );
+			SET_STATIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps30 );
+			
 			FogToFogColor();
 		}
 		else
@@ -203,18 +173,9 @@ BEGIN_VS_SHADER( DecalBaseTimesLightmapAlphaBlendSelfIllum_DX9, "" )
 			vEyePos_SpecExponent[3] = 0.0f;
 			pShaderAPI->SetPixelShaderConstant( PSREG_EYEPOS_SPEC_EXPONENT, vEyePos_SpecExponent, 1 );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps20 );
-			}
+			DECLARE_DYNAMIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
+			SET_DYNAMIC_PIXEL_SHADER( decalbasetimeslightmapalphablendselfillum2_ps30 );
 		}
 		Draw();
 	}
@@ -250,7 +211,7 @@ BEGIN_VS_SHADER( DecalBaseTimesLightmapAlphaBlendSelfIllum_DX9, "" )
 	SHADER_DRAW
 	{
 		bool bUsingFlashlight = UsingFlashlight( params );
-		if ( bUsingFlashlight && ( IsX360() || r_flashlight_version2.GetInt() ) )
+		if ( bUsingFlashlight && r_flashlight_version2.GetInt() )
 		{
 			DrawPass( params, pShaderAPI, pShaderShadow, false );
 			if ( pShaderShadow )

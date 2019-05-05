@@ -8,8 +8,7 @@
 #include "BaseVSShader.h"
 #include "common_hlsl_cpp_consts.h"
 
-#include "downsample_ps20.inc"
-#include "downsample_ps20b.inc"
+#include "downsample_ps30.inc"
 
 
 BEGIN_VS_SHADER_FLAGS( Downsample, "Help for Downsample", SHADER_NOT_EDITABLE )
@@ -26,7 +25,6 @@ BEGIN_VS_SHADER_FLAGS( Downsample, "Help for Downsample", SHADER_NOT_EDITABLE )
 		// Requires DX9 + above
 		if (!g_pHardwareConfig->SupportsVertexAndPixelShaders())
 		{
-//			Assert( 0 );
 			return "Wireframe";
 		}
 		return 0;
@@ -49,16 +47,8 @@ BEGIN_VS_SHADER_FLAGS( Downsample, "Help for Downsample", SHADER_NOT_EDITABLE )
 
 			pShaderShadow->SetVertexShader( "Downsample_vs20", 0 );
 			
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( downsample_ps20b );
-				SET_STATIC_PIXEL_SHADER( downsample_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( downsample_ps20 );
-				SET_STATIC_PIXEL_SHADER( downsample_ps20 );
-			}
+			DECLARE_STATIC_PIXEL_SHADER( downsample_ps30 );
+			SET_STATIC_PIXEL_SHADER( downsample_ps30 );
 		}
 
 		DYNAMIC_STATE
@@ -92,16 +82,8 @@ BEGIN_VS_SHADER_FLAGS( Downsample, "Help for Downsample", SHADER_NOT_EDITABLE )
 
 			pShaderAPI->SetVertexShaderIndex( 0 );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( downsample_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER( downsample_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( downsample_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER( downsample_ps20 );
-			}
+			DECLARE_DYNAMIC_PIXEL_SHADER( downsample_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER( downsample_ps30 );
 		}
 		Draw();
 	}

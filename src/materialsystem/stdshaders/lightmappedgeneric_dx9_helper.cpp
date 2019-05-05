@@ -947,9 +947,6 @@ void DrawLightmappedGeneric_DX9_Internal(CBaseVSShader *pShader, IMaterialVar** 
 
 				SET_STATIC_VERTEX_SHADER_COMBO( RELIEF_MAPPING, false );
 				SET_STATIC_VERTEX_SHADER_COMBO( SEAMLESS, bSeamlessMapping );
-#ifdef _X360
-				SET_STATIC_VERTEX_SHADER_COMBO( FLASHLIGHT, hasFlashlight);
-#endif
 				SET_STATIC_VERTEX_SHADER( lightmappedgeneric_vs30 );
 
 				
@@ -975,9 +972,6 @@ void DrawLightmappedGeneric_DX9_Internal(CBaseVSShader *pShader, IMaterialVar** 
 				SET_STATIC_PIXEL_SHADER_COMBO( PARALLAXCORRECT, hasParallaxCorrection );
 				//SET_STATIC_PIXEL_SHADER_COMBO( NORMAL_DECODE_MODE, (int)  nNormalDecodeMode );
 				//SET_STATIC_PIXEL_SHADER_COMBO( NORMALMASK_DECODE_MODE, (int) nNormalMaskDecodeMode );
-#ifdef _X360
-				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT, hasFlashlight);
-#endif
 				SET_STATIC_PIXEL_SHADER( lightmappedgeneric_ps30 );
 				
 				// HACK HACK HACK - enable alpha writes all the time so that we have them for

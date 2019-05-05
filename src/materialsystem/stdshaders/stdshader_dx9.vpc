@@ -11,20 +11,10 @@ $Include "$SRCDIR\vpc_scripts\source_dll_base.vpc"
 
 $Configuration "Debug"
 {
-	$General [$WINDOWS]
-	{
-		$OutputDirectory		"Debug_dx9"			
-		$IntermediateDirectory	"Debug_dx9"
-	}
 }
 
 $Configuration "Release"
 {
-	$General [$WINDOWS]
-	{
-		$OutputDirectory		"Release_dx9"
-		$IntermediateDirectory	"Release_dx9"
-	}
 }
 
 // Common Configuration

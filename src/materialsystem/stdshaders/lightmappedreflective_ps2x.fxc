@@ -1,15 +1,11 @@
-// STATIC: "CONVERT_TO_SRGB"			"0..1"	[ps20b][= g_pHardwareConfig->NeedsShaderSRGBConversion()]
+// STATIC: "CONVERT_TO_SRGB"			"0..1"	[ps30][= g_pHardwareConfig->NeedsShaderSRGBConversion()]
 // STATIC: "BASETEXTURE"				"0..1"
 // STATIC: "REFLECT"					"0..1"
 // STATIC: "REFRACT"					"0..1"
 // STATIC: "ENVMAPMASK"					"0..1"
 
 // DYNAMIC: "PIXELFOGTYPE"				"0..1"
-// DYNAMIC: "WRITE_DEPTH_TO_DESTALPHA"	"0..1"	[ps20b]
-
-#if defined( SHADER_MODEL_PS_2_0 )
-#	define WRITE_DEPTH_TO_DESTALPHA 0
-#endif
+// DYNAMIC: "WRITE_DEPTH_TO_DESTALPHA"	"0..1"	[ps30]
 
 #include "common_ps_fxc.h"
 
@@ -71,15 +67,12 @@ float4 main( PS_INPUT i ) : COLOR
 	float2 vRefractTexCoord;
 
 	// vectorize the dependent UV calculations (reflect = .xy, refract = .wz)
-#ifdef NV3X
-	float4 vDependentTexCoords = vNormal.xyxy * vNormalSample.a * reflectRefractScale;
-#else
 	float4 vN;
 	vN.xy = vNormal.xy;
 	vN.w = vNormal.x;
 	vN.z = vNormal.y;
 	float4 vDependentTexCoords = vN * vNormalSample.a * reflectRefractScale;
-#endif
+
 
 	vDependentTexCoords += ( i.vReflectXY_vRefractYX * ooW );
 	vReflectTexCoord = vDependentTexCoords.xy;
