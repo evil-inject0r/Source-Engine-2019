@@ -11,7 +11,7 @@ $include "$SRCDIR\vpc_scripts\source_dll_base.vpc"
 
 $Configuration
 {
-	$Linker [$WIN32]
+	$Linker [$WINDOWS]
 	{
 		$AdditionalDependencies			"Winmm.lib;%(AdditionalDependencies)"
 	}
@@ -35,7 +35,6 @@ $Project "inputsystem"
 		$File	"$SRCDIR\public\inputsystem\ButtonCode.h"
 		$File	"$SRCDIR\public\inputsystem\iinputsystem.h"
 		$File	"$SRCDIR\public\inputsystem\InputEnums.h"
-		$File	"$SRCDIR\dx9sdk\include\xinput.h"
 	}
 
 	$Folder	"Link Libraries"

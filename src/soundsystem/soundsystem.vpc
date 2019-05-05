@@ -18,7 +18,7 @@ $Configuration
 
 	$Linker
 	{
-		$AdditionalDependencies				"$BASE winmm.lib"
+		$AdditionalDependencies				"$BASE winmm.lib dsound.lib dxguid.lib"
 	}
 }
 
@@ -55,8 +55,6 @@ $Project "Soundsystem"
 
 	$Folder	"Link Libraries"
 	{
-		$Lib	"$SRCDIR\dx9sdk\lib\dsound"
-		$Lib	"$SRCDIR\dx9sdk\lib\dxguid"
 		$Lib	"$LIBCOMMON\mss32" [$WIN32]
 		$Lib	mathlib
 		$Lib	tier2

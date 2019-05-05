@@ -166,8 +166,6 @@ $Project "stdshader_dx9"
 
 	$Folder	"Link Libraries"
 	{
-		$Lib	"$SRCDIR\dx9sdk\lib\d3dx9" [$WIN32]
-		$Lib	"$SRCDIR\dx10sdk\lib\x64\d3dx9" [$WIN64]
         $Lib    $LIBCOMMMON\nvtc64       [$WIN64]
 		$Lib	mathlib
 		$Lib	shaderlib

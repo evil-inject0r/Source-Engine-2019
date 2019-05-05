@@ -16,8 +16,11 @@ $Configuration
 	{
 		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\dx9sdk\include;..\"
 		$PreprocessorDefinitions		"$BASE;SHADERAPIDX9;SHADER_DLL_EXPORT;PROTECTED_THINGS_ENABLE;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead"
+	}
 
-//		$AdditionalOptions		"/FC"
+    $Linker
+	{
+		$AdditionalDependencies			"$BASE d3d9.lib d3dx9.lib" [$WINDOWS]
 	}
 }
 
@@ -51,23 +54,8 @@ $Project "shaderapidx9"
 		$File	"vertexdecl.cpp"
 		$File	"VertexShaderDX8.cpp"
 		$File	"wmi.cpp"									[$WINDOWS]
-	}
 
-	$Folder	"DirectX Header Files" [$WINDOWS]
-	{
-		$File	"$SRCDIR\dx9sdk\include\d3d9.h"
-		$File	"$SRCDIR\dx9sdk\include\d3d9caps.h"
-		$File	"$SRCDIR\dx9sdk\include\d3d9types.h"
-		$File	"$SRCDIR\dx9sdk\include\d3dx9.h"
-		$File	"$SRCDIR\dx9sdk\include\d3dx9anim.h"
-		$File	"$SRCDIR\dx9sdk\include\d3dx9core.h"
-		$File	"$SRCDIR\dx9sdk\include\d3dx9effect.h"
-		$File	"$SRCDIR\dx9sdk\include\d3dx9math.h"
-		$File	"$SRCDIR\dx9sdk\include\d3dx9math.inl"
-		$File	"$SRCDIR\dx9sdk\include\d3dx9mesh.h"
-		$File	"$SRCDIR\dx9sdk\include\d3dx9shader.h"
-		$File	"$SRCDIR\dx9sdk\include\d3dx9shape.h"
-		$File	"$SRCDIR\dx9sdk\include\d3dx9tex.h"
+        $File   "matrixstack.cpp"
 	}
 
 	$Folder	"Public Header Files"
@@ -113,13 +101,7 @@ $Project "shaderapidx9"
 		$Lib	"$LIBPUBLIC\bitmap"
 		$Lib	"$LIBPUBLIC\mathlib"
 		$Lib	"$LIBPUBLIC\tier2"
-		$Lib	"$SRCDIR\dx9sdk\lib\d3d9"       [$WIN32]
-		$Lib	"$SRCDIR\dx9sdk\lib\d3dx9"      [$WIN32]
-		$Lib	$SRCDIR\dx10sdk\lib\x64\d3d9    [$WIN64]
-        $Lib    $SRCDIR\dx10sdk\lib\x64\d3dx9   [$WIN64]
-
-
-
+		
 		$Lib	"$LIBCOMMON\bzip2"
 	}
 }

@@ -150,7 +150,7 @@ $Configuration
 
 	$Linker
 	{
-		$AdditionalDependencies			"$BASE winmm.lib wsock32.lib ws2_32.lib wininet.lib vfw32.lib Rpcrt4.lib" [$WINDOWS]
+		$AdditionalDependencies			"$BASE winmm.lib wsock32.lib ws2_32.lib wininet.lib vfw32.lib Rpcrt4.lib dsound.lib dxguid.lib dinput8.lib" [$WINDOWS]
 		$AdditionalLibraryDirectories	"$BASE;$LIBCOMMON\vc7;$SRCDIR\dx9sdk\lib" [$WINDOWS]
 	}
 }
@@ -988,7 +988,7 @@ $Project "engine"
 //		$File	"$SRCDIR\public\tier1\datalru.h"
 		$File	"$SRCDIR\public\datamap.h"
 		$File	"$SRCDIR\public\tier0\dbg.h"
-		$File	"$SRCDIR\dx9sdk\include\dinput.h"
+		// $File	"$SRCDIR\dx9sdk\include\dinput.h"
 		$File	"$SRCDIR\public\disp_vertindex.h"
 		$File	"$SRCDIR\public\dlight.h"
 		$File	"$SRCDIR\public\dt_utlvector_recv.h"
@@ -1195,7 +1195,7 @@ $Project "engine"
 		$Lib	"$LIBPUBLIC\tier3"
 		$Lib	"$LIBPUBLIC\vtf"
 		$Lib	"$LIBPUBLIC\vgui_controls"
-		$Lib	$LIBCOMMON\steam_api
+		$Lib	$LIBPUBLIC\steam_api
 		
 		$Lib	"$LIBCOMMON\bzip2"
         $Lib    "$LIBCOMMON\binkw32" [$WIN32]
@@ -1203,13 +1203,5 @@ $Project "engine"
 		$Lib	"$LIBCOMMON\jpeglib"
 
         $Lib    $LIBCOMMON\nvtc64 [$WIN64]
-				
-		$File	"$SRCDIR\dx9sdk\lib\dsound.lib"	[$WIN32]
-		$File	"$SRCDIR\dx9sdk\lib\dxguid.lib"	[$WIN32]
-        $File   "$SRCDIR\dx9sdk\lib\dinput8.lib" [$WIN32]
-				
-		$File	"$SRCDIR\dx10sdk\lib\x64\dsound.lib"	[$WIN64]
-		$File	"$SRCDIR\dx10sdk\lib\x64\dxguid.lib"	[$WIN64]
-        $File   "$SRCDIR\dx10sdk\lib\x64\dinput8.lib"   [$WIN64]
 	}
 }

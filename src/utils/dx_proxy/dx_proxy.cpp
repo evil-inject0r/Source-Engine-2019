@@ -33,8 +33,8 @@ const char * WINAPI GetDllVersion( void );
 #define DX_PROXY_INC_CONFIG
 #pragma message ( "Compiling DX_PROXY for DX9_V00_PC" )
 
-#pragma comment ( lib, "../../dx9sdk/lib/d3dx9" )
-#include "../../dx9sdk/include/d3dx9shader.h"
+#pragma comment ( lib, "d3dx9" )
+#include "d3dx9shader.h"
 
 #endif // #ifdef DX9_V00_PC
 
@@ -61,8 +61,8 @@ const char * WINAPI GetDllVersion( void );
 
 #pragma comment( lib, "delayimp" )
 
-#pragma comment ( lib, "../../dx10sdk/lib/d3dx9" )
-#include "../../dx10sdk/include/d3dx9shader.h"
+#pragma comment ( lib, "d3dx9" )
+#include "d3dx9shader.h"
 
 #endif // #ifdef DX9_V30_PC
 
@@ -90,8 +90,8 @@ const char * WINAPI GetDllVersion( void );
 
 #pragma comment( lib, "delayimp" )
 
-#pragma comment ( lib, "../../dx10sdk/lib/d3dx10" )
-#include "../../dx10sdk/include/d3dx10.h"
+#pragma comment ( lib, "d3dx10" )
+#include "d3dx10.h"
 
 typedef D3D10_SHADER_MACRO D3DXMACRO;
 typedef LPD3D10INCLUDE LPD3DXINCLUDE;
