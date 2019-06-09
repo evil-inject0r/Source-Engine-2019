@@ -22,19 +22,11 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 projPos					: POSITION;	
-#if !defined( _X360 )
 	float  fog						: FOG;
-#endif
 	float2 vBumpTexCoord			: TEXCOORD0;
 	float3 vTangentSpaceLightDir	: TEXCOORD1;
 	float3 vAmbientColor			: TEXCOORD2;
-	
-#if defined( _X360 )
-	float4 vScreenPos_ReverseZ		: TEXCOORD3;
-#else
 	float4 vScreenPos				: TEXCOORD3;
-#endif
-
 	
 	float4 vDirLightScale			: COLOR0;
 	
@@ -47,28 +39,18 @@ VS_OUTPUT main( const VS_INPUT v )
 
 	// Transform the input position.
 	float4 projPos = mul( v.vPos, cModelViewProj );
-	o.projPos = projPos;
-	
-#if defined( _X360 )
-	o.vScreenPos_ReverseZ.x = projPos.x;
-	o.vScreenPos_ReverseZ.y = -projPos.y; // invert Y
-	o.vScreenPos_ReverseZ.xy = (o.vScreenPos_ReverseZ.xy + projPos.w) * 0.5f;
-	o.vScreenPos_ReverseZ.z = projPos.w - projPos.z;
-	o.vScreenPos_ReverseZ.w = projPos.w;
-#else	
+	o.projPos = projPos;	
 	o.vScreenPos.x = projPos.x;
 	o.vScreenPos.y = -projPos.y; // invert Y
 	o.vScreenPos.xy = (o.vScreenPos.xy + projPos.w) * 0.5f;
 	o.vScreenPos.z = projPos.z;
 	o.vScreenPos.w = projPos.w;
-#endif
+
 	
 	o.worldPos_projPosZ = float4( v.vPos.xyz, projPos.z );
 
-#if !defined( _X360 )
 	// Setup fog.
 	o.fog = CalcFog( mul( v.vPos, cModel[0] ), projPos, g_FogType );
-#endif
 
 	// Copy texcoords over.
 	o.vBumpTexCoord = v.vBumpTexCoord;

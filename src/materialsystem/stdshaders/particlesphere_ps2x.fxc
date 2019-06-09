@@ -1,7 +1,7 @@
 // DYNAMIC: "PIXELFOGTYPE"		"0..1"
 
-// STATIC: "CONVERT_TO_SRGB"	"0..1"	[ps20b][= g_pHardwareConfig->NeedsShaderSRGBConversion()]
-// STATIC: "DEPTHBLEND"			"0..1"	[ps20b]
+// STATIC: "CONVERT_TO_SRGB"	"0..1"	[ps30][= g_pHardwareConfig->NeedsShaderSRGBConversion()]
+// STATIC: "DEPTHBLEND"			"0..1"	[ps30]
 
 #include "shader_constant_register_map.h"
 
@@ -19,11 +19,7 @@ struct PS_INPUT
 	float2 vBumpTexCoord			: TEXCOORD0;
 	float3 vTangentSpaceLightDir	: TEXCOORD1;
 	float3 vAmbientColor			: TEXCOORD2;
-#if defined( _X360 )
-	float4 vScreenPos_ReverseZ		: TEXCOORD3;
-#else
 	float4 vScreenPos				: TEXCOORD3;
-#endif
 	
 	float4 vDirLightScale	: COLOR0;
 	
@@ -52,11 +48,7 @@ float4 main( PS_INPUT i ) : COLOR
 	
 	//Soft Particles FTW
 #	if (DEPTHBLEND == 1)
-#		if defined( _X360 )
-			vOutput.a *= DepthFeathering( DepthSampler, i.vScreenPos_ReverseZ.xy / i.vScreenPos_ReverseZ.w, i.vScreenPos_ReverseZ.z, i.vScreenPos_ReverseZ.w, g_DepthFeatheringConstants );
-#		else
-			vOutput.a *= DepthFeathering( DepthSampler, i.vScreenPos.xy / i.vScreenPos.w, i.vScreenPos.z, i.vScreenPos.w, g_DepthFeatheringConstants );
-#		endif
+	vOutput.a *= DepthFeathering( DepthSampler, i.vScreenPos.xy / i.vScreenPos.w, i.vScreenPos.z, i.vScreenPos.w, g_DepthFeatheringConstants );
 #	endif
 	
 	float fogFactor = CalcPixelFogFactor( PIXELFOGTYPE, g_FogParams, g_EyePos_SpecExponent.z, i.worldPos_projPosZ.z, i.worldPos_projPosZ.w );
