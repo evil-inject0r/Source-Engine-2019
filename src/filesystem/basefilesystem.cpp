@@ -22,9 +22,6 @@
 #include "tier2/tier2.h"
 #include "tier1/lzmaDecoder.h"
 #include "zip_utils.h"
-#ifdef _X360
-#include "xbox/xbox_launch.h"
-#endif
 
 #ifndef DEDICATED
 #include "keyvaluescompiler.h"
@@ -35,11 +32,6 @@
 // Needed for getting file type string
 #define WIN32_LEAN_AND_MEAN
 #include <shellapi.h>
-#endif
-
-#if defined( _X360 )
-#include "xbox\xbox_win32stubs.h"
-#undef GetCurrentDirectory
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -304,17 +296,6 @@ CBaseFileSystem::CBaseFileSystem()
 
 	// allows very specifc constrained behavior
 	m_DVDMode = DVDMODE_OFF;
-	if ( IsX360() )
-	{
-		if ( CommandLine()->FindParm( "-dvd" ) )
-		{
-			m_DVDMode = DVDMODE_STRICT;
-		}
-		else if ( CommandLine()->FindParm( "-dvddev" ) )
-		{
-			m_DVDMode = DVDMODE_DEV;
-		}
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -377,54 +358,7 @@ InitReturnVal_t CBaseFileSystem::Init()
 	}
 
 	InitAsync();
-
-	if ( IsX360() && m_DVDMode == DVDMODE_DEV )
-	{
-		// exclude paths are valid ony in dvddev mode
-		char szExcludeFile[MAX_PATH];
-		const char *pRemotePath = CommandLine()->ParmValue( "-remote" );
-		const char *pBasePath = CommandLine()->ParmValue( "-basedir" );
-		if ( pRemotePath && pBasePath )
-		{
-			// the optional exclude path file only exists at the remote path
-			V_ComposeFileName( pRemotePath, "xbox_exclude_paths.txt", szExcludeFile, sizeof( szExcludeFile ) );
-
-			// populate the exclusion list
-			CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
-			if ( ReadFile( szExcludeFile, NULL, buf, 0, 0 ) )
-			{
-				characterset_t breakSet;
-				CharacterSetBuild( &breakSet, "" );
-				char szPath[MAX_PATH];
-				char szToken[MAX_PATH];
-				for ( ;; )
-				{
-					int nTokenSize = buf.ParseToken( &breakSet, szToken, sizeof( szToken ) );
-					if ( nTokenSize <= 0 )
-					{
-						break;
-					}
-
-					char *pToken = szToken;
-					if ( pToken[0] == '\\' )
-					{
-						// skip past possible initial seperator
-						pToken++;
-					}
-
-					V_ComposeFileName( pBasePath, pToken, szPath, sizeof( szPath ) );
-					V_AppendSlash( szPath, sizeof( szPath ) );
-					
-					FileNameHandle_t hFileName = FindOrAddFileName( szPath );
-					if ( m_ExcludePaths.Find( hFileName ) == -1 )
-					{
-						m_ExcludePaths.AddToTail( hFileName );
-					}
-				}
-			}
-		}
-	}
-
+		
 	return INIT_OK;
 }
 
@@ -1067,13 +1001,6 @@ void CZipPackFile::SetupPreloadData()
 		return;
 	}
 
-	if ( IsX360() )
-	{
-		// 360 XZips are always dvd aligned
-		Assert( ( m_nPreloadSectionSize % XBOX_DVD_SECTORSIZE ) == 0 );
-		Assert( ( m_nPreloadSectionOffset % XBOX_DVD_SECTORSIZE ) == 0 );
-	}
-
 	// preload data is loaded as a single unbuffered i/o operation
 	ReadFromPack( -1, pPreload, -1, m_nPreloadSectionSize, m_nPreloadSectionOffset );
 
@@ -1114,7 +1041,7 @@ bool CZipPackFile::Prepare( int64 fileLen, int64 nFileOfs )
 	}
 
 	// Pack files are always little-endian
-	m_swap.ActivateByteSwapping( IsX360() );
+	m_swap.ActivateByteSwapping( false );
 
 	m_FileLength = fileLen;
 	m_nBaseOffset = nFileOfs;
@@ -1127,52 +1054,19 @@ bool CZipPackFile::Prepare( int64 fileLen, int64 nFileOfs )
 
 	// 360 can have an inompatible  
 	bool bCompatibleFormat = true;
-	if ( IsX360() )
-	{
-		// 360 has dependable exact zips, backup to handle possible xzip format
-		if ( offset - XZIP_COMMENT_LENGTH >= 0 )
-		{
-			offset -= XZIP_COMMENT_LENGTH;
-		}
 	
-		// single i/o operation, scanning forward
-		char *pTemp = (char *)_alloca( fileLen - offset );
-		ReadFromPack( -1, pTemp, -1, fileLen - offset, offset );
-		while ( offset <= fileLen - sizeof( ZIP_EndOfCentralDirRecord ) )
-		{
-			memcpy( &rec, pTemp, sizeof( ZIP_EndOfCentralDirRecord ) );
-			m_swap.SwapFieldsToTargetEndian( &rec );
-			if ( rec.signature == PKID( 5, 6 ) )
-			{
-				bCentralDirRecord = true;
-				if ( rec.commentLength >= 4 )
-				{
-					char *pComment = pTemp + sizeof( ZIP_EndOfCentralDirRecord );
-					if ( !V_strnicmp( pComment, "XZP2", 4 ) )
-					{
-						bCompatibleFormat = false;
-					}
-				}
-				break;
-			}
-			offset++;
-			pTemp++;
-		}
-	}
-	else
+	// scan entire file from expected location for central dir
+	for ( ; offset >= 0; offset-- )
 	{
-		// scan entire file from expected location for central dir
-		for ( ; offset >= 0; offset-- )
+		ReadFromPack( -1, (void*)&rec, -1, sizeof( rec ), offset );
+		m_swap.SwapFieldsToTargetEndian( &rec );
+		if ( rec.signature == PKID( 5, 6 ) )
 		{
-			ReadFromPack( -1, (void*)&rec, -1, sizeof( rec ), offset );
-			m_swap.SwapFieldsToTargetEndian( &rec );
-			if ( rec.signature == PKID( 5, 6 ) )
-			{
-				bCentralDirRecord = true;
-				break;
-			}
+			bCentralDirRecord = true;
+			break;
 		}
 	}
+
 	Assert( bCentralDirRecord );
 	if ( !bCentralDirRecord )
 	{
@@ -1194,7 +1088,7 @@ bool CZipPackFile::Prepare( int64 fileLen, int64 nFileOfs )
 	// read central directory into memory and parse
 	CUtlBuffer zipDirBuff( 0, rec.centralDirectorySize, 0 );
 	zipDirBuff.EnsureCapacity( rec.centralDirectorySize );
-	zipDirBuff.ActivateByteSwapping( IsX360() );
+	zipDirBuff.ActivateByteSwapping( false );
 	ReadFromPack( -1, zipDirBuff.Base(), -1, rec.centralDirectorySize, rec.startOfCentralDirOffset );
 	zipDirBuff.SeekPut( CUtlBuffer::SEEK_HEAD, rec.centralDirectorySize );
 
@@ -1221,16 +1115,6 @@ bool CZipPackFile::Prepare( int64 fileLen, int64 nFileOfs )
 	}
 	else
 	{
-		if ( IsX360() )
-		{
-			// all 360 zip files are expected to have preload sections
-			// only during development, maps are allowed to lack them, due to auto-conversion
-			if ( !m_bIsMapPath || g_pFullFileSystem->GetDVDMode() == DVDMODE_STRICT )
-			{
-				Warning( "ZipFile '%s' missing preload section\n", m_PackName.String() );
-			}
-		}
-
 		// No preload section, reset buffer pointer
 		zipDirBuff.SeekGet( CUtlBuffer::SEEK_HEAD, 0 );
 	}
@@ -1325,12 +1209,7 @@ bool CZipPackFile::CPackFileLessFunc::Less( CZipPackFile::CPackFileEntry const& 
 // Purpose: Search pPath for pak?.pak files and add to search path if found
 // Input  : *pPath - 
 //-----------------------------------------------------------------------------
-#if !defined( _X360 )
 #define PACK_NAME_FORMAT "zip%i.zip"
-#else
-#define PACK_NAME_FORMAT "zip%i.360.zip"
-#define PACK_LOCALIZED_NAME_FORMAT "zip%i_%s.360.zip"
-#endif
 
 void CBaseFileSystem::AddPackFiles( const char *pPath, const CUtlSymbol &pathID, SearchPathAdd_t addType )
 {
@@ -1357,32 +1236,6 @@ void CBaseFileSystem::AddPackFiles( const char *pPath, const CUtlSymbol &pathID,
 		pakNames.AddToTail( pakfile );
 		pakSizes.AddToTail( (int64)((unsigned int)buf.st_size) );
 	}
-
-#if defined( _X360 )
-	// localized zips are added last to ensure they appear first in the search path construction
-	// localized zips can only appear in the game or mod directories
-	bool bUseEnglishAudio = XboxLaunch()->GetForceEnglish();
-
-	if ( XBX_IsLocalized() && ( bUseEnglishAudio == false ) && 
-		 ( V_stricmp( g_PathIDTable.String( pathID ), "game" ) == 0 || V_stricmp( g_PathIDTable.String( pathID ), "mod" ) == 0 ) )
-	{
-		// determine localized pak files, [zip0_language..zipN_language]
-		for ( int i = 0; ; i++ )
-		{
-			char pakfile[MAX_PATH];
-			char fullpath[MAX_PATH];
-			V_snprintf( pakfile, sizeof( pakfile ), PACK_LOCALIZED_NAME_FORMAT, i, XBX_GetLanguageString() );
-			V_ComposeFileName( pPath, pakfile, fullpath, sizeof( fullpath ) );
-
-			struct _stat buf;
-			if ( FS_stat( fullpath, &buf ) == -1 )
-				break;
-
-			pakNames.AddToTail( pakfile );
-			pakSizes.AddToTail( (int64)((unsigned int)buf.st_size) );
-		}
-	}
-#endif
 
 	// Add any zip files in the format zip1.zip ... zip0.zip
 	// Add them backwards so zip(N) is higher priority than zip(N-1), etc.
@@ -1577,11 +1430,6 @@ void CBaseFileSystem::AddMapPackFile( const char *pPath, const char *pPathID, Se
 		sp->m_storeId = g_iNextSearchPathID++;
 		sp->SetPath( g_PathIDTable.AddString( newPath ) );
 		sp->m_pPathIDInfo = FindOrAddPathIDInfo( g_PathIDTable.AddString( pPathID ), -1 );
-
-		if ( IsX360() && !V_strnicmp( newPath, "net:", 4 ) )
-		{
-			sp->m_bIsRemotePath = true;
-		}
 
 		pf->SetPath( sp->GetPath() );
 		pf->m_lPackFileTime = GetFileTime( newPath );
@@ -1911,20 +1759,6 @@ void CBaseFileSystem::PrintSearchPaths( void )
 
 		Msg( "\"%s\" \"%s\" %s%s\n", pSearchPath->GetPathString(), (const char *)pSearchPath->GetPathIDString(), pszType, pszPack );
 	}
-
-	if ( IsX360() && m_ExcludePaths.Count() )
-	{
-		// dump current list
-		Msg( "\nExclude:\n" );
-		char szPath[MAX_PATH];
-		for ( int i = 0; i < m_ExcludePaths.Count(); i++ )
-		{
-			if ( String( m_ExcludePaths[i], szPath, sizeof( szPath ) ) )
-			{
-				Msg( "\"%s\"\n", szPath );
-			}
-		}
-	}
 }
 
 
@@ -1960,7 +1794,7 @@ void CBaseFileSystem::AddSearchPathInternal( const char *pPath, const char *path
 	}
 	else
 	{
-		if ( IsX360() || Q_IsAbsolutePath( pPath ) )
+		if ( Q_IsAbsolutePath( pPath ) )
 		{
 			Q_strncpy( newPath, pPath, sizeof( newPath ) );
 		}
@@ -2073,27 +1907,6 @@ void CBaseFileSystem::AddSearchPath( const char *pPath, const char *pathID, Sear
 	int currCount = m_SearchPaths.Count();
 
 	AddSearchPathInternal( pPath, pathID, addType, true );
-
-	if ( IsX360() && m_DVDMode == DVDMODE_DEV )
-	{
-		// dvd development mode clones a search path based on the remote path for fall through
-		const char *pRemotePath = CommandLine()->ParmValue( "-remote" );
-		const char *pBasePath = CommandLine()->ParmValue( "-basedir" );
-		if ( pRemotePath && pBasePath && !V_stristr( pPath, ".bsp" ) )
-		{
-			// isolate the search path from the base path
-			if ( !V_strnicmp( pPath, pBasePath, strlen( pBasePath ) ) )
-			{
-				// substitue the remote path
-				char szRemotePath[MAX_PATH];
-				V_strncpy( szRemotePath, pRemotePath, sizeof( szRemotePath ) );
-				V_strncat( szRemotePath, pPath + strlen( pBasePath ), sizeof( szRemotePath ) );
-
-				// no pack files are allowed on the fall through remote path
-				AddSearchPathInternal( szRemotePath, pathID, addType, false );
-			}
-		}
-	}
 
 	if ( currCount != m_SearchPaths.Count() )
 	{
@@ -2259,31 +2072,6 @@ CBaseFileSystem::CSearchPath *CBaseFileSystem::FindWritePath( const char *pFilen
 		if ( pSearchPath->GetPackFile() )
 		{
 			continue;
-		}
-
-		if ( IsX360() && ( m_DVDMode == DVDMODE_DEV ) && pFilename && !pSearchPath->m_bIsRemotePath )
-		{
-			bool bIgnorePath = false;
-			char szExcludePath[MAX_PATH];
-			char szFilename[MAX_PATH];
-			V_ComposeFileName( pSearchPath->GetPathString(), pFilename, szFilename, sizeof( szFilename ) );
-			for ( int j = 0; j < m_ExcludePaths.Count(); j++ )
-			{
-				if ( g_pFullFileSystem->String( m_ExcludePaths[j], szExcludePath, sizeof( szExcludePath ) ) )
-				{
-					if ( !V_strnicmp( szFilename, szExcludePath, strlen( szExcludePath ) ) )
-					{
-						bIgnorePath = true;
-						break;
-					}
-				}
-			}
-			if ( bIgnorePath )
-			{
-				// filename matches exclusion path, skip it
-				// favoring the next path which should be the path fall through hit
-				continue;
-			}
 		}
 
 		if ( !pathID || ( pSearchPath->GetPathID() == lookup ) )
@@ -2463,12 +2251,6 @@ int CBaseFileSystem::ReadFileEx( const char *pFileName, const char *pPath, void 
 	if ( !fp )
 	{
 		return 0;
-	}
-
-	if ( IsX360() )
-	{
-		// callers are sloppy, always want optimal
-		bOptimalAlloc = true;
 	}
 
 	SetBufferSize( fp, 0 );  // TODO: what if it's a pack file? restore buffer size?
@@ -2705,11 +2487,6 @@ public:
 	
 	~CFileOpenInfo()
 	{
-		if ( IsX360() )
-		{
-			return;
-		}
-
 		m_pFileSystem->m_FileWhitelist.ReleaseRef( m_pWhitelist );
 	}
 	
@@ -2736,11 +2513,6 @@ public:
 	// where the file came from, and possibly calculate a CRC if necessary.
 	void HandleFileCRCTracking( const char *pRelativeFileName )
 	{
-		if ( IsX360() )
-		{
-			return;
-		}
-
 		if ( m_pFileSystem->m_WhitelistFileTrackingEnabled != 1 || !m_bTrackCRCs )
 			return;
 		
@@ -2774,12 +2546,6 @@ public:
 	// Decides if the file must come from Steam or if it can be allowed to come off disk.
 	void DetermineFileLoadInfoParameters( CFileLoadInfo &fileLoadInfo, bool bIsAbsolutePath )
 	{
-		if ( IsX360() )
-		{
-			fileLoadInfo.m_bSteamCacheOnly = false;
-			return;
-		}
-
 		if ( m_bTrackCRCs && m_pWhitelist && m_pWhitelist->m_pAllowFromDiskList && !bIsAbsolutePath )
 		{
 			Assert( !V_IsAbsolutePath( m_pFileName ) ); // (This is what bIsAbsolutePath is supposed to tell us..)
@@ -2977,20 +2743,7 @@ FileHandle_t CBaseFileSystem::FindFileInSearchPaths(
 {
 	// Run through all the search paths.
 	PathTypeFilter_t pathFilter = FILTER_NONE;
-	if ( IsX360() )
-	{
-		if ( flags & FSOPEN_NEVERINPACK )
-		{
-			pathFilter = FILTER_CULLPACK;
-		}
-		else if ( m_DVDMode == DVDMODE_STRICT )
-		{
-			// most all files on the dvd are expected to be in the pack
-			// don't allow disk paths to be searched, which is very expensive on the dvd
-			pathFilter = FILTER_CULLNONPACK;
-		}
-	}
-
+	
 	CSearchPathsIterator iter( this, &pFileName, pathID, pathFilter );
 	for ( CSearchPath *pSearchPath = iter.GetFirst(); pSearchPath != NULL; pSearchPath = iter.GetNext() )
 	{
@@ -3934,11 +3687,6 @@ long CBaseFileSystem::GetPathTime( const char *pFileName, const char *pPathID )
 
 bool CBaseFileSystem::ShouldGameReloadFile( const char *pFilename )
 {
-	if ( IsX360() )
-	{
-		return false;
-	}
-
 	if ( V_IsAbsolutePath( pFilename ) )
 	{
 		if ( m_WhitelistSpewFlags & WHITELIST_SPEW_RELOAD_FILES )
@@ -4041,22 +3789,12 @@ bool CBaseFileSystem::ShouldGameReloadFile( const char *pFilename )
 
 void CBaseFileSystem::MarkAllCRCsUnverified()
 {
-	if ( IsX360() )
-	{
-		return;
-	}
-
 	m_FileTracker.MarkAllCRCsUnverified();
 }
 
 
 void CBaseFileSystem::CacheFileCRCs( const char *pPathname, ECacheCRCType eType, IFileList *pFilter )
 {
-	if ( IsX360() )
-	{
-		return;
-	}
-
 	// Get a list of the unique search path names (mod, game, platform, etc).
 	CUtlDict<int,int> searchPathNames;
 	m_SearchPathsMutex.Lock();
@@ -4074,11 +3812,6 @@ void CBaseFileSystem::CacheFileCRCs( const char *pPathname, ECacheCRCType eType,
 
 void CBaseFileSystem::CacheFileCRCs_R( const char *pPathname, ECacheCRCType eType, IFileList *pFilter, CUtlDict<int,int> &searchPathNames )
 {
-	if ( IsX360() )
-	{
-		return;
-	}
-
 	char searchStr[MAX_PATH];
 	bool bRecursive = false;
 
@@ -4174,11 +3907,6 @@ EFileCRCStatus CBaseFileSystem::CheckCachedFileCRC( const char *pPathID, const c
 
 void CBaseFileSystem::EnableWhitelistFileTracking( bool bEnable )
 {
-	if ( IsX360() )
-	{
-		return;
-	}
-
 	if ( m_WhitelistFileTrackingEnabled != -1 )
 	{
 		Error( "CBaseFileSystem::EnableWhitelistFileTracking called more than once." );
@@ -4190,11 +3918,6 @@ void CBaseFileSystem::EnableWhitelistFileTracking( bool bEnable )
 
 void CBaseFileSystem::RegisterFileWhitelist( IFileList *pWantCRCList, IFileList *pAllowFromDiskList, IFileList **pFilesToReload )
 {
-	if ( IsX360() )
-	{
-		return;
-	}
-
 	// We can assume the game is going to want CRCs for any files that came off disk after this, so
 	// calculate the CRCs for any files we didn't calculate it for before.
 	if ( pWantCRCList )
@@ -4257,25 +3980,9 @@ void CBaseFileSystem::SetWhitelistSpewFlags( int flags )
 //-----------------------------------------------------------------------------
 void CBaseFileSystem::FileTimeToString( char *pString, int maxCharsIncludingTerminator, long fileTime )
 {
-	if ( IsX360() )
-	{
-		char szTemp[ 256 ];
-
-		time_t time = fileTime;
-		Q_strncpy( szTemp, ctime( &time ), sizeof( szTemp ) );
-		char *pFinalColon = Q_strrchr( szTemp, ':' );
-		if ( pFinalColon )
-			*pFinalColon = '\0';
-
-		// Clip off the day of the week
-		Q_strncpy( pString, szTemp + 4, maxCharsIncludingTerminator );
-	}
-	else
-	{
-		time_t time = fileTime;
-		strncpy( pString, ctime( &time ), maxCharsIncludingTerminator );
-		pString[maxCharsIncludingTerminator-1] = '\0';
-	}
+	time_t time = fileTime;
+	strncpy( pString, ctime( &time ), maxCharsIncludingTerminator );
+	pString[maxCharsIncludingTerminator-1] = '\0';
 }
 
 //-----------------------------------------------------------------------------
@@ -4876,7 +4583,7 @@ void CBaseFileSystem::RemoveFile( char const* pRelativePath, const char *pathID 
 	char tempPathID[MAX_PATH];
 	ParsePathID( pRelativePath, pathID, tempPathID );
 
-	Assert( pathID || !IsX360() );
+	Assert( pathID );
 
 	// Opening for write or append uses Write Path
 	char szScratchFileName[MAX_PATH];
@@ -5171,37 +4878,6 @@ CBaseFileSystem::CSearchPath *CBaseFileSystem::CSearchPathsIterator::GetNext()
 		if ( CBaseFileSystem::FilterByPathID( pSearchPath, m_pathID ) )
 			continue;
 
-		// 360 can optionally ignore a local search path in dvddev mode
-		// ignoring a local search path falls through to its cloned remote path
-		// map paths are exempt from this exclusion logic
-		if ( IsX360() && ( m_DVDMode == DVDMODE_DEV ) && m_Filename[0] && !pSearchPath->m_bIsRemotePath )
-		{
-			bool bIsMapPath = pSearchPath->GetPackFile() && pSearchPath->GetPackFile()->m_bIsMapPath;
-			if ( !bIsMapPath )
-			{
-				bool bIgnorePath = false;
-				char szExcludePath[MAX_PATH];
-				char szFilename[MAX_PATH];
-				V_ComposeFileName( pSearchPath->GetPathString(), m_Filename, szFilename, sizeof( szFilename ) );
-				for ( int i = 0; i < m_ExcludePaths.Count(); i++ )
-				{
-					if ( g_pFullFileSystem->String( m_ExcludePaths[i], szExcludePath, sizeof( szExcludePath ) ) )
-					{
-						if ( !V_strnicmp( szFilename, szExcludePath, strlen( szExcludePath ) ) )
-						{
-							bIgnorePath = true;
-							break;
-						}
-					}
-				}
-				if ( bIgnorePath )
-				{
-					// filename matches exclusion path, skip it
-					continue;
-				}
-			}
-		}
-
 		if ( !m_visits.MarkVisit( *pSearchPath ) )
 			break;
 	}
@@ -5296,12 +4972,6 @@ static void AddSeperatorAndFixPath( char *str )
 		lastChar[2] = '\0';
 	}
 	Q_FixSlashes( str );
-
-	if ( IsX360() )
-	{
-		// 360 FS won't resolve any path with ../
-		V_RemoveDotSlashes( str );
-	}
 }
 
 //-----------------------------------------------------------------------------

@@ -12,9 +12,9 @@
 
 #include "OptionsDialog.h"
 
-class CControllerDialog : public COptionsDialogXbox
+class CControllerDialog : public COptionsDialog
 {
-	DECLARE_CLASS_SIMPLE( CControllerDialog, COptionsDialogXbox );
+	DECLARE_CLASS_SIMPLE( CControllerDialog, COptionsDialog );
 
 public:
 	CControllerDialog(vgui::Panel *parent);

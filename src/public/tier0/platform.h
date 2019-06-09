@@ -1108,9 +1108,7 @@ PLATFORM_INTERFACE struct tm *		Plat_localtime( const time_t *timep, struct tm *
 
 inline uint64 Plat_Rdtsc()
 {
-#if defined( _X360 )
-	return ( uint64 )__mftb32();
-#elif defined( _WIN64 )
+#if defined( _WIN64 )
 	return ( uint64 )__rdtsc();
 #elif defined( _WIN32 )
   #if defined( _MSC_VER ) && ( _MSC_VER >= 1400 )
