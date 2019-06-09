@@ -49,6 +49,10 @@ struct AISightIterVal_t
 	char  array;
 	short iNext;
 	char  SeenArray;
+
+#ifdef PLATFORM_64BITS
+	uint32 unused;
+#endif
 };
 
 #pragma pack(pop)
