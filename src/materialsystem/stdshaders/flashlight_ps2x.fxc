@@ -17,7 +17,6 @@
 // STATIC: "FLASHLIGHTDEPTHFILTERMODE"	"0..2"
 
 // DYNAMIC: "FLASHLIGHTSHADOWS"			"0..1"
-// DYNAMIC: "UBERLIGHT"					"0..1"
 
 // SKIP: !$WORLDVERTEXTRANSITION && $NORMALMAP2
 // SKIP: !$NORMALMAP && $NORMALMAP2
@@ -38,15 +37,6 @@ const float3 g_FlashLightPos				: register( PSREG_FRESNEL_SPEC_PARAMS );
 // asw
 // const float4 g_FlashlightPos				: register( PSREG_FLASHLIGHT_POSITION_RIM_BOOST );
 
-#if UBERLIGHT
-
-const float3 g_vSmoothEdge0					: register( PSREG_UBERLIGHT_SMOOTH_EDGE_0 );
-const float3 g_vSmoothEdge1					: register( PSREG_UBERLIGHT_SMOOTH_EDGE_1 );
-const float3 g_vSmoothOneOverWidth			: register( PSREG_UBERLIGHT_SMOOTH_EDGE_OOW );
-const float4 g_vShearRound					: register( PSREG_UBERLIGHT_SHEAR_ROUND );
-const float4 g_aAbB							: register( PSREG_UBERLIGHT_AABB );
-const float4x4 g_FlashlightWorldToLight		: register( PSREG_UBERLIGHT_WORLD_TO_LIGHT );
-#endif
 
 sampler SpotSampler							: register( s0 );
 sampler BaseTextureSampler					: register( s1 );
@@ -208,14 +198,6 @@ float4 main( PS_INPUT i ) : COLOR
 	flShadow = saturate(lerp( flAttenuated, flShadow, flAtten ));	// Blend between shadow and above, according to light attenuation
 	spotColor *= flShadow;
 #endif
-
-#if UBERLIGHT
-	// Transform from world space position to light space position
-	float3 flashlightSpacePosition = mul( float4( i.worldPos_worldTransition.xyz, 1.0f ), g_FlashlightWorldToLight ).yzx;
-	spotColor *= uberlight( flashlightSpacePosition, g_vSmoothEdge0, g_vSmoothEdge1,
-							g_vSmoothOneOverWidth, g_vShearRound.xy, g_aAbB, g_vShearRound.zw );
-#endif
-
 
 #if WORLDVERTEXTRANSITION && !defined( SHADER_MODEL_PS_2_0 )
 	baseColor.xyz = lerp( baseColor2.xyz, baseColor.xyz, lerpAlpha );

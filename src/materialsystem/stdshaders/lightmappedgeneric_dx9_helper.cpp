@@ -341,7 +341,6 @@ void DrawLightmappedAdvFlashlight_DX9_Internal( CBaseVSShader *pShader, IMateria
 		DECLARE_DYNAMIC_PIXEL_SHADER( lightmappedadv_flashlight_ps30 );
 		SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
 		SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, flashlightState.m_bEnableShadows );
-		SET_DYNAMIC_PIXEL_SHADER_COMBO( UBERLIGHT, flashlightState.m_bUberlight );
 		SET_DYNAMIC_PIXEL_SHADER( lightmappedadv_flashlight_ps30 );
 
 		float atten[4];										// Set the flashlight attenuation factors
