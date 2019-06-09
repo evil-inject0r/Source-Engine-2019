@@ -6,9 +6,8 @@
 //===========================================================================//
 
 #include "BaseVSShader.h"
-#include "motion_blur_vs20.inc"
-#include "motion_blur_ps20.inc"
-#include "motion_blur_ps20b.inc"
+#include "motion_blur_vs30.inc"
+#include "motion_blur_ps30.inc"
 #include "convar.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -55,19 +54,11 @@ BEGIN_VS_SHADER_FLAGS( MotionBlur_dx9, "Motion Blur", SHADER_NOT_EDITABLE )
 			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, false );
 			pShaderShadow->EnableSRGBWrite( false );
 
-			DECLARE_STATIC_VERTEX_SHADER( motion_blur_vs20 );
-			SET_STATIC_VERTEX_SHADER( motion_blur_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( motion_blur_vs30 );
+			SET_STATIC_VERTEX_SHADER( motion_blur_vs30 );
 
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( motion_blur_ps20b );
-				SET_STATIC_PIXEL_SHADER( motion_blur_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( motion_blur_ps20 );
-				SET_STATIC_PIXEL_SHADER( motion_blur_ps20 );
-			}
+			DECLARE_STATIC_PIXEL_SHADER( motion_blur_ps30 );
+			SET_STATIC_PIXEL_SHADER( motion_blur_ps30 );
 
 			pShaderShadow->EnableDepthWrites( false );
 			pShaderShadow->EnableAlphaWrites( false );
@@ -75,8 +66,8 @@ BEGIN_VS_SHADER_FLAGS( MotionBlur_dx9, "Motion Blur", SHADER_NOT_EDITABLE )
 
 		DYNAMIC_STATE
 		{
-			DECLARE_DYNAMIC_VERTEX_SHADER( motion_blur_vs20 );
-			SET_DYNAMIC_VERTEX_SHADER( motion_blur_vs20 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( motion_blur_vs30 );
+			SET_DYNAMIC_VERTEX_SHADER( motion_blur_vs30 );
 
 			// Bind textures
 			BindTexture( SHADER_SAMPLER0, BASETEXTURE );
@@ -109,19 +100,10 @@ BEGIN_VS_SHADER_FLAGS( MotionBlur_dx9, "Motion Blur", SHADER_NOT_EDITABLE )
 				// No motion blur this frame, so force quality to 0
 				nQuality = 0;
 			}
-
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( motion_blur_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( QUALITY, nQuality );
-				SET_DYNAMIC_PIXEL_SHADER( motion_blur_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( motion_blur_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( QUALITY, nQuality );
-				SET_DYNAMIC_PIXEL_SHADER( motion_blur_ps20 );
-			}
+			
+			DECLARE_DYNAMIC_PIXEL_SHADER( motion_blur_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( QUALITY, nQuality );
+			SET_DYNAMIC_PIXEL_SHADER( motion_blur_ps30 );
 		}
 
 		Draw();

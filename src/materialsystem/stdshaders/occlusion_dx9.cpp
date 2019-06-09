@@ -7,9 +7,8 @@
 
 #include "BaseVSShader.h"
 
-#include "writez_vs20.inc"
-#include "white_ps20.inc"
-#include "white_ps20b.inc"
+#include "writez_vs30.inc"
+#include "white_ps30.inc"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -47,8 +46,8 @@ BEGIN_VS_SHADER_FLAGS( Occlusion_DX9, "Help for Occlusion", SHADER_NOT_EDITABLE 
 			pShaderShadow->EnableAlphaWrites( false );
 			pShaderShadow->EnableDepthWrites( false );
 
-			DECLARE_STATIC_VERTEX_SHADER( writez_vs20 );
-			SET_STATIC_VERTEX_SHADER( writez_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( writez_vs30 );
+			SET_STATIC_VERTEX_SHADER( writez_vs30 );
 
 			//no pixel shader, doubles fill rate.
 
@@ -60,10 +59,10 @@ BEGIN_VS_SHADER_FLAGS( Occlusion_DX9, "Help for Occlusion", SHADER_NOT_EDITABLE 
 		}
 		DYNAMIC_STATE
 		{
-			DECLARE_DYNAMIC_VERTEX_SHADER( writez_vs20 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( writez_vs30 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
-			SET_DYNAMIC_VERTEX_SHADER( writez_vs20 );
+			SET_DYNAMIC_VERTEX_SHADER( writez_vs30 );
 
 			//no pixel shader, doubles fill rate.
 		}
