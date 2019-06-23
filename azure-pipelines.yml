@@ -16,6 +16,7 @@ steps:
 - task: CmdLine@2
   displayName: Create solution using VPC
   inputs:
+    workingDirectory: '$(Agent.BuildDirectory)'
     script: 'echo .\src\devtools\bin\vpc.exe /hl2 /hl2mp /episodic /hl2r +everything /define:VS2019 /mksln everything.sln
 
     dir src
@@ -29,3 +30,10 @@ steps:
   inputs:
     solution: '**/*.sln'
     configuration: 'Release'
+
+- task: CmdLine@2
+  inputs:
+    script: 'echo Write your commands here
+      
+      echo Use the environment variables input below to pass secret variables to this script'
+    workingDirectory: '$(Agent.BuildDirectory)'
