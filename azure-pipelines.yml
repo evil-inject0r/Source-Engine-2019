@@ -13,7 +13,7 @@ pool:
 steps:
 
 # run vpc first
-- task: cmd-run-vpc
+- task: CmdLine@2
   displayName: Create solution using VPC
   inputs:
     script: 'echo .\devtools\bin\vpc.exe /hl2 /hl2mp /episodic /hl2r +everything /define:VS2019 /mksln everything.sln'
@@ -21,7 +21,7 @@ steps:
 # todo: fix solution file so its msbuild compatible
 
 # run msbuild on the solution
-- task: build-msbuild
+- task: MSBuild@1
   displayName: Build solution using Visual Studio 2019
   inputs:
     solution: '**/*.sln'
