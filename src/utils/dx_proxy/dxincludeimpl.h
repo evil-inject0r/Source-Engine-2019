@@ -14,9 +14,9 @@
 
 FileCache s_incFileCache;
 
-struct DxIncludeImpl : public ID3DXInclude
+struct DxIncludeImpl : public ID3DInclude
 {
-	STDMETHOD(Open)(THIS_ D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
+	STDMETHOD(Open)(THIS_ D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
 	{
 		CachedFileData *pFileData = s_incFileCache.Get( pFileName );
 		if ( !pFileData || !pFileData->IsValid() )
@@ -30,7 +30,7 @@ struct DxIncludeImpl : public ID3DXInclude
 		return S_OK;
 	}
 
-	STDMETHOD(Open)(THIS_ D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData,
+	STDMETHOD(Open)(THIS_ D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData,
 		LPCVOID *ppData, UINT *pBytes,
 		/* OUT */ LPSTR pFullPath, DWORD cbFullPath)
 	{
