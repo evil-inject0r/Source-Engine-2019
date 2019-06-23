@@ -17,7 +17,7 @@ steps:
   displayName: Create solution using VPC
   inputs:
     workingDirectory: '$(Build.Repository.LocalPath)'
-    script: 'echo .\src\devtools\bin\vpc.exe /hl2 /hl2mp /episodic /hl2r +everything /define:VS2019 /mksln everything.sln
+    script: '.\src\devtools\bin\vpc.exe /hl2 /hl2mp /episodic /hl2r +everything /define:VS2019 /mksln everything.sln
 
     dir src
     '
