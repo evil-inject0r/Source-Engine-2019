@@ -1,0 +1,42 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-2019'
+
+# build steps
+steps:
+
+# run vpc first
+- task: CmdLine@2
+  displayName: Create solution using VPC
+  inputs:
+    workingDirectory: '$(Build.Repository.LocalPath)'
+    script: '
+    cd src\
+    
+    devtools\bin\vpc.exe /hl2 /hl2mp /episodic /hl2r +everything /define:VS2019 /mksln everything.sln
+
+    dir src
+    '
+
+# todo: fix solution file so its msbuild compatible
+
+# run msbuild on the solution
+- task: MSBuild@1
+  displayName: Build solution using Visual Studio 2019
+  inputs:
+    solution: '**/*.sln'
+    configuration: 'Release'
+
+- task: CmdLine@2
+  inputs:
+    script: 'echo Write your commands here
+      
+      echo Use the environment variables input below to pass secret variables to this script'
+    workingDirectory: '$(Build.Repository.LocalPath)'
