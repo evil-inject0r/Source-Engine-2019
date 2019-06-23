@@ -17,7 +17,8 @@ steps:
   displayName: Create solution using VPC
   inputs:
     script: 'echo .\devtools\bin\vpc.exe /hl2 /hl2mp /episodic /hl2r +everything /define:VS2019 /mksln everything.sln
-    dir .\
+
+    dir .
     '
 
 # todo: fix solution file so its msbuild compatible
