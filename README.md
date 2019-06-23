@@ -3,6 +3,9 @@ Custom Source Engine branch based on Source Engine 2007 currently available on W
 
 **Pull this repository with recursive submodules (`git clone --recursive`) to clone hl2r**
 
+
+[![Build Status](https://dev.azure.com/evil-inject0r/source%20engine%202019/_apis/build/status/evil-inject0r.Source-Engine-2019?branchName=master)](https://dev.azure.com/evil-inject0r/source%20engine%202019/_build/latest?definitionId=1&branchName=master)
+
 ## Building
 
 ### Windows
