@@ -408,11 +408,7 @@ CIndexBuffer::~CIndexBuffer()
 //-----------------------------------------------------------------------------
 inline bool CIndexBuffer::HasEnoughRoom( int numIndices ) const
 {
-#if !defined( _X360 )
 	return ( numIndices + m_Position ) <= m_IndexCount;
-#else
-	return numIndices <= m_IndexCount; //the ring buffer will free room as needed
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -421,70 +417,6 @@ inline bool CIndexBuffer::HasEnoughRoom( int numIndices ) const
 inline void CIndexBuffer::BlockUntilUnused( int nAllocationSize )
 {
 	Assert( nAllocationSize <= m_IndexCount );
-
-#ifdef _X360
-	Assert( (m_AllocationRing.Count() != 0) || ((m_Position == 0) && (m_iNextBlockingPosition == m_iAllocationCount)) );
-
-	if ( (m_iNextBlockingPosition - m_Position) >= nAllocationSize )
-		return;
-
-	Assert( (m_AllocationRing[m_AllocationRing.Head()].m_iStartOffset == 0) || ((m_iNextBlockingPosition == m_AllocationRing[m_AllocationRing.Head()].m_iStartOffset) && (m_Position <= m_iNextBlockingPosition)) );
-
-	int iMinBlockPosition = m_Position + nAllocationSize;
-	if( iMinBlockPosition > m_iAllocationCount )
-	{
-		//Allocation requires us to wrap
-		iMinBlockPosition = nAllocationSize;
-		m_Position = 0;
-
-		//modify the last allocation so that it uses up the whole tail end of the buffer. Makes other code simpler
-		Assert( m_AllocationRing.Count() != 0 );
-		m_AllocationRing[m_AllocationRing.Tail()].m_iEndOffset = m_iAllocationCount;
-
-		//treat all allocations between the current position and the tail end of the ring as freed since they will be before we unblock
-		while( m_AllocationRing.Count() ) 
-		{
-			unsigned int head = m_AllocationRing.Head();
-			if( m_AllocationRing[head].m_iStartOffset == 0 )
-				break;
-
-			m_AllocationRing.Remove( head );
-		}
-	}
-
-	//now we go through the allocations until we find the last fence we care about. Treat everything up until that fence as freed.
-	DWORD FinalFence = 0;
-	while( m_AllocationRing.Count() )
-	{
-		unsigned int head = m_AllocationRing.Head();		
-		
-		if( m_AllocationRing[head].m_iEndOffset >= iMinBlockPosition )
-		{
-			//When this frees, we'll finally have enough space for the allocation
-			FinalFence = m_AllocationRing[head].m_Fence;
-			m_iNextBlockingPosition = m_AllocationRing[head].m_iEndOffset;
-			m_AllocationRing.Remove( head );
-			break;
-		}
-		m_AllocationRing.Remove( head );
-	}
-	Assert( FinalFence != 0 );
-
-#ifdef SPEW_INDEX_BUFFER_STALLS
-	if( Dx9Device()->IsFencePending( FinalFence ) )
-	{
-		float st = Plat_FloatTime();
-#endif
-
-		Dx9Device()->BlockOnFence( FinalFence );
-
-#ifdef SPEW_INDEX_BUFFER_STALLS	
-		float dt = Plat_FloatTime() - st;
-		Warning( "Blocked locking dynamic index buffer for %f ms!\n", 1000.0 * dt );
-	}
-#endif
-
-#endif
 }
 
 
@@ -494,13 +426,6 @@ inline void CIndexBuffer::BlockUntilUnused( int nAllocationSize )
 unsigned short* CIndexBuffer::Lock( bool bReadOnly, int numIndices, int& startIndex, int startPosition )
 {
 	Assert( !m_bLocked );
-
-#if defined( _X360 )
-	if ( m_pIB && m_pIB->IsSet( Dx9Device() ) )
-	{
-		Unbind( m_pIB );
-	}
-#endif
 
 	unsigned short* pLockedData = NULL;
 
@@ -516,17 +441,15 @@ unsigned short* CIndexBuffer::Lock( bool bReadOnly, int numIndices, int& startIn
 		return 0; 
 	}
 	
-#ifndef _X360
 	if ( !m_pIB )
 		return 0;
-#endif
 
 	DWORD dwFlags;
 	
 	if ( m_bDynamic )
 	{
 		Assert( startPosition < 0 );
-#if !defined( _X360 )
+
 		dwFlags = LOCKFLAGS_APPEND;
 	
 		// If either user forced us to flush,
@@ -541,36 +464,6 @@ unsigned short* CIndexBuffer::Lock( bool bReadOnly, int numIndices, int& startIn
 
 			dwFlags = LOCKFLAGS_FLUSH;
 		}
-#else
-		if ( m_bFlush )
-		{
-#			if ( defined( X360_BLOCK_ON_IB_FLUSH ) )
-			{
-				if( m_AllocationRing.Count() )
-				{
-					DWORD FinalFence = m_AllocationRing[m_AllocationRing.Tail()].m_Fence;
-
-					m_AllocationRing.RemoveAll();
-					m_Position = 0;
-					m_iNextBlockingPosition = m_iAllocationCount;
-
-#				if ( defined( SPEW_VERTEX_BUFFER_STALLS ) )
-					if( Dx9Device()->IsFencePending( FinalFence ) )
-					{
-						float st = Plat_FloatTime();
-#				endif
-						Dx9Device()->BlockOnFence( FinalFence );
-#				if ( defined ( SPEW_VERTEX_BUFFER_STALLS ) )
-						float dt = Plat_FloatTime() - st;
-						Warning( "Blocked FLUSHING dynamic index buffer for %f ms!\n", 1000.0 * dt );
-					}
-#				endif
-				}
-			}
-#			endif
-			m_bFlush = false;
-		}
-#endif
 	}
 	else
 	{
@@ -601,7 +494,6 @@ unsigned short* CIndexBuffer::Lock( bool bReadOnly, int numIndices, int& startIn
 
 	HRESULT hr = D3D_OK;
 
-#if !defined( _X360 )
 	if ( m_bDynamic )
 	{
 		hr = Dx9Device()->Lock( m_pIB, position * IndexSize(), numIndices * IndexSize(), 
@@ -612,24 +504,7 @@ unsigned short* CIndexBuffer::Lock( bool bReadOnly, int numIndices, int& startIn
 		hr = Dx9Device()->Lock( m_pIB, position * IndexSize(),  numIndices * IndexSize(), 
 						   reinterpret_cast< void** >( &pLockedData ), dwFlags );
 	}
-#else
-	if ( m_bDynamic )
-	{
-		// Block until earlier parts of the buffer are free
-		BlockUntilUnused( numIndices );
-		position = m_Position;
-		m_pIB = NULL;
-		Assert( (m_Position + numIndices) <= m_iAllocationCount );
-	}
-	else
-	{
-		//static, block until last lock finished?
-		m_Position = position;
-	}
-	pLockedData = (unsigned short *)(m_pAllocatedMemory + (position * IndexSize()));
 	
-#endif
-
 	switch ( hr )
 	{
 		case D3DERR_INVALIDCALL:
@@ -661,11 +536,7 @@ unsigned short* CIndexBuffer::Lock( bool bReadOnly, int numIndices, int& startIn
 
 void CIndexBuffer::Unlock( int numIndices )
 {
-#if defined( _X360 )
-	Assert( (m_Position + numIndices) <= m_iAllocationCount );
-#else
 	Assert( (m_Position + numIndices) <= m_IndexCount );
-#endif
 
 	if ( !m_bLocked )
 		return;
@@ -674,10 +545,8 @@ void CIndexBuffer::Unlock( int numIndices )
 	if( m_bDynamic )
 		ALIGN_VALUE( numIndices, 2 );
 
-#ifndef _X360
 	if ( !m_pIB )
 		return;
-#endif
 
 	RECORD_COMMAND( DX8_UNLOCK_INDEX_BUFFER, 1 );
 	RECORD_INT( m_UID );
@@ -687,7 +556,6 @@ void CIndexBuffer::Unlock( int numIndices )
 	m_LockedNumIndices = 0;
 #endif
 
-#if !defined( _X360 )
 	if ( m_bDynamic )
 	{
 		Dx9Device()->Unlock( m_pIB, &m_LockData, numIndices*IndexSize() );
@@ -696,43 +564,6 @@ void CIndexBuffer::Unlock( int numIndices )
 	{
 		Dx9Device()->Unlock( m_pIB );
 	}
-#else
-	if ( m_bDynamic )
-	{
-		Assert( (m_Position == 0) || (m_AllocationRing[m_AllocationRing.Tail()].m_iEndOffset == m_Position) );
-
-		DynamicBufferAllocation_t LockData;
-		LockData.m_Fence = Dx9Device()->GetCurrentFence(); //This isn't the correct fence, but it's all we have access to for now and it'll provide marginal safety if something goes really wrong.
-		LockData.m_iStartOffset	= m_Position;
-		LockData.m_iEndOffset = LockData.m_iStartOffset + numIndices;
-		Assert( (LockData.m_iStartOffset == 0) || (LockData.m_iStartOffset == m_AllocationRing[m_AllocationRing.Tail()].m_iEndOffset) );
-		m_AllocationRing.AddToTail( LockData );
-		
-		void* pLockedData = m_pAllocatedMemory + (LockData.m_iStartOffset * IndexSize());
-		
-		//Always re-use the same index buffer header based on the assumption that D3D copies it off in the draw calls.
-		m_pIB = &m_D3DIndexBuffer;
-		XGSetIndexBufferHeader( numIndices * IndexSize(), 0, D3DFMT_INDEX16, 0, 0, m_pIB );
-		XGOffsetResourceAddress( m_pIB, pLockedData );
-
-		// Invalidate the GPU caches for this memory.
-		// FIXME: Should dynamic allocations be 4k aligned?
-		Dx9Device()->InvalidateGpuCache( pLockedData, numIndices * IndexSize(), 0 );
-	}
-	else
-	{
-		if ( !m_pIB )
-		{
-			int nBufferSize = m_IndexCount * IndexSize();
-			XGSetIndexBufferHeader( nBufferSize, 0, D3DFMT_INDEX16, 0, 0, &m_D3DIndexBuffer );
-			XGOffsetResourceAddress( &m_D3DIndexBuffer, m_pAllocatedMemory );
-			m_pIB = &m_D3DIndexBuffer;
-		}
-
-		// Invalidate the GPU caches for this memory.
-		Dx9Device()->InvalidateGpuCache( m_pAllocatedMemory, m_IndexCount * IndexSize(), 0 );
-	}
-#endif
 
 	m_Position += numIndices;
 	m_bLocked = false;

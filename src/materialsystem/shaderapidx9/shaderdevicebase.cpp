@@ -6,9 +6,7 @@
 //
 //===========================================================================//
 
-#ifndef _X360
 #include <windows.h>
-#endif
 
 #include "shaderdevicebase.h"
 #include "tier1/keyvalues.h"
@@ -488,12 +486,7 @@ KeyValues *CShaderDeviceMgrBase::ReadDXSupportKeyValues()
 	KeyValues *pCfg = new KeyValues( "dxsupport" );
 
 	const char *pPathID = "EXECUTABLE_PATH";
-	if ( IsX360() && g_pFullFileSystem->GetDVDMode() == DVDMODE_STRICT )
-	{
-		// 360 dvd optimzation, expect it inside the platform zip
-		pPathID = "PLATFORM";
-	}
-
+	
 	// First try to read a game-specific config, if it exists
 	if ( !pCfg->LoadFromFile( g_pFullFileSystem, SUPPORT_CFG_FILE, pPathID ) )
 	{
@@ -909,7 +902,6 @@ static BOOL CALLBACK EnumWindowsProcNotThis( HWND hWnd, LPARAM lParam )
 
 static LRESULT CALLBACK ShaderDX8WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-#if !defined( _X360 )
 	// FIXME: Should these IPC messages tell when an app has focus or not?
 	// If so, we'd want to totally disable the shader api layer when an app
 	// doesn't have focus.
@@ -943,7 +935,6 @@ static LRESULT CALLBACK ShaderDX8WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 	}
 
 	return DefWindowProc( hWnd, msg, wParam, lParam );
-#endif
 }
 
 
@@ -954,7 +945,6 @@ void CShaderDeviceBase::InstallWindowHook( void* hWnd )
 {
 	Assert( m_hWndCookie == NULL );
 
-#if !defined( _X360 )
 	HWND hParent = GetTopmostParentWindow( (HWND)hWnd );
 
 	// Attach a child window to the parent; we're gonna store special info there
@@ -978,12 +968,10 @@ void CShaderDeviceBase::InstallWindowHook( void* hWnd )
 
 	// Marks it as a material system window
 	SetWindowLongPtr( (HWND)m_hWndCookie, GWLP_USERDATA, MATERIAL_SYSTEM_WINDOW_ID );
-#endif
 }
 
 void CShaderDeviceBase::RemoveWindowHook( void* hWnd )
 {
-#if !defined( _X360 )
 	if ( m_hWndCookie )
 	{
 		DestroyWindow( (HWND)m_hWndCookie ); 
@@ -993,7 +981,6 @@ void CShaderDeviceBase::RemoveWindowHook( void* hWnd )
 	HWND hParent = GetTopmostParentWindow( (HWND)hWnd );
 	HINSTANCE hInst = (HINSTANCE)GetWindowLongPtr( hParent, GWLP_HINSTANCE );
 	UnregisterClass( "shaderdx9", hInst );
-#endif
 }
 
 
@@ -1002,7 +989,6 @@ void CShaderDeviceBase::RemoveWindowHook( void* hWnd )
 //-----------------------------------------------------------------------------
 void CShaderDeviceBase::SendIPCMessage( IPCMessage_t msg )
 {
-#if !defined( _X360 )
 	// Gotta send this to all windows, since we don't know which ones
 	// are material system apps...
 	if ( msg != EVICT_MESSAGE )
@@ -1013,7 +999,6 @@ void CShaderDeviceBase::SendIPCMessage( IPCMessage_t msg )
 	{
 		EnumWindows( EnumWindowsProcNotThis, (DWORD)msg );
 	}
-#endif
 }
 
 

@@ -23,10 +23,7 @@
 #include "materialsystem/materialsystem_config.h"
 #include "vertexshaderdx8.h"
 #include "recording.h"
-
-#ifndef _X360
 #include "wmi.h"
-#endif
 
 
 //-----------------------------------------------------------------------------
@@ -156,13 +153,10 @@ void CShaderDeviceMgrDx8::Shutdown( )
 //-----------------------------------------------------------------------------
 // Inline methods
 //-----------------------------------------------------------------------------
-#if !defined( _X360 )
 bool CShaderDeviceDx8::IsActive() const
 {
 	return Dx9Device()->IsActive();
 }
-#endif
-
 
 //-----------------------------------------------------------------------------
 // Initialize adapter information
@@ -648,22 +642,15 @@ bool CShaderDeviceMgrDx8::ComputeCapsFromD3D( HardwareCaps_t *pCaps, int nAdapte
 	pCaps->m_UseFastClipping = false;
 
 	// query for SRGB support as needed for our DX 9 stuff
-	if ( IsPC() || !IsX360() )
+
+	pCaps->m_SupportsSRGB = ( D3D()->CheckDeviceFormat( nAdapter, DX8_DEVTYPE,
+		D3DFMT_X8R8G8B8, D3DUSAGE_QUERY_SRGBREAD, D3DRTYPE_TEXTURE, D3DFMT_DXT1 ) == S_OK);
+
+	if ( pCaps->m_SupportsSRGB )
 	{
 		pCaps->m_SupportsSRGB = ( D3D()->CheckDeviceFormat( nAdapter, DX8_DEVTYPE,
-			D3DFMT_X8R8G8B8, D3DUSAGE_QUERY_SRGBREAD, D3DRTYPE_TEXTURE, D3DFMT_DXT1 ) == S_OK);
-
-		if ( pCaps->m_SupportsSRGB )
-		{
-			pCaps->m_SupportsSRGB = ( D3D()->CheckDeviceFormat( nAdapter, DX8_DEVTYPE,
-				D3DFMT_X8R8G8B8, D3DUSAGE_QUERY_SRGBREAD | D3DUSAGE_QUERY_SRGBWRITE,
-				D3DRTYPE_TEXTURE, D3DFMT_A8R8G8B8 ) == S_OK);
-		}
-	}
-	else
-	{
-		// 360 does support it, but is queried in the wrong manner, so force it
-		pCaps->m_SupportsSRGB = true;
+			D3DFMT_X8R8G8B8, D3DUSAGE_QUERY_SRGBREAD | D3DUSAGE_QUERY_SRGBWRITE,
+			D3DRTYPE_TEXTURE, D3DFMT_A8R8G8B8 ) == S_OK);
 	}
 
 	if ( CommandLine()->CheckParm( "-nosrgb" ) )
@@ -756,8 +743,7 @@ bool CShaderDeviceMgrDx8::ComputeCapsFromD3D( HardwareCaps_t *pCaps, int nAdapte
 		//		(caps.PrimitiveMiscCaps & D3DPMISCCAPS_SEPARATEALPHABLEND) &&
 		bSupportsFloat16Textures &&
 		bSupportsFloat16RenderTargets &&
-		pCaps->m_SupportsSRGB && 
-		!IsX360();
+		pCaps->m_SupportsSRGB;
 
 	pCaps->m_MaxHDRType = HDR_TYPE_NONE;
 	if ( bSupportsFloatHDR )
@@ -1227,7 +1213,7 @@ void CShaderDeviceDx8::SetPresentParameters( void* hWnd, int nAdapter, const Sha
 	m_PresentParameters.SwapEffect = info.m_bUsingMultipleWindows ? D3DSWAPEFFECT_COPY : D3DSWAPEFFECT_DISCARD;
 
 	// for 360, we want to create it ourselves for hierarchical z support
-	m_PresentParameters.EnableAutoDepthStencil = IsX360() ? FALSE : TRUE; 
+	m_PresentParameters.EnableAutoDepthStencil = TRUE; 
 
 	// What back-buffer format should we use?
 	ImageFormat backBufferFormat = FindNearestSupportedBackBufferFormat( nAdapter,

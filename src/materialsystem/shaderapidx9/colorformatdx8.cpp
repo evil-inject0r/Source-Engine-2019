@@ -59,7 +59,7 @@ static bool TestTextureFormat( D3DFORMAT format, bool bIsRenderTarget,
 	HRESULT hr;
 
 	// IHV depth texture formats require a slightly different check...
-	if ( !IsX360() && bIsRenderTarget && ( ( format == NVFMT_RAWZ ) || ( format == NVFMT_INTZ   ) ||
+	if ( bIsRenderTarget && ( ( format == NVFMT_RAWZ ) || ( format == NVFMT_INTZ   ) ||
 										   ( format == D3DFMT_D16 ) || ( format == D3DFMT_D24S8 ) ||
 										   ( format == ATIFMT_D16 ) || ( format == ATIFMT_D24S8 ) ) )
 	{
@@ -67,17 +67,12 @@ static bool TestTextureFormat( D3DFORMAT format, bool bIsRenderTarget,
 			g_DisplayAdapter, g_DeviceType, ImageLoader::ImageFormatToD3DFormat( g_DeviceFormat ),
 			D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_TEXTURE, format );
 	}
-	else if ( !IsX360() || !bIsRenderTarget )
+	else if ( !bIsRenderTarget )
 	{
 		// See if we can do it!
 		hr = D3D()->CheckDeviceFormat( 
 			g_DisplayAdapter, g_DeviceType, ImageLoader::ImageFormatToD3DFormat( g_DeviceFormat ),
 			nUsage, D3DRTYPE_TEXTURE, format );
-	}
-	else // 360
-	{
-		// 360 can only validate render targets as surface display format
-		hr = D3D()->CheckDeviceFormat( g_DisplayAdapter, g_DeviceType, format, 0, D3DRTYPE_SURFACE, format );
 	}
 
     return SUCCEEDED( hr );
