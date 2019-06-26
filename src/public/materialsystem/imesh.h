@@ -181,7 +181,7 @@ struct MeshDesc_t : public VertexDesc_t, public IndexDesc_t
 //-----------------------------------------------------------------------------
 // Standard vertex formats for models
 //-----------------------------------------------------------------------------
-struct ModelVertexDX7_t
+struct ModelVertexDX8_t
 {
 	Vector			m_vecPosition;
 	Vector2D		m_flBoneWeights;
@@ -189,10 +189,6 @@ struct ModelVertexDX7_t
 	Vector			m_vecNormal;
 	unsigned int	m_nColor;	// ARGB
 	Vector2D		m_vecTexCoord;
-};
-
-struct ModelVertexDX8_t	: public ModelVertexDX7_t
-{
 	Vector4D		m_vecUserData;
 };
 
@@ -360,10 +356,6 @@ public:
 	virtual void DisableFlexMesh() = 0;
 
 	virtual void MarkAsDrawn() = 0;
-
-#if defined( _X360 )
-	virtual unsigned ComputeMemoryUsed() = 0;
-#endif
 };
 
 

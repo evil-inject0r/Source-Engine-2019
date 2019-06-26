@@ -63,7 +63,7 @@ float3 VertexShaderAmbientLight( const float3 worldNormal, const float3 cAmbient
 
 float3 AmbientLight( const float3 worldNormal, const float3 cAmbientCube[6] )
 {
-#if defined( SHADER_MODEL_VS_2_0 ) || defined( SHADER_MODEL_VS_3_0 )
+#if defined( SHADER_MODEL_VS_3_0 )
 	return VertexShaderAmbientLight( worldNormal, cAmbientCube );
 #else
 	return PixelShaderAmbientLight( worldNormal, cAmbientCube );
