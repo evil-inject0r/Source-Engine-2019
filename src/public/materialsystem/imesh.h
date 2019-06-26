@@ -2673,25 +2673,12 @@ public:
 	// Fast Vertex! No need to call advance vertex, and no random access allowed. 
 	// WARNING - these are low level functions that are intended only for use
 	// in the software vertex skinner.
-	void FastVertex( const ModelVertexDX7_t &vertex );
-	void FastVertexSSE( const ModelVertexDX7_t &vertex );
-
-	// store 4 dx7 vertices fast. for special sse dx7 pipeline
-	void Fast4VerticesSSE( 
-		ModelVertexDX7_t const *vtx_a,
-		ModelVertexDX7_t const *vtx_b,
-		ModelVertexDX7_t const *vtx_c,
-		ModelVertexDX7_t const *vtx_d);
 
 	void FastVertex( const ModelVertexDX8_t &vertex );
 	void FastVertexSSE( const ModelVertexDX8_t &vertex );
 
 	// Add number of verts and current vert since FastVertexxx routines do not update.
 	void FastAdvanceNVertices(int n);	
-
-#if defined( _X360 )
-	void VertexDX8ToX360( const ModelVertexDX8_t &vertex );
-#endif
 
 private:
 	// Computes number of verts and indices 
@@ -3244,23 +3231,6 @@ FORCEINLINE void CMeshBuilder::FastAdvanceNVertices( int nVertexCount )
 //-----------------------------------------------------------------------------
 // Fast Vertex! No need to call advance vertex, and no random access allowed
 //-----------------------------------------------------------------------------
-FORCEINLINE void CMeshBuilder::FastVertex( const ModelVertexDX7_t &vertex )
-{
-	m_VertexBuilder.FastVertex( vertex );
-}
-
-FORCEINLINE void CMeshBuilder::FastVertexSSE( const ModelVertexDX7_t &vertex )
-{
-	m_VertexBuilder.FastVertexSSE( vertex );
-}
-
-FORCEINLINE void CMeshBuilder::Fast4VerticesSSE( 
-	const ModelVertexDX7_t *vtx_a, const ModelVertexDX7_t *vtx_b,
-	const ModelVertexDX7_t *vtx_c, const ModelVertexDX7_t *vtx_d )
-{
-	m_VertexBuilder.Fast4VerticesSSE( vtx_a, vtx_b, vtx_c, vtx_d );
-}
-
 FORCEINLINE void CMeshBuilder::FastVertex( const ModelVertexDX8_t &vertex )
 {
 	m_VertexBuilder.FastVertex( vertex );
@@ -3270,16 +3240,6 @@ FORCEINLINE void CMeshBuilder::FastVertexSSE( const ModelVertexDX8_t &vertex )
 {
 	m_VertexBuilder.FastVertexSSE( vertex );
 }
-
-//-----------------------------------------------------------------------------
-// Copies a vertex into the x360 format
-//-----------------------------------------------------------------------------
-#if defined( _X360 )
-inline void CMeshBuilder::VertexDX8ToX360( const ModelVertexDX8_t &vertex )
-{
-	m_VertexBuilder.VertexDX8ToX360( vertex );
-}
-#endif
 
 //-----------------------------------------------------------------------------
 // Vertex field setting methods

@@ -1437,19 +1437,11 @@ public:
 				// copy 1..3 verts
 				while(n_iters!=-4)
 				{
-					meshBuilder.FastVertexSSE( *(ModelVertexDX7_t*)dst );
+					meshBuilder.FastVertexSSE( *dst );
 					n_iters--;
 					dst++;
 				}
 				break;
-			}
-			else
-			{
-				meshBuilder.Fast4VerticesSSE( 
-					(ModelVertexDX7_t*)&(dst[0]),
-					(ModelVertexDX7_t*)&(dst[1]),
-					(ModelVertexDX7_t*)&(dst[2]),
-					(ModelVertexDX7_t*)&(dst[3]));
 			}
 		}
 		meshBuilder.FastAdvanceNVertices( numVertices );
