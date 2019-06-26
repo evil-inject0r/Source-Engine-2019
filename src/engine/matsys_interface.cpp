@@ -1120,13 +1120,6 @@ void InitMaterialSystem( void )
 #ifndef SWDS
 	DispInfo_InitMaterialSystem();
 #endif
-
-#ifdef BENCHMARK
-	if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 )
-	{
-		Error( "dx6 and dx7 hardware not supported by this benchmark!" );
-	}
-#endif
 }
 
 void ShutdownMaterialSystem( void )

@@ -1432,9 +1432,8 @@ void CDmeMesh::SetDeltaStateWeight( int nDeltaIndex, MeshDeltaWeightType_t type,
 //-----------------------------------------------------------------------------
 VertexFormat_t CDmeMesh::ComputeHwMeshVertexFormat( void )
 {
-	bool           bIsDX7       = !g_pMaterialSystemHardwareConfig->SupportsVertexAndPixelShaders();
 	VertexFormat_t vertexFormat = VERTEX_POSITION | VERTEX_COLOR | VERTEX_NORMAL | VERTEX_TEXCOORD_SIZE(0,2) | VERTEX_BONEWEIGHT(2) | VERTEX_BONE_INDEX
-									| ( bIsDX7 ? 0 : VERTEX_USERDATA_SIZE(4) );
+									| VERTEX_USERDATA_SIZE(4) ;
 
 	// FIXME: set VERTEX_FORMAT_COMPRESSED if there are no artifacts and if it saves enough memory (use 'mem_dumpvballocs')
 	// vertexFormat |= VERTEX_FORMAT_COMPRESSED;

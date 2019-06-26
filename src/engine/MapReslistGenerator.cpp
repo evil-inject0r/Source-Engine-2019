@@ -719,11 +719,7 @@ void CMapReslistGenerator::OnResourcePrecachedFullPath(const char *fullPathFileN
 		OnResourcePrecachedFullPath(file);
 		Q_strncpy(ext, ".ani", 10);
 		OnResourcePrecachedFullPath(file);
-		Q_strncpy(ext, ".dx80.vtx", 10);
-		OnResourcePrecachedFullPath(file);
 		Q_strncpy(ext, ".dx90.vtx", 10);
-		OnResourcePrecachedFullPath(file);
-		Q_strncpy(ext, ".sw.vtx", 10);
 		OnResourcePrecachedFullPath(file);
 		Q_strncpy(ext, ".phy", 10);
 		OnResourcePrecachedFullPath(file);

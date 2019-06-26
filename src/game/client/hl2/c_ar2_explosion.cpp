@@ -236,14 +236,7 @@ void C_AR2Explosion::Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArg
 	#endif
 
 	int nParticles = 0;
-
 	int iParticlesToSpawn = NUM_AR2_EXPLOSION_PARTICLES;
-
-	// In DX7, much fewer particles
-	if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 )
-	{
-		iParticlesToSpawn *= 0.25;
-	}
 
 	if(nSurfInfos > 0)
 	{

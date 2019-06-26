@@ -69,9 +69,7 @@ decalcache_t	g_TempCache;
 static decal_t	*s_pDecalDestroyList = NULL;
 
 #define MAX_DECALS_DX9		2048
-#define MAX_DECALS_DX8		1536
-#define MAX_DECALS_DX7		1024
-int	g_nMaxDecals = 0;
+int	g_nMaxDecals = 2048;
 
 //
 // ConVars that control distance-based decal scaling
@@ -314,29 +312,10 @@ static WorldDecalHandle_t DecalToHandle( decal_t *pDecal )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Initialize the max decal count given the dx level.
-//-----------------------------------------------------------------------------
-void InitMaxDecals( void )
-{
-	g_nMaxDecals = MAX_DECALS_DX7;
-	if ( g_pMaterialSystemHardwareConfig )
-	{
-		if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 )
-		{
-			g_nMaxDecals = MAX_DECALS_DX9;
-		}
-		else if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 )
-		{
-			g_nMaxDecals = MAX_DECALS_DX8;
-		}
-	}
-}
-
 // Init the decal pool
+//-----------------------------------------------------------------------------
 void R_DecalInit( void )
 {
-	InitMaxDecals();
-
 	Assert( g_DecalAllocator.Count() == 0 );
 	g_nDynamicDecals = 0;
 	g_nStaticDecals = 0;

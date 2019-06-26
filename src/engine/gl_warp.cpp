@@ -110,16 +110,7 @@ bool R_LoadNamedSkys( const char *skyname )
 	for ( int i = 0; i < 6; i++ )
 	{
 		skies[i] = NULL;
-		if ( bUseDx8Skyboxes )
-		{
-			Q_snprintf( name, sizeof( name ), "skybox/%s_dx80%s", skyname, skyboxsuffix[i] );
-			skies[i] = materials->FindMaterial( name, TEXTURE_GROUP_SKYBOX, false );
-			if( IsErrorMaterial( skies[i] ) )
-			{
-				skies[i] = NULL;
-			}
-		}
-
+		
 		if ( skies[i] == NULL )
 		{
 			Q_snprintf( name, sizeof( name ), "skybox/%s%s", skyname, skyboxsuffix[i] );

@@ -257,11 +257,6 @@ public:
 	bool UsingFlashlight( IMaterialVar **params ) const;
 	bool UsingEditor( IMaterialVar **params ) const;
 
-	void DrawFlashlight_dx70( IMaterialVar** params, IShaderDynamicAPI *pShaderAPI, 
-							  IShaderShadow* pShaderShadow, 
-							  int flashlightTextureVar, int flashlightTextureFrameVar, 
-							  bool suppress_lighting = false );
-
 	void SetFlashlightFixedFunctionTextureTransform( MaterialMatrixMode_t matrix );
 
 	void GetColorParameter( IMaterialVar** params, float *pColorOut ) const; // return tint color (color*color2)

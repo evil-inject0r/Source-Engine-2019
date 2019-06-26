@@ -1223,33 +1223,15 @@ public:
 
 			dstVertex.m_vecTexCoord = vert.m_vecTexCoord; 
 
-			if ( IsX360() || nDX8VertexFormat )
+			Assert( dstVertex.m_vecUserData.w == -1.0f || dstVertex.m_vecUserData.w == 1.0f );
+			if ( nHasSIMD )
 			{
-#if !defined( _X360 )
-				Assert( dstVertex.m_vecUserData.w == -1.0f || dstVertex.m_vecUserData.w == 1.0f );
-				if ( nHasSIMD )
-				{
-					meshBuilder.FastVertexSSE( dstVertex );
-				}
-				else
-				{
-					meshBuilder.FastVertex( dstVertex );
-				}
-#else
-				meshBuilder.VertexDX8ToX360( dstVertex );
-#endif
+				meshBuilder.FastVertexSSE( dstVertex );
 			}
 			else
 			{
-				if ( nHasSIMD )
-				{
-					meshBuilder.FastVertexSSE( *(ModelVertexDX7_t*)&dstVertex );
-				}
-				else
-				{
-					meshBuilder.FastVertex( *(ModelVertexDX7_t*)&dstVertex );
-				}
-			}
+				meshBuilder.FastVertex( dstVertex );
+			}			
 		}
 		meshBuilder.FastAdvanceNVertices( numVertices );
 	}

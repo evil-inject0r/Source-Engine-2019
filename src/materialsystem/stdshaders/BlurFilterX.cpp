@@ -26,10 +26,6 @@ BEGIN_VS_SHADER_FLAGS( BlurFilterX, "Help for BlurFilterX", SHADER_NOT_EDITABLE 
 	
 	SHADER_FALLBACK
 	{
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 90 )
-		{
-			return "BlurFilterX_DX80";
-		}
 		return 0;
 	}
 

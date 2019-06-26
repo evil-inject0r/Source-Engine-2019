@@ -26,10 +26,6 @@ BEGIN_VS_SHADER( Bik, "Help for Bik" )
 
 	SHADER_FALLBACK
 	{
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 90 )
-		{
-			return "bik_dx81";
-		}
 		return 0;
 	}
 

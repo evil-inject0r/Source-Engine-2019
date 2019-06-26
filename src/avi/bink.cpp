@@ -24,9 +24,6 @@
 
 #pragma warning( default : 4201 )
 
-// We don't support the alpha channel in bink files due to dx8.  Can make it work if necessary.
-#define SUPPORT_BINK_ALPHA
-
 class CBIKMaterial;
 
 class CBIKMaterialYTextureRegenerator : public ITextureRegenerator
@@ -49,7 +46,6 @@ private:
 	int				m_nSourceHeight;
 };
 
-#ifdef SUPPORT_BINK_ALPHA
 class CBIKMaterialATextureRegenerator : public ITextureRegenerator
 {
 public:
@@ -69,7 +65,6 @@ private:
 	int				m_nSourceWidth;
 	int				m_nSourceHeight;
 };
-#endif
 
 class CBIKMaterialCrTextureRegenerator : public ITextureRegenerator
 {
@@ -150,9 +145,7 @@ public:
 private:
 
 	friend class CBIKMaterialYTextureRegenerator;
-#ifdef SUPPORT_BINK_ALPHA
 	friend class CBIKMaterialATextureRegenerator;
-#endif
 	friend class CBIKMaterialCrTextureRegenerator;
 	friend class CBIKMaterialCbTextureRegenerator;
 
@@ -171,9 +164,7 @@ private:
 
 	CMaterialReference m_Material;
 	CTextureReference m_TextureY;
-#ifdef SUPPORT_BINK_ALPHA
 	CTextureReference m_TextureA;
-#endif
 	CTextureReference m_TextureCr;
 	CTextureReference m_TextureCb;
 
@@ -190,9 +181,7 @@ private:
 	int m_nCurrentFrame;
 
 	CBIKMaterialYTextureRegenerator m_YTextureRegenerator;
-#ifdef SUPPORT_BINK_ALPHA
 	CBIKMaterialATextureRegenerator m_ATextureRegenerator;
-#endif
 	CBIKMaterialCrTextureRegenerator m_CrTextureRegenerator;
 	CBIKMaterialCbTextureRegenerator m_CbTextureRegenerator;
 };
@@ -241,7 +230,6 @@ void CBIKMaterialYTextureRegenerator::Release()
 {
 }
 
-#ifdef SUPPORT_BINK_ALPHA
 //-----------------------------------------------------------------------------
 // Inherited from ITextureRegenerator
 //-----------------------------------------------------------------------------
@@ -296,7 +284,6 @@ BIKMaterialError:
 void CBIKMaterialATextureRegenerator::Release()
 {
 }
-#endif
 
 //-----------------------------------------------------------------------------
 // Inherited from ITextureRegenerator
@@ -433,9 +420,7 @@ bool CBIKMaterial::Init( const char *pMaterialName, const char *pFileName, const
 	
 	// Now we can properly setup out regenerators
 	m_YTextureRegenerator.SetParentMaterial( this, m_nBIKWidth, m_nBIKHeight );
-#ifdef SUPPORT_BINK_ALPHA
 	m_ATextureRegenerator.SetParentMaterial( this, m_nBIKWidth, m_nBIKHeight );
-#endif
 	m_CrTextureRegenerator.SetParentMaterial( this, m_nBIKWidth, m_nBIKHeight );
 	m_CbTextureRegenerator.SetParentMaterial( this, m_nBIKWidth, m_nBIKHeight );
 
@@ -479,9 +464,7 @@ bool CBIKMaterial::Update( void )
 
 	// Regenerate our textures
 	m_TextureY->Download();
-#ifdef SUPPORT_BINK_ALPHA
 	m_TextureA->Download();
-#endif
 	m_TextureCr->Download();
 	m_TextureCb->Download();
 
@@ -578,14 +561,12 @@ void CBIKMaterial::CreateProceduralTextures( const char *pTextureName )
 	m_TextureY.InitProceduralTexture( textureName, "bik", nWidth, nHeight, IMAGE_FORMAT_I8, nTextureFlags );
 	m_TextureY->SetTextureRegenerator( &m_YTextureRegenerator );
 
-#ifdef SUPPORT_BINK_ALPHA
 	Q_strncpy( textureName, pTextureName, MAX_PATH-1 );
 	Q_StripExtension( textureName, textureName, sizeof( textureName ) );
 	Q_strncat( textureName, "A", MAX_PATH );
 
 	m_TextureA.InitProceduralTexture( textureName, "bik", nWidth, nHeight, IMAGE_FORMAT_I8, nTextureFlags );
 	m_TextureA->SetTextureRegenerator( &m_ATextureRegenerator );
-#endif
 
 	Q_strncpy( textureName, pTextureName, MAX_PATH-1 );
 	Q_StripExtension( textureName, textureName, sizeof( textureName ) );
@@ -617,9 +598,7 @@ void CBIKMaterial::DestroyProceduralTexture( CTextureReference &texture )
 void CBIKMaterial::DestroyProceduralTextures()
 {	
 	DestroyProceduralTexture( m_TextureY );
-#ifdef SUPPORT_BINK_ALPHA
 	DestroyProceduralTexture( m_TextureA );
-#endif
 	DestroyProceduralTexture( m_TextureCr );
 	DestroyProceduralTexture( m_TextureCb );
 }
@@ -638,9 +617,7 @@ void CBIKMaterial::CreateProceduralMaterial( const char *pMaterialName )
 	if (!pVMTKeyValues->LoadFromFile( g_pFullFileSystem , vmtfilename, "GAME" ))
 	{
 		pVMTKeyValues->SetString( "$ytexture", m_TextureY->GetName() );
-#ifdef SUPPORT_BINK_ALPHA
 		pVMTKeyValues->SetString( "$atexture", m_TextureA->GetName() );
-#endif
 		pVMTKeyValues->SetString( "$crtexture", m_TextureCr->GetName() );
 		pVMTKeyValues->SetString( "$cbtexture", m_TextureCb->GetName() );
 		pVMTKeyValues->SetInt( "$nofog", 1 );
@@ -679,9 +656,7 @@ void CBIKMaterial::SetTime( float flTime )
 	Assert( 0 );
 	BinkDoFrame( m_pHBINK );
 	m_TextureY->Download();
-#ifdef SUPPORT_BINK_ALPHA
 	m_TextureA->Download();
-#endif
 	m_TextureCr->Download();
 	m_TextureCb->Download();
 }
@@ -712,9 +687,7 @@ void CBIKMaterial::SetFrame( float flFrame )
 	{
 		BinkGoto( m_pHBINK, iFrame, 0 );
 		m_TextureY->Download();
-#ifdef SUPPORT_BINK_ALPHA
 		m_TextureA->Download();
-#endif
 		m_TextureCr->Download();
 		m_TextureCb->Download();
 	}
@@ -754,14 +727,12 @@ void CBIKMaterial::CreateVideoStream( )
 			m_buffers.Frames[ i ].cBPlane.Buffer = MemAlloc_AllocAligned( m_buffers.Frames[ i ].cBPlane.BufferPitch * m_buffers.cRcBBufferHeight, 16 );  
 		}
 
-#ifdef SUPPORT_BINK_ALPHA
 		if ( m_buffers.Frames[ i ].APlane.Allocate )  
 		{    // calculate a good pitch    
 			m_buffers.Frames[ i ].APlane.BufferPitch = ( m_buffers.YABufferWidth + 15 ) & ~15;    
 			// now allocate the pointer   
 			m_buffers.Frames[ i ].APlane.Buffer = MemAlloc_AllocAligned( m_buffers.Frames[ i ].APlane.BufferPitch * m_buffers.YABufferHeight, 16 );  
 		}
-#endif
 	}
 	// Now tell Bink to use these new planes
 	BinkRegisterFrameBuffers( m_pHBINK, &m_buffers );
@@ -795,14 +766,12 @@ void CBIKMaterial::DestroyVideoStream( )
 			m_buffers.Frames[ i ].cBPlane.Buffer = NULL;
 		}
 
-#ifdef SUPPORT_BINK_ALPHA
 		if ( m_buffers.Frames[ i ].APlane.Allocate && m_buffers.Frames[ i ].APlane.Buffer )  
 		{
 			// now allocate the pointer   
 			MemAlloc_FreeAligned( m_buffers.Frames[ i ].APlane.Buffer );
 			m_buffers.Frames[ i ].APlane.Buffer = NULL;
 		}
-#endif
 	}
 }
 

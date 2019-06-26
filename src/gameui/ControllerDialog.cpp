@@ -13,7 +13,7 @@ using namespace vgui;
 #include <tier0/memdbgon.h>
 
 
-CControllerDialog::CControllerDialog( vgui::Panel *parent ) : BaseClass( parent, true )	// TRUE second param says we want the controller options
+CControllerDialog::CControllerDialog( vgui::Panel *parent ) : BaseClass( parent )	// TRUE second param says we want the controller options
 {
 }
 

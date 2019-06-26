@@ -2406,22 +2406,6 @@ bool CMDLCache::IsDataLoaded( MDLHandle_t handle, MDLCacheDataType_t type )
 //-----------------------------------------------------------------------------
 const char *CMDLCache::GetVTXExtension()
 {
-	if ( IsPC() )
-	{
-		if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 )
-		{
-			return ".dx90.vtx";
-		}
-		else if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 )
-		{
-			return ".dx80.vtx";
-		}
-		else
-		{
-			return ".sw.vtx";
-		}
-	}
-
 	return ".dx90.vtx";
 }
 

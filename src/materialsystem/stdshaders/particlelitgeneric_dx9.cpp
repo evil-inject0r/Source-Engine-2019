@@ -39,14 +39,6 @@ BEGIN_VS_SHADER( ParticleLitGeneric_DX9,
 
 	SHADER_FALLBACK
 	{	
-		if (g_pHardwareConfig->GetDXSupportLevel() < 70)
-			return "ParticleLitGeneric_DX6";
-
-		if (g_pHardwareConfig->GetDXSupportLevel() < 80)
-			return "ParticleLitGeneric_DX7";
-
-		return "ParticleLitGeneric_DX8";
-
 		return 0;
 	}
 

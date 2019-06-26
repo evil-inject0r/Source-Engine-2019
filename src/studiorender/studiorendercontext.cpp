@@ -1026,129 +1026,109 @@ VertexFormat_t CStudioRenderContext::CalculateVertexFormat( const studiohdr_t *p
 	bool bSkinnedMesh = ( pStudioHdr->numbones > 1 );
 	int  nBoneWeights = GetNumBoneWeights( pGroup );
 
-	bool bIsDX7 = !g_pMaterialSystemHardwareConfig->SupportsVertexAndPixelShaders();
-	bool bIsDX8 = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 90 );
-	if ( bIsDX7 )
-	{
-		// FIXME: this is untested (as of June '07, the engine currently doesn't work with "-dxlevel 70")
-		if ( bSkinnedMesh )
-			return MATERIAL_VERTEX_FORMAT_MODEL_SKINNED_DX7;
-		else
-			return MATERIAL_VERTEX_FORMAT_MODEL_DX7;
-	}
-	else if ( bIsDX8 )
-	{
-		if ( bSkinnedMesh )
-			return MATERIAL_VERTEX_FORMAT_MODEL_SKINNED;
-		else
-			return MATERIAL_VERTEX_FORMAT_MODEL;
-	}
-	else
-	{
-		// DX9+ path (supports vertex compression)
+	// DX9+ path (supports vertex compression)
 
-		// iterate each skin table
-		// determine aggregate vertex format for specified mesh's material
-		VertexFormat_t newVertexFormat = 0;
-		//bool bBumpmapping = false;
-		short *pSkinref	= pStudioHdr->pSkinref( 0 );
-		for ( int i = 0; i < pStudioHdr->numskinfamilies; i++ )
-		{
-			// FIXME: ### MATERIAL VERTEX FORMATS ARE UNRELIABLE! ###
-			//
-			//	IMaterial* pMaterial = pStudioLodData->ppMaterials[ pSkinref[ pMesh->material ] ];
-			//	Assert( pMaterial );
-			//	VertexFormat_t vertexFormat = pMaterial->GetVertexFormat();
-			//	newVertexFormat &= ~VERTEX_FORMAT_COMPRESSED; // Decide whether to compress below
-			//
-			// FIXME: ### MATERIAL VERTEX FORMATS ARE UNRELIABLE! ###
-			//        we need to go through all the shader CPP code and make sure that the correct vertex format
-			//        is being specified for every single shader combo! We don't have time to fix that before
-			//        shipping Ep2, but should fix it ASAP afterwards. To make catching such errors easier, we
-			//        should Assert in draw calls that the vertexdecl matches vertex shader inputs (note that D3D
-			//        debug DLLs will do that on PC, though it's not as informative as if we do it ourselves).
-			//        So, in the absence of reliable material vertex formats, use the old 'standard' elements
-			//        (we can still omit skinning data - and COLOR for DX8+, where it should come from the
-			//        second static lighting stream):
-			VertexFormat_t vertexFormat = bIsDX7 ? MATERIAL_VERTEX_FORMAT_MODEL_DX7 : ( MATERIAL_VERTEX_FORMAT_MODEL & ~VERTEX_COLOR );
+	// iterate each skin table
+	// determine aggregate vertex format for specified mesh's material
+	VertexFormat_t newVertexFormat = 0;
+	//bool bBumpmapping = false;
+	short *pSkinref	= pStudioHdr->pSkinref( 0 );
+	for ( int i = 0; i < pStudioHdr->numskinfamilies; i++ )
+	{
+		// FIXME: ### MATERIAL VERTEX FORMATS ARE UNRELIABLE! ###
+		//
+		//	IMaterial* pMaterial = pStudioLodData->ppMaterials[ pSkinref[ pMesh->material ] ];
+		//	Assert( pMaterial );
+		//	VertexFormat_t vertexFormat = pMaterial->GetVertexFormat();
+		//	newVertexFormat &= ~VERTEX_FORMAT_COMPRESSED; // Decide whether to compress below
+		//
+		// FIXME: ### MATERIAL VERTEX FORMATS ARE UNRELIABLE! ###
+		//        we need to go through all the shader CPP code and make sure that the correct vertex format
+		//        is being specified for every single shader combo! We don't have time to fix that before
+		//        shipping Ep2, but should fix it ASAP afterwards. To make catching such errors easier, we
+		//        should Assert in draw calls that the vertexdecl matches vertex shader inputs (note that D3D
+		//        debug DLLs will do that on PC, though it's not as informative as if we do it ourselves).
+		//        So, in the absence of reliable material vertex formats, use the old 'standard' elements
+		//        (we can still omit skinning data - and COLOR for DX8+, where it should come from the
+		//        second static lighting stream):
+		VertexFormat_t vertexFormat = MATERIAL_VERTEX_FORMAT_MODEL & ~VERTEX_COLOR;
 
-			// aggregate single bit settings
-			newVertexFormat |= vertexFormat & ( ( 1 << VERTEX_LAST_BIT ) - 1 );
+		// aggregate single bit settings
+		newVertexFormat |= vertexFormat & ( ( 1 << VERTEX_LAST_BIT ) - 1 );
 			
-			int nUserDataSize = UserDataSize( vertexFormat );
-			if ( nUserDataSize > UserDataSize( newVertexFormat ) )
-			{
-				newVertexFormat &= ~USER_DATA_SIZE_MASK;
-				newVertexFormat |= VERTEX_USERDATA_SIZE( nUserDataSize );
-			}
-
-			for (int j = 0; j < VERTEX_MAX_TEXTURE_COORDINATES; ++j)
-			{
-				int nSize = TexCoordSize( j, vertexFormat );
-				if ( nSize > TexCoordSize( j, newVertexFormat ) )
-				{
-					newVertexFormat &= ~VERTEX_TEXCOORD_SIZE( j, 0x7 );
-					newVertexFormat |= VERTEX_TEXCOORD_SIZE( j, nSize );
-				}
-			}
-
-			// FIXME: re-enable this test, fix it to work and see how much memory we save (Q: why is this different to CStudioRenderContext::MeshNeedsTangentSpace ?)
-			/*if ( !bBumpmapping && pMaterial->NeedsTangentSpace() )
-			{
-				bool bFound = false;
-				IMaterialVar *pEnvmapMatVar = pMaterial->FindVar( "$envmap", &bFound, false );
-				if ( bFound && pEnvmapMatVar->IsDefined() )
-				{
-					IMaterialVar *pBumpMatVar = pMaterial->FindVar( "$bumpmap", &bFound, false );
-					if ( bFound && pBumpMatVar->IsDefined() )
-					{
-						bBumpmapping = true;
-					}
-				}
-			} */
-
-			pSkinref += pStudioHdr->numskinref;
-		}
-
-		// Add skinning elements for non-rigid models (with more than one bone weight)
-		if ( bSkinnedMesh )
+		int nUserDataSize = UserDataSize( vertexFormat );
+		if ( nUserDataSize > UserDataSize( newVertexFormat ) )
 		{
-			if ( nBoneWeights > 0 )
-			{
-				// Always exactly zero or two weights
-				newVertexFormat |= VERTEX_BONEWEIGHT( 2 );
-			}
-			newVertexFormat |= VERTEX_BONE_INDEX;
-		}
-
-
-		// FIXME: re-enable this (see above)
-		/*if ( !bBumpmapping )
-		{
-			// no bumpmapping, user data not needed
 			newVertexFormat &= ~USER_DATA_SIZE_MASK;
-		}*/
-
-		// materials on models should never have tangent space as they use userdata
-		Assert( !(newVertexFormat & VERTEX_TANGENT_SPACE) );
-
-		// mask off irrelevant non-data bits
-		newVertexFormat &= ~VERTEX_FORMAT_VERTEX_SHADER;
-
-		// Don't compress the mesh unless it is HW-skinned (we only want to compress static
-		// VBs, not dynamic ones - that would slow down the MeshBuilder in dynamic use cases).
-		// Also inspect the vertex data to see if it's appropriate for the vertex element
-		// compression techniques that we do (e.g. look at UV ranges).
-		if ( IsX360() && // Disabled until the craziness is banished
-			 bIsHwSkinned &&
-			( g_pMaterialSystemHardwareConfig->SupportsCompressedVertices() == VERTEX_COMPRESSION_ON ) )
-		{
-			// this mesh is appropriate for vertex compression
-			newVertexFormat |= VERTEX_FORMAT_COMPRESSED;
+			newVertexFormat |= VERTEX_USERDATA_SIZE( nUserDataSize );
 		}
 
-		return newVertexFormat;
+		for (int j = 0; j < VERTEX_MAX_TEXTURE_COORDINATES; ++j)
+		{
+			int nSize = TexCoordSize( j, vertexFormat );
+			if ( nSize > TexCoordSize( j, newVertexFormat ) )
+			{
+				newVertexFormat &= ~VERTEX_TEXCOORD_SIZE( j, 0x7 );
+				newVertexFormat |= VERTEX_TEXCOORD_SIZE( j, nSize );
+			}
+		}
+
+		// FIXME: re-enable this test, fix it to work and see how much memory we save (Q: why is this different to CStudioRenderContext::MeshNeedsTangentSpace ?)
+		/*if ( !bBumpmapping && pMaterial->NeedsTangentSpace() )
+		{
+			bool bFound = false;
+			IMaterialVar *pEnvmapMatVar = pMaterial->FindVar( "$envmap", &bFound, false );
+			if ( bFound && pEnvmapMatVar->IsDefined() )
+			{
+				IMaterialVar *pBumpMatVar = pMaterial->FindVar( "$bumpmap", &bFound, false );
+				if ( bFound && pBumpMatVar->IsDefined() )
+				{
+					bBumpmapping = true;
+				}
+			}
+		} */
+
+		pSkinref += pStudioHdr->numskinref;
 	}
+
+	// Add skinning elements for non-rigid models (with more than one bone weight)
+	if ( bSkinnedMesh )
+	{
+		if ( nBoneWeights > 0 )
+		{
+			// Always exactly zero or two weights
+			newVertexFormat |= VERTEX_BONEWEIGHT( 2 );
+		}
+		newVertexFormat |= VERTEX_BONE_INDEX;
+	}
+
+
+	// FIXME: re-enable this (see above)
+	/*if ( !bBumpmapping )
+	{
+		// no bumpmapping, user data not needed
+		newVertexFormat &= ~USER_DATA_SIZE_MASK;
+	}*/
+
+	// materials on models should never have tangent space as they use userdata
+	Assert( !(newVertexFormat & VERTEX_TANGENT_SPACE) );
+
+	// mask off irrelevant non-data bits
+	newVertexFormat &= ~VERTEX_FORMAT_VERTEX_SHADER;
+
+	// Don't compress the mesh unless it is HW-skinned (we only want to compress static
+	// VBs, not dynamic ones - that would slow down the MeshBuilder in dynamic use cases).
+	// Also inspect the vertex data to see if it's appropriate for the vertex element
+	// compression techniques that we do (e.g. look at UV ranges).
+	if ( IsX360() && // Disabled until the craziness is banished
+			bIsHwSkinned &&
+		( g_pMaterialSystemHardwareConfig->SupportsCompressedVertices() == VERTEX_COMPRESSION_ON ) )
+	{
+		// this mesh is appropriate for vertex compression
+		newVertexFormat |= VERTEX_FORMAT_COMPRESSED;
+	}
+
+	return newVertexFormat;
 }
 
 bool CStudioRenderContext::MeshNeedsTangentSpace( studiohdr_t *pStudioHdr, studioloddata_t *pStudioLodData, mstudiomesh_t* pMesh )

@@ -200,7 +200,7 @@ bool CVguiMatSysApp::PreInit( )
 	g_pMatSystemSurface->AttachToWindow( m_HWnd );
 
 	// NOTE: If we specifically wanted to use a particular shader DLL, we set it here...
-	//m_pMaterialSystem->SetShaderAPI( "shaderapidx8" );
+
 
 	// Get the adapter from the command line....
 	const char *pAdapterString;

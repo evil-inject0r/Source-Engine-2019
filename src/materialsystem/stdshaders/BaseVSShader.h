@@ -19,8 +19,6 @@
 #include "ConVar.h"
 #include <renderparm.h>
 
-#define SUPPORT_DX8 0
-#define SUPPORT_DX7 0
 //-----------------------------------------------------------------------------
 // Helper macro for vertex shaders
 //-----------------------------------------------------------------------------

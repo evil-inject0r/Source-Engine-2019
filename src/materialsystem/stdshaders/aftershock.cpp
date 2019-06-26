@@ -52,11 +52,6 @@ BEGIN_VS_SHADER( Aftershock_dx9, "Aftershock" )
 
 	SHADER_FALLBACK
 	{
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 90 )
-		{
-			return "Aftershock_dx8";
-		}
-
 		return 0;
 	}
 
