@@ -537,30 +537,13 @@ public:
 	// Fast Vertex! No need to call advance vertex, and no random access allowed. 
 	// WARNING - these are low level functions that are intended only for use
 	// in the software vertex skinner.
-	void FastVertex( const ModelVertexDX7_t &vertex );
-	void FastVertexSSE( const ModelVertexDX7_t &vertex );
+	void FastVertex(const ModelVertexDX8_t& vertex);
+	void FastVertexSSE(const ModelVertexDX8_t& vertex);
 
-	// AVX fast vertex
-	void FastVertexAVX(const ModelVertexDX7_t &vertex);
-
-	// store 4 dx7 vertices fast. for special sse dx7 pipeline
-	void Fast4VerticesSSE( 
-		ModelVertexDX7_t const *vtx_a,
-		ModelVertexDX7_t const *vtx_b,
-		ModelVertexDX7_t const *vtx_c,
-		ModelVertexDX7_t const *vtx_d);
-
-	void FastVertex( const ModelVertexDX8_t &vertex );
-	void FastVertexSSE( const ModelVertexDX8_t &vertex );
-
-	void FastVertexAVX(const ModelVertexDX8_t &vertex);
+	void FastVertexAVX(const ModelVertexDX8_t& vertex);
 
 	// Add number of verts and current vert since FastVertex routines do not update.
 	void FastAdvanceNVertices( int n );	
-
-#if defined( _X360 )
-	void VertexDX8ToX360( const ModelVertexDX8_t &vertex );
-#endif
 
 	// FIXME: Remove! Backward compat so we can use this from a CMeshBuilder.
 	void AttachBegin( IMesh* pMesh, int nMaxVertexCount, const MeshDesc_t &desc );
@@ -1109,124 +1092,20 @@ inline void CVertexBuilder::FastAdvanceNVertices( int n )
 	m_nVertexCount = m_nCurrentVertex;
 }
 
-
-//-----------------------------------------------------------------------------
-// Fast Vertex! No need to call advance vertex, and no random access allowed
-//-----------------------------------------------------------------------------
-inline void CVertexBuilder::FastVertex( const ModelVertexDX7_t &vertex )
-{
-	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // FIXME: support compressed verts if needed
-	Assert( m_nCurrentVertex < m_nMaxVertexCount );
-
-	// TODO: Make this less shitty
-	__m128* v1 = (__m128*)&m_pCurrPosition;
-	__m128* v2 = ((__m128*)&m_pCurrPosition + 1);
-	__m128* v3 = ((__m128*)&m_pCurrPosition + 2);
-	__m128* v4 = ((__m128*)&m_pCurrPosition + 3);
-	*v1 = _mm_loadu_ps((float*)&vertex);
-	*v2 = _mm_loadu_ps((float*)&vertex + 4);
-	*v3 = _mm_loadu_ps((float*)&vertex + 8);
-	*v4 = _mm_loadu_ps((float*)&vertex + 12);
-
-	IncrementFloatPointer( m_pCurrPosition, m_VertexSize_Position );
-	//m_nVertexCount = ++m_nCurrentVertex;
-
-#if ( defined( _DEBUG ) && ( COMPRESSED_NORMALS_TYPE == COMPRESSED_NORMALS_COMBINEDTANGENTS_UBYTE4 ) )
-	m_bWrittenNormal   = false;
-	m_bWrittenUserData = false;
-#endif
-}
-
-inline void CVertexBuilder::FastVertexSSE( const ModelVertexDX7_t &vertex )
-{
-	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // FIXME: support compressed verts if needed
-	Assert( m_nCurrentVertex < m_nMaxVertexCount );
-
-	// TODO: Make this less shitty
-	__m128* v1 = (__m128*)&m_pCurrPosition;
-	__m128* v2 = ((__m128*)&m_pCurrPosition + 1);
-	__m128* v3 = ((__m128*)&m_pCurrPosition + 2);
-	__m128* v4 = ((__m128*)&m_pCurrPosition + 3);
-	*v1 = _mm_loadu_ps((float*)&vertex);
-	*v2 = _mm_loadu_ps((float*)&vertex + 4);
-	*v3 = _mm_loadu_ps((float*)&vertex + 8);
-	*v4 = _mm_loadu_ps((float*)&vertex + 12);
-
-	IncrementFloatPointer( m_pCurrPosition, m_VertexSize_Position );
-	//m_nVertexCount = ++m_nCurrentVertex;
-
-#if ( defined( _DEBUG ) && ( COMPRESSED_NORMALS_TYPE == COMPRESSED_NORMALS_COMBINEDTANGENTS_UBYTE4 ) )
-	m_bWrittenNormal   = false;
-	m_bWrittenUserData = false;
-#endif
-}
-
-inline void CVertexBuilder::FastVertexAVX(const ModelVertexDX7_t &vertex)
+inline void CVertexBuilder::FastVertex(const ModelVertexDX8_t & vertex)
 {
 	Assert(m_CompressionType == VERTEX_COMPRESSION_NONE); // FIXME: support compressed verts if needed
 	Assert(m_nCurrentVertex < m_nMaxVertexCount);
 
-#ifdef _USE_AVX
-	__m256* v1 = (__m256*)&m_pCurrPosition;
-	__m256* v2 = ((__m256*)&m_pCurrPosition + 1);
-	*v1 = _mm256_loadu_ps((float*)&vertex);
-	*v2 = _mm256_loadu_ps((float*)&vertex + 4);
-#else
-	__m128* v1 = (__m128*)&m_pCurrPosition;
-	__m128* v2 = ((__m128*)&m_pCurrPosition + 1);
-	__m128* v3 = ((__m128*)&m_pCurrPosition + 2);
-	__m128* v4 = ((__m128*)&m_pCurrPosition + 3);
-	*v1 = _mm_loadu_ps((float*)&vertex);
-	*v2 = _mm_loadu_ps((float*)&vertex + 4);
-	*v3 = _mm_loadu_ps((float*)&vertex + 8);
-	*v4 = _mm_loadu_ps((float*)&vertex + 12);
-#endif
-	IncrementFloatPointer(m_pCurrPosition, m_VertexSize_Position);
-
-#if ( defined( _DEBUG ) && ( COMPRESSED_NORMALS_TYPE == COMPRESSED_NORMALS_COMBINEDTANGENTS_UBYTE4 ) )
-	m_bWrittenNormal = false;
-	m_bWrittenUserData = false;
-#endif
-}
-
-
-inline void CVertexBuilder::Fast4VerticesSSE( 
-	ModelVertexDX7_t const *vtx_a,
-	ModelVertexDX7_t const *vtx_b,
-	ModelVertexDX7_t const *vtx_c,
-	ModelVertexDX7_t const *vtx_d)
-{
-	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // FIXME: support compressed verts if needed
-	Assert( m_nCurrentVertex < m_nMaxVertexCount-3 );
-
-	this->FastVertexSSE(*vtx_a);
-	this->FastVertexSSE(*vtx_b);
-	this->FastVertexSSE(*vtx_c);
-	this->FastVertexSSE(*vtx_d);
-
-
-	IncrementFloatPointer( m_pCurrPosition, 4*m_VertexSize_Position );
-
-#if ( defined( _DEBUG ) && ( COMPRESSED_NORMALS_TYPE == COMPRESSED_NORMALS_COMBINEDTANGENTS_UBYTE4 ) )
-	m_bWrittenNormal   = false;
-	m_bWrittenUserData = false;
-#endif
-}
-
-inline void CVertexBuilder::FastVertex( const ModelVertexDX8_t &vertex )
-{
-	Assert( m_CompressionType == VERTEX_COMPRESSION_NONE ); // FIXME: support compressed verts if needed
-	Assert( m_nCurrentVertex < m_nMaxVertexCount );
-
 	// TODO: Make this less shitty
-	__m128* v1 = (__m128*)&m_pCurrPosition;
-	__m128* v2 = ((__m128*)&m_pCurrPosition + 1);
-	__m128* v3 = ((__m128*)&m_pCurrPosition + 2);
-	__m128* v4 = ((__m128*)&m_pCurrPosition + 3);
-	*v1 = _mm_loadu_ps((float*)&vertex);
-	*v2 = _mm_loadu_ps((float*)&vertex + 4);
-	*v3 = _mm_loadu_ps((float*)&vertex + 8);
-	*v4 = _mm_loadu_ps((float*)&vertex + 12);
+	__m128 * v1 = (__m128*)m_pCurrPosition;
+	__m128 * v2 = ((__m128*)m_pCurrPosition + 1);
+	__m128 * v3 = ((__m128*)m_pCurrPosition + 2);
+	__m128 * v4 = ((__m128*)m_pCurrPosition + 3);
+	*v1 = _mm_loadu_ps((float*)& vertex);
+	*v2 = _mm_loadu_ps((float*)& vertex + 4);
+	*v3 = _mm_loadu_ps((float*)& vertex + 8);
+	*v4 = _mm_loadu_ps((float*)& vertex + 12);
 
 	IncrementFloatPointer( m_pCurrPosition, m_VertexSize_Position );
 	//	m_nVertexCount = ++m_nCurrentVertex;
