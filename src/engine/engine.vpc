@@ -139,7 +139,7 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories	"$BASE;.\;audio;audio\private;audio\public;$SRCDIR\vgui2\include;$SRCDIR\vgui2\controls"
-		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\dx9sdk\include" [$WINDOWS]
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\thirdparty\dx9sdk\include" [$WINDOWS]
 		$PreprocessorDefinitions		"$BASE;USE_CONVARS;VOICE_OVER_IP;BUMPMAP;__USEA3D;_ADD_EAX_;ENGINE_DLL;PROTECTED_THINGS_ENABLE;fopen=dont_use_fopen"
 	}
 
@@ -151,7 +151,7 @@ $Configuration
 	$Linker
 	{
 		$AdditionalDependencies			"$BASE winmm.lib wsock32.lib ws2_32.lib wininet.lib vfw32.lib Rpcrt4.lib dsound.lib dxguid.lib dinput8.lib" [$WINDOWS]
-		$AdditionalLibraryDirectories	"$BASE;$LIBCOMMON\vc7;$SRCDIR\dx9sdk\lib" [$WINDOWS]
+		$AdditionalLibraryDirectories	"$BASE;$LIBCOMMON\vc7;$SRCDIR\thirdparty\dx9sdk\lib" [$WINDOWS]
 	}
 }
 
@@ -988,7 +988,7 @@ $Project "engine"
 //		$File	"$SRCDIR\public\tier1\datalru.h"
 		$File	"$SRCDIR\public\datamap.h"
 		$File	"$SRCDIR\public\tier0\dbg.h"
-		// $File	"$SRCDIR\dx9sdk\include\dinput.h"
+		// $File	"$SRCDIR\thirdparty\dx9sdk\include\dinput.h"
 		$File	"$SRCDIR\public\disp_vertindex.h"
 		$File	"$SRCDIR\public\dlight.h"
 		$File	"$SRCDIR\public\dt_utlvector_recv.h"

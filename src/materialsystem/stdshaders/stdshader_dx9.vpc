@@ -22,7 +22,7 @@ $Configuration
 {
 	$Compiler [$WINDOWS]
 	{
-		$AdditionalIncludeDirectories	"$BASE;fxctmp9;vshtmp9;..\..\dx9sdk\include"
+		$AdditionalIncludeDirectories	"$BASE;fxctmp9;vshtmp9;..\..\thirdparty\dx9sdk\include"
 		$PreprocessorDefinitions		"$BASE;STDSHADER_DX9_DLL_EXPORT;FAST_MATERIALVAR_ACCESS"
 	}
 
@@ -105,7 +105,7 @@ $Project "stdshader_dx9"
 		$File	"sfm_integercombine.cpp"
 		$File	"shadow.cpp"
 		$File	"shadowbuild_dx9.cpp"
-	//	$File	"shadowmodel_dx9.cpp"
+		$File	"shadowmodel_dx9.cpp"
 		$File	"shatteredglass.cpp"
 		$File	"showz.cpp"
 		$File	"skin_dx9_helper.cpp"

@@ -18,7 +18,7 @@ $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\dx9sdk\include"			[$WINDOWS]
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\thirdparty\dx9sdk\include"			[$WINDOWS]
 		$PreprocessorDefinitions		"$BASE;fopen=dont_use_fopen"
 	}
 }
