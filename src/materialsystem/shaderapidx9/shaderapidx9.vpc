@@ -20,7 +20,7 @@ $Configuration
 
     $Linker
 	{
-		$AdditionalDependencies			"$BASE d3d9.lib d3dx9.lib" [$WINDOWS]
+		$AdditionalDependencies			"$BASE d3d9.lib $SRCDIR\thirdparty\dx9sdk\lib\d3dx9.lib" [$WINDOWS]
 	}
 }
 
