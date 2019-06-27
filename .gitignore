@@ -151,3 +151,6 @@ modeswitchsave.tga
 GameConfig.txt
 *.vdf
 build/CMakeFiles/
+
+# libraries we want
+!zlib.lib
