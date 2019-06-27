@@ -13,7 +13,7 @@ $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories		"$BASE;../common,../hlfaceposer,../sapi51/include"
+		$AdditionalIncludeDirectories		"$BASE;../common,../hlfaceposer,../../thirdparty/sapi51/include"
 		$PreprocessorDefinitions			"$BASE;PHONEMEEXTRACTOR_EXPORTS"
 
 		// The project has some trouble with the deprecated string function warnings, so turn those off.
@@ -43,12 +43,12 @@ $Project "Phonemeextractor"
 	
 	$Folder	"SAPI Header Files"
 	{ // These are dynamic because sapi might not be present in SDK branches, but we still want VPC to succeed.
-		$DynamicFile	"..\sapi51\Include\sapi.h"
-		$DynamicFile	"..\sapi51\Include\sapiddk.h"
-		$DynamicFile	"..\sapi51\Include\Spddkhlp.h"
-		$DynamicFile	"..\sapi51\Include\spdebug.h"
-		$DynamicFile	"..\sapi51\Include\sperror.h"
-		$DynamicFile	"..\sapi51\Include\sphelper.h"
+		$DynamicFile	"../../thirdparty/sapi51/Include/sapi.h"
+		$DynamicFile	"../../thirdparty/sapi51/Include/sapiddk.h"
+		$DynamicFile	"../../thirdparty/sapi51/Include/Spddkhlp.h"
+		$DynamicFile	"../../thirdparty/sapi51/Include/spdebug.h"
+		$DynamicFile	"../../thirdparty/sapi51/Include/sperror.h"
+		$DynamicFile	"../../thirdparty/sapi51/Include/sphelper.h"
 	}
 	
 	$Folder	"Public Header Files"
@@ -78,6 +78,6 @@ $Project "Phonemeextractor"
 	$Folder	"Link Libraries"
 	{
 		$Lib 			"$LIBPUBLIC\mathlib"
-		$DynamicFile	"..\sapi51\lib\i386\sapi.lib"
+		$DynamicFile	"..\..\thirdparty\sapi51\lib\i386\sapi.lib"
 	}
 }
