@@ -2124,167 +2124,6 @@ void CShaderDeviceDx8::CheckDeviceLost( bool bOtherAppInitializing )
 //-----------------------------------------------------------------------------
 bool CShaderDeviceDx8::AllocNonInteractiveRefreshObjects()
 {
-	if ( !IsX360() )
-		return true;
-
-	const char *strVertexShaderProgram = 
-		" float4x4 matWVP : register(c0);"  
-		" struct VS_IN"  
-		" {" 
-		" float4 ObjPos : POSITION;"
-		" float2 TexCoord : TEXCOORD;"
-		" };" 
-		" struct VS_OUT" 
-		" {" 
-		" float4 ProjPos : POSITION;" 
-		" float2 TexCoord : TEXCOORD;"
-		" };"  
-		" VS_OUT main( VS_IN In )"  
-		" {"  
-		" VS_OUT Out; "  
-		" Out.ProjPos = mul( matWVP, In.ObjPos );"
-		" Out.TexCoord = In.TexCoord;"
-		" return Out;"  
-		" }";
-
-	const char *strPixelShaderProgram = 
-		" struct PS_IN"
-		" {"
-		" float2 TexCoord : TEXCOORD;"
-		" };"
-		" sampler detail : register( s0 );"
-		" float4 main( PS_IN In ) : COLOR"  
-		" {"  
-		" return tex2D( detail, In.TexCoord );"
-		" }"; 
-
-	const char *strPixelShaderProgram2 = 
-		" struct PS_IN"
-		" {"
-		" float2 TexCoord : TEXCOORD;"
-		" };"
-		" sampler detail : register( s0 );"
-		" float4 main( PS_IN In ) : COLOR"  
-		" {"  
-		" return tex2D( detail, In.TexCoord );"
-		" }"; 
-
-	const char *strPixelShaderProgram3 = 
-		" struct PS_IN"
-		" {"
-		" float2 TexCoord : TEXCOORD;"
-		" };"
-		" float SrgbGammaToLinear( float flSrgbGammaValue )"
-		" {"
-		"	float x = saturate( flSrgbGammaValue );"
-		"	return ( x <= 0.04045f ) ? ( x / 12.92f ) : ( pow( ( x + 0.055f ) / 1.055f, 2.4f ) );"
-		" }"
-		"float X360LinearToGamma( float flLinearValue )"
-		"{"
-		"		float fl360GammaValue;"
-		""
-		"	flLinearValue = saturate( flLinearValue );"
-		"	if ( flLinearValue < ( 128.0f / 1023.0f ) )"
-		"	{"
-		"		if ( flLinearValue < ( 64.0f / 1023.0f ) )"
-		"		{"
-		"			fl360GammaValue = flLinearValue * ( 1023.0f * ( 1.0f / 255.0f ) );"
-		"		}"
-		"		else"
-		"		{"
-		"			fl360GammaValue = flLinearValue * ( ( 1023.0f / 2.0f ) * ( 1.0f / 255.0f ) ) + ( 32.0f / 255.0f );"
-		"		}"
-		"	}"
-		"	else"
-		"	{"
-		"		if ( flLinearValue < ( 512.0f / 1023.0f ) )"
-		"		{"
-		"			fl360GammaValue = flLinearValue * ( ( 1023.0f / 4.0f ) * ( 1.0f / 255.0f ) ) + ( 64.0f / 255.0f );"
-		"		}"
-		"		else"
-		"		{"
-		"			fl360GammaValue = flLinearValue * ( ( 1023.0f /8.0f ) * ( 1.0f / 255.0f ) ) + ( 128.0f /255.0f );"
-		"			if ( fl360GammaValue > 1.0f )"
-		"			{"
-		"				fl360GammaValue = 1.0f;"
-		"			}"
-		"		}"
-		"	}"
-		""
-		"	fl360GammaValue = saturate( fl360GammaValue );"
-		"	return fl360GammaValue;"
-		"}"
-		" sampler detail : register( s0 );"
-		" float4 main( PS_IN In ) : COLOR"  
-		" {"  
-		"	float4 vTextureColor = tex2D( detail, In.TexCoord );"
-		"	vTextureColor.r = X360LinearToGamma( SrgbGammaToLinear( vTextureColor.r ) );" 
-		"	vTextureColor.g = X360LinearToGamma( SrgbGammaToLinear( vTextureColor.g ) );"
-		"	vTextureColor.b = X360LinearToGamma( SrgbGammaToLinear( vTextureColor.b ) );"
-		"	return vTextureColor;"
-		" }"; 
-
-	D3DVERTEXELEMENT9 VertexElements[4] =
-	{
-		{ 0,  0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-		{ 0, 12, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
-		D3DDECL_END()
-	};
-
-	ID3DXBuffer *pErrorMsg = NULL;
-	ID3DXBuffer *pShaderCode = NULL;
-
-	HRESULT hr = D3DXCompileShader( strVertexShaderProgram, (UINT)strlen( strVertexShaderProgram ), NULL, NULL, "main", "vs_2_0", 0, &pShaderCode, &pErrorMsg, NULL );
-	if ( FAILED( hr ) )
-		return false;
-
-	Dx9Device()->CreateVertexShader( (DWORD*)pShaderCode->GetBufferPointer(), &m_NonInteractiveRefresh.m_pVertexShader );
-	pShaderCode->Release();
-	pShaderCode = NULL;
-	if ( pErrorMsg )
-	{
-		pErrorMsg->Release();
-		pErrorMsg = NULL;
-	}
-
-	hr = D3DXCompileShader( strPixelShaderProgram, (UINT)strlen( strPixelShaderProgram ), NULL, NULL, "main", "ps_2_0", 0, &pShaderCode, &pErrorMsg, NULL );
-	if ( FAILED(hr) )
-		return false;
-
-	Dx9Device()->CreatePixelShader( (DWORD*)pShaderCode->GetBufferPointer(), &m_NonInteractiveRefresh.m_pPixelShader );
-	pShaderCode->Release();
-	if ( pErrorMsg )
-	{
-		pErrorMsg->Release();
-		pErrorMsg = NULL;
-	}
-
-	hr = D3DXCompileShader( strPixelShaderProgram3, (UINT)strlen( strPixelShaderProgram3 ), NULL, NULL, "main", "ps_2_0", 0, &pShaderCode, &pErrorMsg, NULL );
-	if ( FAILED(hr) )
-		return false;
-
-	Dx9Device()->CreatePixelShader( (DWORD*)pShaderCode->GetBufferPointer(), &m_NonInteractiveRefresh.m_pPixelShaderStartup );
-	pShaderCode->Release();
-	if ( pErrorMsg )
-	{
-		pErrorMsg->Release();
-		pErrorMsg = NULL;
-	}
-
-	hr = D3DXCompileShader( strPixelShaderProgram2, (UINT)strlen( strPixelShaderProgram2 ), NULL, NULL, "main", "ps_2_0", 0, &pShaderCode, &pErrorMsg, NULL );
-	if ( FAILED(hr) )
-		return false;
-
-	Dx9Device()->CreatePixelShader( (DWORD*)pShaderCode->GetBufferPointer(), &m_NonInteractiveRefresh.m_pPixelShaderStartupPass2 );
-	pShaderCode->Release();
-	if ( pErrorMsg )
-	{
-		pErrorMsg->Release();
-		pErrorMsg = NULL;
-	}
-
-	// Create a vertex declaration from the element descriptions.
-	Dx9Device()->CreateVertexDeclaration( VertexElements, &m_NonInteractiveRefresh.m_pVertexDecl );
 	return true;
 }
 
@@ -2473,13 +2312,6 @@ void CShaderDeviceDx8::Present()
 
 	CheckDeviceLost( m_bOtherAppInitializing );
 
-	if ( IsX360() )
-	{
-		// according to docs  - "Mandatory Reset of GPU Registers"
-		// 360 must force the cached state to be dirty after any present()
-		g_pShaderAPI->ResetRenderState( false );
-	}
-
 #ifdef RECORD_KEYFRAMES
 	static int frame = 0;
 	++frame;
@@ -2527,23 +2359,7 @@ void CShaderDeviceDx8::SetHardwareGammaRamp( float fGamma, float fGammaTVRangeMi
 	for ( int i = 0; i < 256; i++ )
 	{
 		float flInputValue = float( i ) / 255.0f;
-
-		// Since the 360's sRGB read/write is a piecewise linear approximation, we need to correct for the difference in gamma space here
-		float flSrgbGammaValue;
-		if ( IsX360() ) // Should we also do this for the PS3?
-		{
-			// First undo the 360 broken sRGB curve by bringing the value back into linear space
-			float flLinearValue = X360GammaToLinear( flInputValue );
-			flLinearValue = clamp( flLinearValue, 0.0f, 1.0f );
-
-			// Now apply a true sRGB curve to mimic PC hardware
-			flSrgbGammaValue = SrgbLinearToGamma( flLinearValue ); // ( flLinearValue <= 0.0031308f ) ? ( flLinearValue * 12.92f ) : ( 1.055f * powf( flLinearValue, ( 1.0f / 2.4f ) ) ) - 0.055f;
-			flSrgbGammaValue = clamp( flSrgbGammaValue, 0.0f, 1.0f );
-		}
-		else
-		{
-			flSrgbGammaValue = flInputValue;
-		}
+		float flSrgbGammaValue = flInputValue;
 
 		// Apply the user controlled exponent curve
 		float flCorrection = pow( flSrgbGammaValue, ( fGamma / 2.2f ) );

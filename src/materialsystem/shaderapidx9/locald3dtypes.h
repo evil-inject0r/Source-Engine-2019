@@ -49,14 +49,14 @@ public:
 #endif // DX10
 
 
-#if !defined( _X360 )
 #ifdef _DEBUG
 #define D3D_DEBUG_INFO 1
 #endif
 #include <d3d9.h>
+#include <d3d9types.h>
+#include <DirectXTK/SimpleMath.h>
 #include <d3dx9.h>
 #include <d3dx9core.h>
-#endif
 
 struct IDirect3DTexture9;
 struct IDirect3DBaseTexture9;

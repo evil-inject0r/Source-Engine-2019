@@ -51,9 +51,7 @@ mat_fullbright 1 doesn't work properly on alpha materials in testroom_standards
 #include "UtlSymbol.h"
 #include "tier1/strtools.h"
 #include "Recording.h"
-#ifndef _X360
 #include <crtmemdebug.h>
-#endif
 #include "VertexShaderDX8.h"
 #include "FileSystem.h"
 #include "mathlib/mathlib.h"
@@ -86,19 +84,10 @@ mat_fullbright 1 doesn't work properly on alpha materials in testroom_standards
 #include "bitmap/tgawriter.h"
 
 #include "tier0/tslist.h"
-#ifndef _X360
 #include "wmi.h"
-#endif
 #include "filesystem/IQueuedLoader.h"
 #include "shaderdevicedx8.h"
 
-
-// Define this if you want to use a stubbed d3d.
-//#define STUBD3D
-
-#ifdef STUBD3D
-#include "stubd3ddevice.h"
-#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -4514,28 +4503,6 @@ void CShaderAPIDx8::SetDepthFeatheringPixelShaderConstant( int iConstant, float 
 {
 	float fConstantValues[4];
 
-	if( IsX360() )
-	{
-		const D3DMATRIX &projMatrix = GetProjectionMatrix();
-
-		fConstantValues[0] = 50.0f / fDepthBlendScale;
-		fConstantValues[1] = 1.0f / projMatrix.m[2][2];
-		fConstantValues[2] = 1.0f / projMatrix.m[3][2];
-		fConstantValues[3] = projMatrix.m[2][2];
-
-		/*
-		D3DXMATRIX invProjMatrix;
-		D3DXMatrixInverse( &invProjMatrix, NULL, (D3DXMATRIX *)&projMatrix );
-		fConstantValues[1] = invProjMatrix.m[3][2];
-		fConstantValues[2] = invProjMatrix.m[3][3];
-		fConstantValues[3] = invProjMatrix.m[2][2];
-		*/
-	}
-	else
-	{
-		fConstantValues[0] = m_DynamicState.m_DestAlphaDepthRange / fDepthBlendScale;
-		fConstantValues[1] = fConstantValues[2] = fConstantValues[3] = 0.0f; //empty
-	}
 
 	SetPixelShaderConstant( iConstant, fConstantValues );
 }
@@ -8517,7 +8484,7 @@ void CShaderAPIDx8::UpdateMatrixTransform( TransformType_t type )
 		CacheWorldSpaceCameraPosition();
 	}
 
-	if ( !IsX360() && m_CurrStack == MATERIAL_PROJECTION )
+	if ( m_CurrStack == MATERIAL_PROJECTION )
 	{
 		CachePolyOffsetProjectionMatrix();
 	}

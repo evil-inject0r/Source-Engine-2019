@@ -67,7 +67,7 @@ static bool TestTextureFormat( D3DFORMAT format, bool bIsRenderTarget,
 			g_DisplayAdapter, g_DeviceType, ImageLoader::ImageFormatToD3DFormat( g_DeviceFormat ),
 			D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_TEXTURE, format );
 	}
-	else if ( !bIsRenderTarget )
+	if ( !bIsRenderTarget )
 	{
 		// See if we can do it!
 		hr = D3D()->CheckDeviceFormat( 
