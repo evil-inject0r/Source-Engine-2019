@@ -154,3 +154,4 @@ build/CMakeFiles/
 
 # libraries we want
 !zlib.lib
+!bzip2.lib
