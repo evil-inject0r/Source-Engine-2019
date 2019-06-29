@@ -81,11 +81,6 @@ $Project "client"
 	"game\client\client_hl2r.vpc"		[($WINDOWS||$POSIX) && $HL2R]
 }
 
-$Project "client_sdk"
-{
-	"game\client\client_sdk.vpc" [$WINDOWS]
-}
-
 $Project "commedit"
 {
 	"tools\commedit\commedit.vpc" [$WINDOWS]
@@ -151,11 +146,6 @@ $Project "dmxtest"
 	"unittests\dmxtest\dmxtest.vpc" [$WINDOWS]
 }
 
-$Project "dumpmatsyshelp"
-{
-	"utils\dumpmatsyshelp\dumpmatsyshelp.vpc" [$WINDOWS]
-}
-
 $Project "dx_proxy_dx9_v00_pc"
 {
 	"utils\dx_proxy\dx_proxy_dx9_v00_pc.vpc"
@@ -204,11 +194,6 @@ $Project "filesystem_steam"
 $Project "finddbgdll"
 {
 	"utils\finddbgdll\finddbgdll.vpc" [$WINDOWS]
-}
-
-$Project "floatbm"
-{
-	"floatbm\floatbm.vpc" [$WINDOWS]
 }
 
 $Project "foundry"
@@ -263,8 +248,6 @@ $Project "server"
 {
 	"game\server\server_hl2.vpc"		[($WINDOWS||$POSIX) && $HL2]
 	"game\server\server_episodic.vpc"	[($WINDOWS||$POSIX) && $EPISODIC]
-	"game\server\server_hl2mp.vpc"		[($WINDOWS||$POSIX) && $HL2MP]
-	"game\server\server_hl2r.vpc"		[($WINDOWS||$POSIX) && $HL2R]
 }
 
 $Project "hlfaceposer"
@@ -305,11 +288,6 @@ $Project "launcher"
 $Project "launcher_main"
 {
 	"launcher_main\launcher_main.vpc" [$WINDOWS||$POSIX]
-}
-
-$Project "localization_check"
-{
-	"utils\localization_check\localization_check.vpc" [$WINDOWS]
 }
 
 $Project "lua"
@@ -362,11 +340,6 @@ $Project "modelbrowser"
 	"utils\modelbrowser\modelbrowser.vpc" [$WINDOWS]
 }
 
-$Project "modelcheckin"
-{
-	"utils\modelcheckin\modelcheckin.vpc" [$WINDOWS]
-}
-
 $Project "movieobjects"
 {
 	"movieobjects\movieobjects.vpc" [$WINDOWS]
@@ -417,11 +390,6 @@ $Project "panel_zoo"
 	"utils\vgui_panel_zoo\panel_zoo.vpc" [$WINDOWS]
 }
 
-$Project "pcffix"
-{
-	"utils\pcffix\pcffix.vpc" [$WINDOWS]
-}
-
 $Project "pet"
 {
 	"tools\pet\pet.vpc" [$WINDOWS]
@@ -432,29 +400,14 @@ $Project "pfmcomp"
 	"utils\pfmcomp\pfmcomp.vpc" [$WINDOWS]
 }
 
-$Project "pfm2tgas"
-{
-	"utils\pfm2tgas\pfm2tgas.vpc" [$WINDOWS]
-}
-
 $Project "phonemeextractor"
 {
 	"utils\phonemeextractor\phonemeextractor.vpc" [$WINDOWS]
 }
 
-$Project "printbones"
-{
-	"utils\printbones\printbones.vpc" [$WINDOWS]
-}
-
 $Project "processgamestats"
 {
 	"devtools\processgamestats\processgamestats.vpc" [$WINDOWS]
-}
-
-$Project "psdinfo"
-{
-	"utils\psdinfo\psdinfo.vpc" [$WINDOWS]
 }
 
 $Project "QCGenerator_Launcher"
@@ -467,24 +420,9 @@ $Project "QC_Eyes"
 	"utils\QC_Eyes\QC_Eyes.vpc" [$WINDOWS]
 }
 
-$Project "quantize"
-{
-	"quantize\quantize.vpc" [$WINDOWS]
-}
-
 $Project "raytrace"
 {
 	"raytrace\raytrace.vpc" [$WINDOWS||$POSIX]
-}
-
-$Project "rpt"
-{
-	"utils\rpt\rpt.vpc" [$WINDOWS]
-}
-
-$Project "runme"
-{
-	"utils\runme\runme.vpc" [$WINDOWS]
 }
 
 $Project "sampletool"
@@ -567,11 +505,6 @@ $Project "shaderlib"
 	"materialsystem\shaderlib\shaderlib.vpc" [$WINDOWS||$POSIX]
 }
 
-$Project "smp"
-{
-	"utils\smp\smp.vpc" [$WINDOWS]
-}
-
 $Project "soundemittersystem"
 {
 	"soundemittersystem\soundemittersystem.vpc" [$WINDOWS||$POSIX]
@@ -602,11 +535,6 @@ $Project "sqlwrapper"
 	"utils\sqlwrapper\sqlwrapper.vpc" [$WINDOWS]
 }
 
-$Project "standalonedatatabletest"
-{
-	"utils\standalonedatatabletest\standalonedatatabletest.vpc" [$WINDOWS]
-}
-
 $project "stdshader_dbg"
 {
 	"materialsystem\stdshaders\stdshader_dbg.vpc" [$WINDOWS||$POSIX]
@@ -615,11 +543,6 @@ $project "stdshader_dbg"
 $Project "stdshader_dx9"
 {
 	"materialsystem\stdshaders\stdshader_dx9.vpc" [$WINDOWS||$POSIX]
-}
-
-$Project "SteamDebugHelper"
-{
-	"utils\SteamDebugHelper\SteamDebugHelper.vpc" [$WINDOWS]
 }
 
 $Project "studiomdl"
@@ -717,11 +640,6 @@ $Project "unusedcontent"
 	"utils\unusedcontent\unusedcontent.vpc" [$WINDOWS]
 }
 
-$Project "valvelib"
-{
-	"utils\valvelib\valvelib.vpc" [$WINDOWS]
-}
-
 $Project "valve_avi"
 {
 	"avi\valve_avi.vpc" [$WINDOWS]
@@ -747,34 +665,9 @@ $Project "vbspinfo"
 	"utils\vbspinfo\vbspinfo.vpc" [$WINDOWS]
 }
 
-$Project "vcd_sound_check"
-{
-	"utils\vcd_sound_check\vcd_sound_check.vpc" [$WINDOWS]
-}
-
-$Project "vcdblock"
-{
-	"tools\vcdblock\vcdblock.vpc" [$WINDOWS]
-}
-
-$Project "vcdimport"
-{
-	"utils\vcdimport\vcdimport.vpc" [$WINDOWS]
-}
-
-$Project "vcdupdate"
-{
-	"utils\vcdupdate\vcdupdate.vpc" [$WINDOWS]
-}
-
 $Project "vconfig"
 {
 	"utils\vconfig\vconfig.vpc" [$WINDOWS]
-}
-
-$Project "vcrtrace"
-{
-	"utils\vcrtrace\vcrtrace.vpc" [$WINDOWS]
 }
 
 $Project "vguimatsurface"
@@ -800,16 +693,6 @@ $Project "vgui_surfacelib"
 $Project "vice"
 {
 	"utils\vice\vice.vpc" [$WINDOWS]
-}
-
-$Project "vlocalize"
-{
-	"vgui2\vlocalize\vlocalize.vpc" [$WINDOWS]
-}
-
-$Project "vmf_tweak"
-{
-	"utils\vmf_tweak\vmf_tweak.vpc" [$WINDOWS]
 }
 
 $Project "vmpi"
@@ -852,26 +735,6 @@ $Project "vmpi_service_ui"
 	"utils\vmpi\vmpi_service_ui\vmpi_service_ui.vpc" [$WINDOWS]
 }
 
-$Project "vmt"
-{
-	"tools\vmt\vmt.vpc" [$WINDOWS]
-}
-
-$Project "vmtcheck"
-{
-	"utils\vmtcheck\vmtcheck.vpc" [$WINDOWS]
-}
-
-$Project "vmtedit"
-{
-	"utils\vmtedit\vmtedit.vpc" [$WINDOWS]
-}
-
-$Project "voice_tweak"
-{
-	"utils\voice_tweak\voice_tweak.vpc" [$WINDOWS]
-}
-
 $Project "vpc"
 {
 	"utils\vpc\vpc.vpc"	[$WINDOWS]
@@ -880,11 +743,6 @@ $Project "vpc"
 $Project "vphysics"
 {
 	"vphysics\vphysics.vpc"  [$WINDOWS||$POSIX]
-}
-
-$Project "vprojtomake"
-{
-	"utils\vprojtomake\vprojtomake.vpc" [$WINDOWS]
 }
 
 $Project "vrad_dll"
@@ -927,11 +785,6 @@ $Project "vtfdiff"
 	"utils\vtfdiff\vtfdiff.vpc" [$WINDOWS]
 }
 
-$Project "vtfscrew"
-{
-	"utils\vtfscrew\vtfscrew.vpc" [$WINDOWS]
-}
-
 $Project "vvis_dll"
 {
 	"utils\vvis\vvis_dll.vpc" [$WINDOWS]
@@ -942,19 +795,9 @@ $Project "vvis_launcher"
 	"utils\vvis_launcher\vvis_launcher.vpc" [$WINDOWS]
 }
 
-$Project "vweightexp"
-{
-	"utils\vweightexp\vweightexp.vpc" [$WINDOWS]
-}
-
 $Project "WaitAndRestart"
 {
 	"utils\vmpi\WaitAndRestart\WaitAndRestart.vpc" [$WINDOWS]
-}
-
-$Project "ZipAlign"
-{
-	"utils\zipalign\ZipAlign.vpc" [$WINDOWS]
 }
 
 $Project "MathlibUnitTest"
