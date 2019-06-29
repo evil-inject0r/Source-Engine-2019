@@ -79,6 +79,7 @@ $Project "tier0"
 				$Compiler
 				{
 					$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
+                    $EnableC++Exceptions			"Yes With SEH Exceptions (/EHa)"
 				}
 			}
 		}
