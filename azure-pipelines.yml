@@ -9,6 +9,14 @@ trigger:
 pool:
   vmImage: 'windows-2019'
 
+# scheduling
+schedules:
+  - cron: "0 0 * * *"
+    displayName: Daily Build
+    branches:
+      include: ["master"]
+always: "false" # Don't run unless changes happen
+
 # build steps
 steps:
 
@@ -22,8 +30,6 @@ steps:
     
     devtools\bin\vpc.exe /hl2 /hl2mp /episodic /hl2r +everything /define:VS2019 /mksln everything.sln
     '
-
-# todo: fix solution file so its msbuild compatible
 
 # run msbuild on the solution
 - task: MSBuild@1
