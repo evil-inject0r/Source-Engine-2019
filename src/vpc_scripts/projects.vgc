@@ -77,8 +77,6 @@ $Project "client"
 {
 	"game\client\client_hl2.vpc"		[($WINDOWS||$POSIX) && $HL2]
 	"game\client\client_episodic.vpc"	[($WINDOWS||$POSIX) && $EPISODIC]
-	"game\client\client_hl2mp.vpc"		[($WINDOWS||$POSIX) && $HL2MP]
-	"game\client\client_hl2r.vpc"		[($WINDOWS||$POSIX) && $HL2R]
 }
 
 $Project "commedit"
@@ -215,8 +213,6 @@ $Project "gameui_client"
 {
 	"game\gameui\gameui_hl2.vpc"		[($WINDOWS||$POSIX) && $HL2]
 	"game\gameui\gameui_episodic.vpc"	[($WINDOWS||$POSIX) && $EPISODIC]
-	"game\gameui\gameui_hl2mp.vpc"		[($WINDOWS||$POSIX) && $HL2MP]
-	"game\gameui\gameui_hl2r.vpc"		[($WINDOWS||$POSIX) && $HL2R]
 }
 
 $Project "hammer_dll"
