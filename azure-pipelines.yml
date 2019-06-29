@@ -15,7 +15,7 @@ schedules:
     displayName: Daily Build
     branches:
       include: ["master"]
-always: "false" # Don't run unless changes happen
+    always: "false" # Don't run unless changes happen
 
 # build steps
 steps:
