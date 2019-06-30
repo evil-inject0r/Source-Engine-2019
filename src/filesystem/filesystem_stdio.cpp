@@ -218,7 +218,7 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CFileSystem_Stdio, IBaseFileSystem, BASEFILES
 #ifndef _RETAIL
 bool UseOptimalBufferAllocation()
 {
-	static bool bUseOptimalBufferAllocation = ( IsX360() || ( !IsLinux() && Q_stristr( Plat_GetCommandLine(), "-unbuffered_io" ) != NULL ) );
+	static bool bUseOptimalBufferAllocation = ( !IsLinux() && Q_stristr( Plat_GetCommandLine(), "-unbuffered_io" ) != NULL );
 	return bUseOptimalBufferAllocation;
 }
 ConVar filesystem_unbuffered_io( "filesystem_unbuffered_io", "1", 0, "" );
@@ -228,7 +228,7 @@ ConVar filesystem_unbuffered_io( "filesystem_unbuffered_io", "1", 0, "" );
 #endif
 
 ConVar filesystem_native( "filesystem_native", "1", 0, "Use native FS or STDIO" );
-ConVar filesystem_max_stdio_read( "filesystem_max_stdio_read", IsX360() ? "64" : "16", 0, "" );
+ConVar filesystem_max_stdio_read( "filesystem_max_stdio_read", "16", 0, "" );
 ConVar filesystem_report_buffered_io( "filesystem_report_buffered_io", "0" );
 
 //-----------------------------------------------------------------------------
@@ -296,14 +296,7 @@ bool CFileSystem_Stdio::GetOptimalIOConstraints( FileHandle_t hFile, unsigned *p
 
 	if ( pBufferAlign )
 	{
-		if ( IsX360() )
-		{
-			*pBufferAlign = 4;
-		}
-		else
-		{
-			*pBufferAlign = sectorSize;
-		}
+		*pBufferAlign = sectorSize;
 	}
 
 	return ( sectorSize > 1 );
@@ -346,15 +339,8 @@ void *CFileSystem_Stdio::AllocOptimalReadBuffer( FileHandle_t hFile, unsigned nS
 	bool bOffsetIsAligned = ( nOffset % sectorSize == 0 );
 	unsigned nAllocSize = ( bOffsetIsAligned ) ? AlignValue( nSize, sectorSize ) : nSize;
 
-	if ( IsX360() )
-	{
-		return malloc( nAllocSize );
-	}
-	else
-	{
-		unsigned nAllocAlignment = ( bOffsetIsAligned ) ? sectorSize : 4;
-		return _aligned_malloc( nAllocSize, nAllocAlignment );
-	}
+	unsigned nAllocAlignment = ( bOffsetIsAligned ) ? sectorSize : 4;
+	return _aligned_malloc( nAllocSize, nAllocAlignment );
 }
 
 
@@ -370,14 +356,7 @@ void CFileSystem_Stdio::FreeOptimalReadBuffer( void *p )
 
 	if ( p )
 	{
-		if ( IsX360() )
-		{
-			free( p );
-		}
-		else
-		{
-			 _aligned_free( p );
-		}
+		_aligned_free( p );
 	}
 }
 
@@ -1158,7 +1137,7 @@ size_t CWin32ReadOnlyFile::FS_fread( void *dest, size_t destSize, size_t size )
 
 	if ( m_hFileUnbuffered != INVALID_HANDLE_VALUE )
 	{
-		const int destBaseAlign = ( IsX360() ) ? 4 : m_SectorSize;
+		const int destBaseAlign = m_SectorSize;
 		bool bDestBaseIsAligned = ( (DWORD)dest % destBaseAlign == 0 );
 		bool bCanReadUnbufferedDirect = ( bDestBaseIsAligned && ( destSize % m_SectorSize == 0 ) && ( m_ReadPos % m_SectorSize == 0 ) );
 
@@ -1241,19 +1220,6 @@ size_t CWin32ReadOnlyFile::FS_fread( void *dest, size_t destSize, size_t size )
 		if ( !bReadOk )
 		{
 			DWORD dwError = GetLastError();
-
-			if ( IsX360() )
-			{
-				if ( dwError == ERROR_DISK_CORRUPT || dwError == ERROR_FILE_CORRUPT )
-				{
-					FSDirtyDiskReportFunc_t func = g_FileSystem_Stdio.GetDirtyDiskReportFunc();
-					if ( func )
-					{
-						func();
-						result = 0;
-					}
-				}
-			}
 
 			if ( dwError == ERROR_NO_SYSTEM_RESOURCES && MAX_READ > MIN_READ )
 			{

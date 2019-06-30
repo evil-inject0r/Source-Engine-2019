@@ -585,32 +585,6 @@ void CBaseFileSystem::InitAsync()
 	if ( m_pThreadPool )
 		return;
 
-	if ( IsX360() && !IsRetail() && Plat_IsInDebugSession() )
-	{
-		class CBreakThread : public CThread
-		{
-			virtual int Run()
-			{
-				for (;;)
-				{
-					Sleep(1000);
-					static int wakeCount;
-					wakeCount++;
-					volatile static int bForceResume = false;
-					if ( bForceResume )
-					{
-						bForceResume = false;
-						BaseFileSystem()->AsyncResume();
-					}
-				}
-			}
-		};
-
-		static CBreakThread breakThread;
-		breakThread.SetName( "DebugBreakThread" );
-		breakThread.Start( 1024 );
-	}
-
 	if ( CommandLine()->FindParm( "-noasync" ) )
 	{
 		Msg( "Async I/O disabled from command line\n" );

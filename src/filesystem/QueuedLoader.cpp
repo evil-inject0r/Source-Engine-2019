@@ -866,20 +866,7 @@ bool CQueuedLoader::AddJob( const LoaderJob_t *pLoaderJob )
 		// must resolve now, all submitted paths must be absolute for proper sort which achieves seek linearization
 		// a resolved absolute file ensures its existence
 		PathTypeFilter_t pathFilter = FILTER_NONE;
-		if ( IsX360() && ( g_pFullFileSystem->GetDVDMode() == DVDMODE_STRICT ) )
-		{
-			if ( V_stristr( pLoaderJob->m_pFilename, ".bsp" ) || V_stristr( pLoaderJob->m_pFilename, ".ain" ) )
-			{
-				// only the bsp/ain are allowed to be external
-				pathFilter = FILTER_CULLPACK;
-			}
-			else
-			{
-				// all files are expected to be in zip
-				pathFilter = FILTER_CULLNONPACK;
-			}
-		}
-
+		
 		PathTypeQuery_t pathType;
 		g_pFullFileSystem->RelativePathToFullPath( pLoaderJob->m_pFilename, pLoaderJob->m_pPathID, szFullPath, sizeof( szFullPath ), pathFilter, &pathType );
 		bExists = V_IsAbsolutePath( szFullPath );

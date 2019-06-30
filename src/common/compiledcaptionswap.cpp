@@ -40,12 +40,6 @@ bool SwapClosecaptionFile( void *pData )
 
 	CompiledCaptionHeader_t *pHdr = (CompiledCaptionHeader_t*)pData;
 
-	if ( IsX360() )
-	{
-		// pre-swap file header
-		swap.SwapFieldsToTargetEndian( pHdr );
-	}
-
 	if ( pHdr->magic != COMPILED_CAPTION_FILEID || pHdr->version != COMPILED_CAPTION_VERSION )
 	{
 		// bad data

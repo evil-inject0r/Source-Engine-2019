@@ -1843,13 +1843,6 @@ void CBaseFileSystem::AddSearchPathInternal( const char *pPath, const char *path
 		id = g_iNextSearchPathID++;
 	}
 
-	if ( IsX360() && bAddPackFiles && ( !Q_stricmp( pathID, "DEFAULT_WRITE_PATH" ) || !Q_stricmp( pathID, "LOGDIR" ) ) )
-	{
-		// xbox can be assured that no zips would ever be loaded on its write path
-		// otherwise xbox reloads zips because of mirrored drive mappings
-		bAddPackFiles = false;
-	}
-
 	// Add to list
 	bool bAdded = false;
 	int nIndex = m_SearchPaths.Count();
@@ -1865,25 +1858,10 @@ void CBaseFileSystem::AddSearchPathInternal( const char *pPath, const char *path
 		Assert( nIndex >= 0 );
 	}
 
-	if ( IsPC() || !bAddPackFiles || !bAdded )
+	if ( !bAddPackFiles || !bAdded )
 	{
 		// Grab last entry and set the path
 		m_SearchPaths.InsertBefore( nIndex );
-	}
-	else if ( IsX360() && bAddPackFiles && bAdded )
-	{
-		// 360 needs to find files (for the preload hit) in the zip first for fast loading
-		// 360 always adds the non-pack search path *after* the pack file but respects the overall list ordering
-		if ( addType == PATH_ADD_TO_HEAD )
-		{
-			m_SearchPaths.InsertBefore( nIndex );
-		}
-		else
-		{
-			nIndex = m_SearchPaths.Count() - 1;
-			m_SearchPaths.InsertAfter( nIndex );
-			nIndex++;
-		}
 	}
 
 	CSearchPath *sp = &m_SearchPaths[ nIndex ];
@@ -1893,10 +1871,6 @@ void CBaseFileSystem::AddSearchPathInternal( const char *pPath, const char *path
 
 	// all matching paths have a reference to the same store
 	sp->m_storeId = id;
-	if ( IsX360() && !V_strnicmp( newPath, "net:", 4 ) )
-	{
-		sp->m_bIsRemotePath = true;
-	}
 }
 
 //-----------------------------------------------------------------------------
