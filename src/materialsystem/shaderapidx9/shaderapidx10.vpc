@@ -13,15 +13,8 @@ $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\dx10sdk\include;..\"
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\thirdparty\dx10sdk\include;..\"
 		$PreprocessorDefinitions		"$BASE;SHADERAPIDX10;SHADER_DLL_EXPORT;PROTECTED_THINGS_ENABLE;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead"
-	}
-
-    $Linker
-	{
-		$AdditionalDependencies			"$BASE d3d9.lib d3d10.lib dxgi.lib" [$WINDOWS]
-        $AdditionalDependencies         "$BASE d3dx10.lib d3dx9.lib" [!$DEBUG]
-        $AdditionalDependencies         "$BASE d3dx10d.lib d3dx9d.lib" [!$RELEASE]
 	}
 }
 
@@ -123,5 +116,27 @@ $Project "shaderapidx10"
 		$Lib	"$LIBPUBLIC\bitmap"
 		$Lib	"$LIBPUBLIC\mathlib"
 		$Lib	"$LIBCOMMON\bzip2"
+
+        $File	"$SRCDIR\thirdparty\dx10sdk\lib\x86\d3d9.lib" 
+		$File	"$SRCDIR\thirdparty\dx10sdk\lib\x86\d3d10.lib" 
+		$File	"$SRCDIR\thirdparty\dx10sdk\lib\x86\dxgi.lib" 
+		
+		$File	"$SRCDIR\thirdparty\dx10sdk\lib\x86\d3dx10.lib"	\
+				"$SRCDIR\thirdparty\dx10sdk\lib\x86\d3dx9.lib"
+		{
+			$Configuration "Debug"
+			{
+				$ExcludedFromBuild	"Yes"
+			}
+		}
+		
+		$File	"$SRCDIR\thirdparty\dx10sdk\lib\x86\d3dx10d.lib"	\
+				"$SRCDIR\thirdparty\dx10sdk\lib\x86\d3dx9d.lib"
+		{
+			$Configuration "Release"
+			{
+				$ExcludedFromBuild	"Yes"
+			}
+		}
 	}
 }
