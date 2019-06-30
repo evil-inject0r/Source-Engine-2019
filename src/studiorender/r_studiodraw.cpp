@@ -902,7 +902,7 @@ inline void CStudioRender::R_ComputeLightAtPoint3( const Vector &pos, const Vect
 
 // define SPECIAL_SSE_MESH_PROCESSOR to enable code which contains a special optimized SSE lighting loop, significantly
 // improving software vertex processing performace.
-#if defined( _WIN32 ) && !defined( _X360 )
+#if defined( _WIN32 )
 #define SPECIAL_SSE_MESH_PROCESSOR
 #endif
 
@@ -1127,7 +1127,7 @@ public:
 		}
 #endif
 
-#if defined( _WIN32 ) && !defined( _X360 )
+#if defined( _WIN32 )
 		if ( nHasSIMD )
 		{
 			// Precaches the data
@@ -1137,7 +1137,7 @@ public:
 		for ( int i = 0; i < PREFETCH_VERT_COUNT; ++i )
 		{
 			ntemp[i] = pGroupToMesh[i];
-#if defined( _WIN32 ) && !defined( _X360 )
+#if defined( _WIN32 )
 			if ( nHasSIMD )
 			{
 				char *pMem = (char*)&pVertices[ntemp[i]];
@@ -1154,7 +1154,7 @@ public:
 		int n, idx;
 		for ( int j=0; j < numVertices; ++j )
 		{
-#if defined( _WIN32 ) && !defined( _WIN64 )
+#if defined( _WIN32 )
 			if ( nHasSIMD )
 			{
 				char *pMem = (char*)&pGroupToMesh[j + PREFETCH_VERT_COUNT + 1];
@@ -1452,89 +1452,65 @@ public:
 //-----------------------------------------------------------------------------
 // Draws the mesh as tristrips using software
 //-----------------------------------------------------------------------------
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< false, false, false, LIGHTING_HARDWARE, false >	ProcessMesh000H7_t;
 typedef CProcessMeshWrapper< false, false, false, LIGHTING_SOFTWARE, false >	ProcessMesh000S7_t;
 typedef CProcessMeshWrapper< false, false, false, LIGHTING_MOUTH, false >		ProcessMesh000M7_t;
-#endif
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< false, false, true, LIGHTING_HARDWARE, false >		ProcessMesh001H7_t;
 typedef CProcessMeshWrapper< false, false, true, LIGHTING_SOFTWARE, false >		ProcessMesh001S7_t;
 typedef CProcessMeshWrapper< false, false, true, LIGHTING_MOUTH, false >		ProcessMesh001M7_t;
-#endif
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< false, true, false, LIGHTING_HARDWARE, false >		ProcessMesh010H7_t;
 typedef CProcessMeshWrapper< false, true, false, LIGHTING_SOFTWARE, false >		ProcessMesh010S7_t;
 typedef CProcessMeshWrapper< false, true, false, LIGHTING_MOUTH, false >		ProcessMesh010M7_t;
-#endif
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< false, true, true, LIGHTING_HARDWARE, false >		ProcessMesh011H7_t;
 typedef CProcessMeshWrapper< false, true, true, LIGHTING_SOFTWARE, false >		ProcessMesh011S7_t;
 typedef CProcessMeshWrapper< false, true, true, LIGHTING_MOUTH, false >			ProcessMesh011M7_t;
-#endif
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< true, false, false, LIGHTING_HARDWARE, false >		ProcessMesh100H7_t;
 typedef CProcessMeshWrapper< true, false, false, LIGHTING_SOFTWARE, false >		ProcessMesh100S7_t;
 typedef CProcessMeshWrapper< true, false, false, LIGHTING_MOUTH, false >		ProcessMesh100M7_t;
-#endif
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< true, false, true, LIGHTING_HARDWARE, false >		ProcessMesh101H7_t;
 typedef CProcessMeshWrapper< true, false, true, LIGHTING_SOFTWARE, false >		ProcessMesh101S7_t;
 typedef CProcessMeshWrapper< true, false, true, LIGHTING_MOUTH, false >			ProcessMesh101M7_t;
-#endif
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< true, true, false, LIGHTING_HARDWARE, false >		ProcessMesh110H7_t;
 typedef CProcessMeshWrapper< true, true, false, LIGHTING_SOFTWARE, false >		ProcessMesh110S7_t;
 typedef CProcessMeshWrapper< true, true, false, LIGHTING_MOUTH, false >			ProcessMesh110M7_t;
-#endif
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< true, true, true, LIGHTING_HARDWARE, false >		ProcessMesh111H7_t;
 typedef CProcessMeshWrapper< true, true, true, LIGHTING_SOFTWARE, false >		ProcessMesh111S7_t;
 typedef CProcessMeshWrapper< true, true, true, LIGHTING_MOUTH, false >			ProcessMesh111M7_t;
-#endif
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< false, false, false, LIGHTING_HARDWARE, true >		ProcessMesh000H8_t;
 typedef CProcessMeshWrapper< false, false, false, LIGHTING_SOFTWARE, true >		ProcessMesh000S8_t;
 typedef CProcessMeshWrapper< false, false, false, LIGHTING_MOUTH, true >		ProcessMesh000M8_t;
-#endif
 
 typedef CProcessMeshWrapper< false, false, true, LIGHTING_HARDWARE, true >		ProcessMesh001H8_t;
 typedef CProcessMeshWrapper< false, false, true, LIGHTING_SOFTWARE, true >		ProcessMesh001S8_t;
 typedef CProcessMeshWrapper< false, false, true, LIGHTING_MOUTH, true >			ProcessMesh001M8_t;
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< false, true, false, LIGHTING_HARDWARE, true >		ProcessMesh010H8_t;
 typedef CProcessMeshWrapper< false, true, false, LIGHTING_SOFTWARE, true >		ProcessMesh010S8_t;
 typedef CProcessMeshWrapper< false, true, false, LIGHTING_MOUTH, true >			ProcessMesh010M8_t;
-#endif
 
 typedef CProcessMeshWrapper< false, true, true, LIGHTING_HARDWARE, true >		ProcessMesh011H8_t;
 typedef CProcessMeshWrapper< false, true, true, LIGHTING_SOFTWARE, true >		ProcessMesh011S8_t;
 typedef CProcessMeshWrapper< false, true, true, LIGHTING_MOUTH, true >			ProcessMesh011M8_t;
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< true, false, false, LIGHTING_HARDWARE, true >		ProcessMesh100H8_t;
 typedef CProcessMeshWrapper< true, false, false, LIGHTING_SOFTWARE, true >		ProcessMesh100S8_t;
 typedef CProcessMeshWrapper< true, false, false, LIGHTING_MOUTH, true >			ProcessMesh100M8_t;
-#endif
 
 typedef CProcessMeshWrapper< true, false, true, LIGHTING_HARDWARE, true >		ProcessMesh101H8_t;
 typedef CProcessMeshWrapper< true, false, true, LIGHTING_SOFTWARE, true >		ProcessMesh101S8_t;
 typedef CProcessMeshWrapper< true, false, true, LIGHTING_MOUTH, true >			ProcessMesh101M8_t;
 
-#if !defined( _X360 )
 typedef CProcessMeshWrapper< true, true, false, LIGHTING_HARDWARE, true >		ProcessMesh110H8_t;
 typedef CProcessMeshWrapper< true, true, false, LIGHTING_SOFTWARE, true >		ProcessMesh110S8_t;
 typedef CProcessMeshWrapper< true, true, false, LIGHTING_MOUTH, true >			ProcessMesh110M8_t;
-#endif
 
 typedef CProcessMeshWrapper< true, true, true, LIGHTING_HARDWARE, true >		ProcessMesh111H8_t;
 typedef CProcessMeshWrapper< true, true, true, LIGHTING_SOFTWARE, true >		ProcessMesh111S8_t;
@@ -1542,7 +1518,6 @@ typedef CProcessMeshWrapper< true, true, true, LIGHTING_MOUTH, true >			ProcessM
 
 static SoftwareProcessMeshFunc_t g_SoftwareProcessMeshFunc[] =
 {
-#if !defined( _X360 )
 	ProcessMesh000H7_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh000S7_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh000M7_t::R_StudioSoftwareProcessMesh,
@@ -1584,37 +1559,35 @@ static SoftwareProcessMeshFunc_t g_SoftwareProcessMeshFunc[] =
 	ProcessMesh111H7_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh111S7_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh111M7_t::R_StudioSoftwareProcessMesh,
-#endif
 
-#if !defined( _X360 )
 	ProcessMesh000H8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh000S8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh000M8_t::R_StudioSoftwareProcessMesh,
-#endif
+
 	ProcessMesh001H8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh001S8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh001M8_t::R_StudioSoftwareProcessMesh,
-#if !defined( _X360 )
+
 	ProcessMesh010H8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh010S8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh010M8_t::R_StudioSoftwareProcessMesh,
-#endif
+
 	ProcessMesh011H8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh011S8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh011M8_t::R_StudioSoftwareProcessMesh,
-#if !defined( _X360 )
+
 	ProcessMesh100H8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh100S8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh100M8_t::R_StudioSoftwareProcessMesh,
-#endif
+
 	ProcessMesh101H8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh101S8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh101M8_t::R_StudioSoftwareProcessMesh,
-#if !defined( _X360 )
+
 	ProcessMesh110H8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh110S8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh110M8_t::R_StudioSoftwareProcessMesh,
-#endif
+
 	ProcessMesh111H8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh111S8_t::R_StudioSoftwareProcessMesh,
 	ProcessMesh111M8_t::R_StudioSoftwareProcessMesh,
@@ -1648,14 +1621,9 @@ void CStudioRender::R_StudioSoftwareProcessMesh( mstudiomesh_t* pmesh, CMeshBuil
 
 	// FIXME: Use function pointers to simplify this?!?
 	int idx;
-	if ( IsPC() )
-	{
-		idx	= bDX8Vertex * 24 + bNeedsTangentSpace * 12 + doFlex * 6 + MathLib_SSEEnabled() * 3 + lighting;
-	}
-	else
-	{
-		idx = bNeedsTangentSpace * 6 + doFlex * 3 + lighting;
-	}
+
+	idx	= bDX8Vertex * 24 + bNeedsTangentSpace * 12 + doFlex * 6 + MathLib_SSEEnabled() * 3 + lighting;
+	
 
 	const mstudio_meshvertexdata_t *pVertData = GetFatVertexData( pmesh, m_pStudioHdr );
 	if ( pVertData )
@@ -2090,9 +2058,6 @@ template<VertexCompressionType_t T> void CStudioRender::R_StudioRestoreMesh( mst
 {
 	Vector4D *pStudioTangentS;
 
-	if ( IsX360() )
-		return;
-
 	// get at the vertex data
 	const mstudio_meshvertexdata_t *vertData = GetFatVertexData( pmesh, m_pStudioHdr );
 	if ( !vertData )
@@ -2251,7 +2216,7 @@ void CStudioRender::ComputeFlexWeights( int nFlexCount, mstudioflex_t *pFlex, Mo
 //-----------------------------------------------------------------------------
 inline VertexFormat_t CStudioRender::ComputeSWSkinVertexFormat( IMaterial *pMaterial ) const
 {
-	bool bDX8OrHigherVertex = IsX360() || ( UserDataSize( pMaterial->GetVertexFormat() ) != 0 );
+	bool bDX8OrHigherVertex = UserDataSize( pMaterial->GetVertexFormat() ) != 0;
 	VertexFormat_t fmt = VERTEX_POSITION | VERTEX_NORMAL | VERTEX_COLOR | VERTEX_BONE_INDEX | 
 		VERTEX_BONEWEIGHT( 2 ) | VERTEX_TEXCOORD_SIZE( 0, 2 );
 	if ( bDX8OrHigherVertex )

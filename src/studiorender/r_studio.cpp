@@ -36,12 +36,6 @@ FORCEINLINE StudioModelLighting_t CStudioRender::R_StudioComputeLighting( IMater
 	Assert( pMaterial );
 	bool doMouthLighting = materialFlags && (m_pStudioHdr->nummouths >= 1);
 
-	if ( IsX360() )
-	{
-		// 360 does not do software lighting
-		return doMouthLighting ? LIGHTING_MOUTH : LIGHTING_HARDWARE;
-	}
-
 	bool doSoftwareLighting = doMouthLighting ||
 		(pMaterial->IsVertexLit() && pMaterial->NeedsSoftwareLighting() );
 

@@ -76,12 +76,10 @@ public:
 	// Returns the amount of video memory in bytes for a particular adapter
 	virtual int GetVidMemBytes( int nAdapter ) const;
 
-#if !defined( _X360 )
 	FORCEINLINE IDirect3D9 *D3D() const
 	{ 
 		return m_pD3D; 
 	}
-#endif
 
 protected:
 	// Determine capabilities

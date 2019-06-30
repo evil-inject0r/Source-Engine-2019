@@ -892,7 +892,6 @@ public:
 	FORCEINLINE void Unlock( IDirect3DVertexBuffer9* vb )
 	{
 		// needed for d3d on pc only
-#ifndef _XBOX
 		if ( ASyncMode() )
 			Push(PBCMD_UNLOCK_VB, vb);
 		else
@@ -904,13 +903,11 @@ public:
 				Warning( "Vertex Buffer Unlock Failed in %s on line %d\n", V_UnqualifiedFileName(__FILE__), __LINE__ );
 			}
 		}
-#endif
 	}
 
 	FORCEINLINE void Unlock( IDirect3DVertexBuffer9* vb, LockedBufferContext *lb, size_t unlock_size)
 	{
 		// needed for d3d on pc only
-#ifndef _XBOX
 		if ( ASyncMode() )
 		{
 			AllocatePushBufferSpace( 1+N_DWORDS_IN_PTR+N_DWORDS( LockedBufferContext )+1 );
@@ -930,13 +927,11 @@ public:
 				Warning( "Vertex Buffer Unlock Failed in %s on line %d\n", V_UnqualifiedFileName(__FILE__), __LINE__ );
 			}
 		}
-#endif
 	}
 
 	FORCEINLINE void Unlock( IDirect3DIndexBuffer9* ib )
 	{
 		// needed for d3d on pc only
-#ifndef _XBOX
 		if ( ASyncMode() )
 			Push(PBCMD_UNLOCK_IB, ib);
 		else
@@ -948,13 +943,12 @@ public:
 				Warning( "Index Buffer Unlock Failed in %s on line %d\n", V_UnqualifiedFileName(__FILE__), __LINE__ );
 			}
 		}
-#endif
 	}
 
 	FORCEINLINE void Unlock( IDirect3DIndexBuffer9* ib, LockedBufferContext *lb, size_t unlock_size)
 	{
 		// needed for d3d on pc only
-#ifndef _XBOX
+
 		if ( ASyncMode() )
 		{
 			AllocatePushBufferSpace( 1+N_DWORDS_IN_PTR+N_DWORDS( LockedBufferContext )+1 );
@@ -974,15 +968,12 @@ public:
 				Warning( "Index Buffer Unlock Failed in %s on line %d\n", V_UnqualifiedFileName(__FILE__), __LINE__ );
 			}
 		}
-#endif
 	}
 
 	void ShowCursor( bool onoff)
 	{
-#ifndef _XBOX
 		Synchronize();
 		DO_D3D( ShowCursor(onoff) );
-#endif
 	}
 
 	FORCEINLINE void Clear( int count, D3DRECT const *pRects, int Flags, D3DCOLOR color, float Z, int stencil)
