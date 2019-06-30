@@ -137,25 +137,6 @@ static LRESULT CALLBACK MatSurfaceWindowProc( HWND hwnd, UINT uMsg, WPARAM wPara
 		break;
 
 	case WM_XCONTROLLER_KEY:
-		if ( IsX360() )
-		{	
-			// First have to insert the edge case event
-			int nRetVal = 0;
-			if ( s_ChainedWindowProc )
-			{
-				nRetVal = CallWindowProc( s_ChainedWindowProc, hwnd, uMsg, wParam, lParam );
-			}
-
-			// xboxissue - as yet HL2 input hasn't been made aware of analog inputs or ports
-			// so just digital step on the sample range
-			int sample = LOWORD( lParam );
-			if ( sample )
-			{
-				event.m_nType = IE_KeyCodeTyped;
-				event.m_nData = (vgui::KeyCode)wParam;
-				g_pInputSystem->PostUserEvent( event );
-			}
-		}
 		break;
 
 	// Need to deal with key repeat for keydown since inputsystem doesn't

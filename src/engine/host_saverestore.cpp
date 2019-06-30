@@ -823,11 +823,11 @@ int CSaveRestore::SaveGameSlot( const char *pSaveName, const char *pSaveComment,
 	S_ExtraUpdate();
 
 	// queue up to save a matching screenshot
-	if ( !IsX360() && save_screenshot.GetBool() ) // X360TBD: Faster savegame screenshots
+	if ( save_screenshot.GetBool() )
 	{
 		if ( !( bIsAutosave || bIsAutosaveDangerous ) || save_screenshot.GetInt() == 2 )
 		{
-			Q_snprintf( m_szSaveGameScreenshotFile, sizeof( m_szSaveGameScreenshotFile ), "%s%s%s.tga", GetSaveDir(), pSaveName, GetPlatformExt() );
+			Q_snprintf( m_szSaveGameScreenshotFile, sizeof( m_szSaveGameScreenshotFile ), "%s%s.tga", GetSaveDir(), pSaveName );
 		}
 	}
 
@@ -2786,8 +2786,8 @@ void CSaveRestore::AutoSaveDangerousIsSafe()
 	// Rename the screenshot
 	if ( !IsX360() )
 	{
-		Q_snprintf( szOldName, sizeof( szOldName ), "//%s/%sautosavedangerous%s.tga", MOD_DIR, GetSaveDir(), GetPlatformExt() );
-		Q_snprintf( szNewName, sizeof( szNewName ), "//%s/%sautosave%s.tga", MOD_DIR, GetSaveDir(), GetPlatformExt() );
+		Q_snprintf( szOldName, sizeof( szOldName ), "//%s/%sautosavedangerous.tga", MOD_DIR, GetSaveDir() );
+		Q_snprintf( szNewName, sizeof( szNewName ), "//%s/%sautosave.tga", MOD_DIR, GetSaveDir() );
 
 		// there could be an old version, remove it
 		if ( g_pFileSystem->FileExists( szNewName ) )
@@ -2808,13 +2808,13 @@ void CSaveRestore::AutoSaveDangerousIsSafe()
 	// Rename the dangerous auto save as a normal auto save
 	if ( !IsXSave() )
 	{
-		Q_snprintf( szOldName, sizeof( szOldName ), "//%s/%sautosavedangerous%s.sav", MOD_DIR, GetSaveDir(), GetPlatformExt() );
-		Q_snprintf( szNewName, sizeof( szNewName ), "//%s/%sautosave%s.sav", MOD_DIR, GetSaveDir(), GetPlatformExt() );
+		Q_snprintf( szOldName, sizeof( szOldName ), "//%s/%sautosavedangerous.sav", MOD_DIR, GetSaveDir() );
+		Q_snprintf( szNewName, sizeof( szNewName ), "//%s/%sautosave.sav", MOD_DIR, GetSaveDir() );
 	}
 	else
 	{
-		Q_snprintf( szOldName, sizeof( szOldName ), "%s:\\autosavedangerous%s.sav", GetCurrentMod(), GetPlatformExt() );
-		Q_snprintf( szNewName, sizeof( szNewName ), "%s:\\autosave%s.sav", GetCurrentMod(), GetPlatformExt() );
+		Q_snprintf( szOldName, sizeof( szOldName ), "%s:\\autosavedangerous.sav", GetCurrentMod() );
+		Q_snprintf( szNewName, sizeof( szNewName ), "%s:\\autosave.sav", GetCurrentMod() );
 	}
 
 	// there could be an old version, remove it
@@ -3240,16 +3240,8 @@ void CSaveRestore::Init( void )
 
 		ThreadPoolStartParams_t threadPoolStartParams;
 		threadPoolStartParams.nThreads = 1;
-		if ( !IsX360() )
-		{
-			threadPoolStartParams.fDistribute = TRS_FALSE;
-		}
-		else
-		{
-			threadPoolStartParams.iAffinityTable[0] = XBOX_PROCESSOR_1;
-			threadPoolStartParams.bUseAffinityTable = true;
-		}
-
+		threadPoolStartParams.fDistribute = TRS_FALSE;
+		
 		g_pSaveThread = CreateThreadPool();
 		g_pSaveThread->Start( threadPoolStartParams, "SaveJob" );
 	}

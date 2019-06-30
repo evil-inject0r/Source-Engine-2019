@@ -893,12 +893,6 @@ int GetSectorSize( const char *pszFilename )
 		return 0;
 	}
 
-	if ( IsX360() )
-	{
-		// purposely dvd centric, which is also the worst case
-		return XBOX_DVD_SECTORSIZE;
-	}
-
 #if defined( _WIN32 ) && !defined( FILESYSTEM_STEAM ) && !defined( _X360 )
 	char szAbsoluteFilename[MAX_FILEPATH];
 	if ( pszFilename[1] != ':' )

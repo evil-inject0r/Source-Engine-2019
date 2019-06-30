@@ -983,7 +983,7 @@ class CResourcePreloadPropLighting : public CResourcePreload
 		char szBasename[MAX_PATH];
 		char szFilename[MAX_PATH];
 		V_FileBase( pName, szBasename, sizeof( szBasename ) );
-		V_snprintf( szFilename, sizeof( szFilename ), "%s%s.vhv", szBasename, GetPlatformExt() );
+		V_snprintf( szFilename, sizeof( szFilename ), "%s.vhv", szBasename );
 
 		// static props have the same name across maps
 		// can check if loading the same map and early out if data present
@@ -3553,11 +3553,11 @@ void CModelRender::ValidateStaticPropColorData( ModelInstanceHandle_t handle )
 	char fileName[MAX_PATH];
 	if ( g_pMaterialSystemHardwareConfig->GetHDRType() == HDR_TYPE_NONE || g_bBakedPropLightingNoSeparateHDR )
 	{
-		Q_snprintf( fileName, sizeof( fileName ), "sp_%d%s.vhv", StaticPropMgr()->GetStaticPropIndex( pProp ), GetPlatformExt() );
+		Q_snprintf( fileName, sizeof( fileName ), "sp_%d.vhv", StaticPropMgr()->GetStaticPropIndex( pProp ) );
 	}
 	else
 	{	
-		Q_snprintf( fileName, sizeof( fileName ), "sp_hdr_%d%s.vhv", StaticPropMgr()->GetStaticPropIndex( pProp ), GetPlatformExt() );
+		Q_snprintf( fileName, sizeof( fileName ), "sp_hdr_%d.vhv", StaticPropMgr()->GetStaticPropIndex( pProp ) );
 	}
 
 	if ( IsX360()  )
@@ -3738,11 +3738,11 @@ bool CModelRender::LoadStaticPropColorData( IHandleEntity *pProp, DataCacheHandl
 	char fileName[MAX_PATH];
 	if ( g_pMaterialSystemHardwareConfig->GetHDRType() == HDR_TYPE_NONE || g_bBakedPropLightingNoSeparateHDR )
 	{
-        Q_snprintf( fileName, sizeof( fileName ), "sp_%d%s.vhv", StaticPropMgr()->GetStaticPropIndex( pProp ), GetPlatformExt() );
+        Q_snprintf( fileName, sizeof( fileName ), "sp_%d.vhv", StaticPropMgr()->GetStaticPropIndex( pProp ) );
 	}
 	else
 	{
-        Q_snprintf( fileName, sizeof( fileName ), "sp_hdr_%d%s.vhv", StaticPropMgr()->GetStaticPropIndex( pProp ), GetPlatformExt() );
+        Q_snprintf( fileName, sizeof( fileName ), "sp_hdr_%d.vhv", StaticPropMgr()->GetStaticPropIndex( pProp ) );
 	}
 
 	// mark as invalid, async callback will set upon completion

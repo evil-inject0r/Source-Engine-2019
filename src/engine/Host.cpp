@@ -3319,16 +3319,7 @@ void Host_Init( bool bDedicated )
 	}
 
 	ThreadPoolStartParams_t startParams;
-	if ( IsX360() )
-	{
-		// 360 overrides defaults, 2 computation threads distributed to core 1 and 2
-		startParams.nThreads = 2;
-		startParams.nStackSize = 256*1024;
-		startParams.fDistribute = TRS_TRUE;
-		startParams.bUseAffinityTable = true;
-		startParams.iAffinityTable[0] = XBOX_PROCESSOR_2;
-		startParams.iAffinityTable[1] = XBOX_PROCESSOR_4;
-	}
+	
 	if ( g_pThreadPool )
 		g_pThreadPool->Start( startParams );
 

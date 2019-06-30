@@ -1611,25 +1611,7 @@ CAudioMixer *CAudioSourceStreamWave::CreateMixer( int initialStreamPosition )
 {
 	char fileName[MAX_PATH];
 	const char *pFileName = m_pSfx->GetFileName();
-	if ( IsX360() && ( m_format == WAVE_FORMAT_XMA || m_format == WAVE_FORMAT_PCM ) )
-	{
-		strcpy( fileName, pFileName );
-		V_SetExtension( fileName, ".360.wav", sizeof( fileName ) );
-		pFileName = fileName;
-
-		// for safety, validate the initial stream position
-		// not trusting save/load
-		if ( m_format == WAVE_FORMAT_XMA )
-		{
-			if ( ( initialStreamPosition % XBOX_DVD_SECTORSIZE ) || 
-				( initialStreamPosition % XMA_BLOCK_SIZE ) ||
-				( initialStreamPosition >= m_dataSize ) )
-			{
-				initialStreamPosition = 0;
-			}
-		}
-	}
-
+	
 	// BUGBUG: Source constructs the IWaveData, mixer frees it, fix this?
 	IWaveData *pWaveData = CreateWaveDataStream( *this, static_cast<IWaveStreamSource *>(this), pFileName, m_dataStart, m_dataSize, m_pSfx, initialStreamPosition );
 	if ( pWaveData )

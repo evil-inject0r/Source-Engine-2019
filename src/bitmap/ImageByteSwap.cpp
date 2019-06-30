@@ -5,7 +5,7 @@
 //
 //=============================================================================//
 
-#if defined( _WIN32 ) && !defined( _X360 )
+#if defined( _WIN32 )
 #include <windows.h>
 #endif
 #include "tier0/platform.h"
@@ -14,15 +14,6 @@
 
 // Should be last include
 #include "tier0/memdbgon.h"
-
-/*#if defined( _WIN32 ) && !defined( _X360 )
-// the x86 version of the 360 (used by win32 tools)
-// It would have been nice to use the 360 D3DFORMAT bit encodings, but the codes
-// are different for WIN32, and this routine is used by a WIN32 library to
-// manipulate 360 data, so there can be no reliance on WIN32 D3DFORMAT bits
-#include "..\x360xdk\include\win32\vs2005\d3d9.h"
-#include "..\x360xdk\include\win32\vs2005\XGraphics.h"
-#endif*/
 
 namespace ImageLoader
 {
@@ -82,48 +73,7 @@ namespace ImageLoader
 //-----------------------------------------------------------------------------
 	void PreConvertSwapImageData( unsigned char *pImageData, int nImageSize, ImageFormat imageFormat, int width, int stride )
 	{
-
 		Assert( IsFormatValidForConversion( imageFormat ) );
-
-#if !defined(_LINUX) && defined( _X360 )
-		if ( IsPC() )
-		{
-			// running as a win32 tool, data is in expected order
-			// for conversion code
-			return;
-		}
-
-		// running on 360 and converting, input data must be x86 order
-		// swap to ensure conversion code gets valid data
-		XGENDIANTYPE xEndian;
-		switch ( imageFormat )
-		{
-			default:
-				return;
-
-			case IMAGE_FORMAT_RGBA16161616F:
-			case IMAGE_FORMAT_RGBA16161616:
-				xEndian = XGENDIAN_8IN16;
-				break;
-		}
-
-		int count;
-		if ( !stride )
-		{
-			stride = XGENDIANTYPE_GET_DATA_SIZE( xEndian );
-			count = nImageSize / stride;
-			XGEndianSwapMemory( pImageData, pImageData, xEndian, stride, count );
-		}
-		else
-		{
-			int nRows = nImageSize/stride;
-			for ( int i=0; i<nRows; i++ )
-			{
-				XGEndianSwapMemory( pImageData, pImageData, xEndian, XGENDIANTYPE_GET_DATA_SIZE( xEndian ), width );
-				pImageData += stride;
-			}
-		}
-#endif
 	}
 
 //-----------------------------------------------------------------------------
@@ -133,62 +83,6 @@ namespace ImageLoader
 	void PostConvertSwapImageData( unsigned char *pImageData, int nImageSize, ImageFormat imageFormat, int width, int stride )
 	{
 		Assert( IsFormatValidForConversion( imageFormat ) );
-
-#if !defined(_LINUX) && defined( _X360 )
-		// It would have been nice to use the 360 D3DFORMAT bit encodings, but the codes
-		// are different for win32, and this routine is used by a win32 library to
-		// manipulate 360 data, so there can be no reliance on D3DFORMAT bits
-		XGENDIANTYPE xEndian;
-		switch ( imageFormat )
-		{
-			default:
-				return;
-
-			case IMAGE_FORMAT_RGBA16161616:
-				if ( IsX360() )
-				{
-					// running on 360 the conversion output is correct
-					return;
-				}
-				// running on the pc, the output needs to be in 360 order
-				xEndian = XGENDIAN_8IN16;
-				break;
-
-			case IMAGE_FORMAT_DXT1:
-			case IMAGE_FORMAT_DXT1_ONEBITALPHA:
-			case IMAGE_FORMAT_DXT3:
-			case IMAGE_FORMAT_DXT5:
-			case IMAGE_FORMAT_UV88:
-			case IMAGE_FORMAT_ATI1N:
-			case IMAGE_FORMAT_ATI2N:
-				xEndian = XGENDIAN_8IN16;
-				break;
-
-			case IMAGE_FORMAT_BGRA8888:
-			case IMAGE_FORMAT_BGRX8888:
-			case IMAGE_FORMAT_UVWQ8888:
-			case IMAGE_FORMAT_UVLX8888:
-				xEndian = XGENDIAN_8IN32;
-				break;
-		}
-
-		int count;
-		if ( !stride )
-		{
-			stride = XGENDIANTYPE_GET_DATA_SIZE( xEndian );
-			count = nImageSize / stride;
-			XGEndianSwapMemory( pImageData, pImageData, xEndian, stride, count );
-		}
-		else
-		{
-			int nRows = nImageSize/stride;
-			for ( int i=0; i<nRows; i++ )
-			{
-				XGEndianSwapMemory( pImageData, pImageData, xEndian, XGENDIANTYPE_GET_DATA_SIZE( xEndian ), width );
-				pImageData += stride;
-			}
-		}
-#endif
 	}
 
 //-----------------------------------------------------------------------------
@@ -197,61 +91,6 @@ namespace ImageLoader
 	void ByteSwapImageData( unsigned char *pImageData, int nImageSize, ImageFormat imageFormat, int width, int stride )
 	{
 		Assert( IsFormatValidForConversion( imageFormat ) );
-
-#if !defined(_LINUX) && defined( _X360 )
-		XGENDIANTYPE xEndian;
-		switch ( imageFormat )
-		{
-			case IMAGE_FORMAT_BGR888:
-			case IMAGE_FORMAT_I8:
-			case IMAGE_FORMAT_A8:
-			default:
-				return;
-
-			case IMAGE_FORMAT_BGRA8888:
-			case IMAGE_FORMAT_BGRX8888:
-			case IMAGE_FORMAT_UVWQ8888:
-			case IMAGE_FORMAT_UVLX8888:
-			case IMAGE_FORMAT_R32F:
-			case IMAGE_FORMAT_RGBA32323232F:
-				xEndian = XGENDIAN_8IN32;
-				break;
-
-			case IMAGE_FORMAT_BGR565:
-			case IMAGE_FORMAT_BGRX5551:
-			case IMAGE_FORMAT_BGRA5551:
-			case IMAGE_FORMAT_BGRA4444:
-			case IMAGE_FORMAT_IA88:
-			case IMAGE_FORMAT_DXT1:
-			case IMAGE_FORMAT_DXT1_ONEBITALPHA:
-			case IMAGE_FORMAT_DXT3:
-			case IMAGE_FORMAT_DXT5:
-			case IMAGE_FORMAT_ATI1N:
-			case IMAGE_FORMAT_ATI2N:
-			case IMAGE_FORMAT_UV88:
-			case IMAGE_FORMAT_RGBA16161616F:
-			case IMAGE_FORMAT_RGBA16161616:
-				xEndian = XGENDIAN_8IN16;
-				break;
-		}
-
-		int count;
-		if ( !stride )
-		{
-			stride = XGENDIANTYPE_GET_DATA_SIZE( xEndian );
-			count = nImageSize / stride;
-			XGEndianSwapMemory( pImageData, pImageData, xEndian, stride, count );
-		}
-		else
-		{
-			int nRows = nImageSize/stride;
-			for ( int i=0; i<nRows; i++ )
-			{
-				XGEndianSwapMemory( pImageData, pImageData, xEndian, XGENDIANTYPE_GET_DATA_SIZE( xEndian ), width );
-				pImageData += stride;
-			}
-		}
-#endif
 	}
 	
 }

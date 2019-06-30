@@ -6457,10 +6457,6 @@ void S_Update_( float mixAheadTime )
 		{
 			g_bMixThreadExit = false;
 			g_hMixThread = ThreadExecuteSolo( "SndMix", S_Update_Thread );
-			if ( IsX360() )
-			{
-				ThreadSetAffinity( g_hMixThread, XBOX_PROCESSOR_5 );
-			}
 		}
 	}
 }

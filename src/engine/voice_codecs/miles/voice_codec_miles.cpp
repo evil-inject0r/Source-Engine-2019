@@ -6,10 +6,8 @@
 //
 //=============================================================================//
 #ifdef _WIN32
-#ifndef _XBOX
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
 #endif
 
 #include "quakedef.h"

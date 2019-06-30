@@ -5,7 +5,7 @@
 //
 //=============================================================================//
 
-#if !defined( _X360 )
+#if defined( _WIN32 )
 #include <windows.h>
 #endif
 #include "tier1/strtools.h"
@@ -27,9 +27,7 @@
 #include <vgui/IVGui.h>
 #include "vgui_surfacelib/FontManager.h"
 #include "FontTextureCache.h"
-#if !defined( _X360 )
 #include "vgui/htmlwindow.h"
-#endif
 #include "MatSystemSurface.h"
 #include "inputsystem/iinputsystem.h"
 #include <vgui_controls/Controls.h>
@@ -43,9 +41,7 @@
 #include <malloc.h>
 #include "../vgui2/src/VPanel.h"
 #include <vgui/IInputInternal.h>
-#if defined( _X360 )
-#include "xbox/xbox_win32stubs.h"
-#endif
+
 #include "xbox/xboxstubs.h"
 
 #pragma warning( disable : 4706 )
@@ -139,11 +135,6 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CMatSystemSurface, ISurface,
 CMatEmbeddedPanel::CMatEmbeddedPanel() : BaseClass( NULL, "MatSystemTopPanel" )
 {
 	SetPaintBackgroundEnabled( false );
-
-#if defined( _X360 )
-	SetPos( 0, 0 );
-	SetSize( GetSystemMetrics( SM_CXSCREEN ), GetSystemMetrics( SM_CYSCREEN ) );
-#endif
 }
 
 void CMatEmbeddedPanel::OnThink()
@@ -384,7 +375,6 @@ void CMatSystemSurface::Shutdown( void )
 	m_Titles.Purge();
 	m_PaintStateStack.Purge();
 
-#if !defined( _X360 )
  	// release any custom font files
 	// use newer function if possible
 	HMODULE gdiModule = ::LoadLibrary( "gdi32.dll" );
@@ -422,7 +412,6 @@ void CMatSystemSurface::Shutdown( void )
 			}
 		}
  	}
-#endif
 
  	m_CustomFontFileNames.RemoveAll();
 	m_BitmapFontFileNames.RemoveAll();
@@ -430,12 +419,10 @@ void CMatSystemSurface::Shutdown( void )
 
 	Cursor_ClearUserCursors();
 
-#if !defined( _X360 )
 	if ( gdiModule )
 	{
 		::FreeLibrary(gdiModule);
 	}
-#endif
 
 	BaseClass::Shutdown();
 }
@@ -468,8 +455,6 @@ bool CMatSystemSurface::SupportsFeature(SurfaceFeature_e feature)
 		return true;
 
 	case ISurface::OUTLINE_FONTS:
-		if ( IsX360() )
-			return false;
 	case ISurface::ESCAPE_KEY:
 		return true;
 
@@ -1286,23 +1271,6 @@ int CMatSystemSurface::CreateNewTextureID( bool procedural /*=false*/ )
 	return TextureDictionary()->CreateTexture( procedural );
 }
 
-#ifdef _X360
-void CMatSystemSurface::DestroyTextureID( int id )
-{
-	TextureDictionary()->DestroyTexture( id );
-}
-#endif
-
-#ifdef _X360
-void CMatSystemSurface::UncacheUnusedMaterials()
-{
-	// unbind any currently set texture (which may be uncached)
-	DrawSetTexture( -1 );
-
-	// X360TBD: Need to only destroy "marked" textures
-}
-#endif
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : id - 
@@ -1387,13 +1355,6 @@ void CMatSystemSurface::DrawSetTexture( int id )
 	{
 		DrawFlushText();
 		m_iBoundTexture = id;
-
-		if ( IsX360() && id == -1 )
-		{
-			// ensure we unbind current material that may go away
-			CMatRenderContextPtr pRenderContext( g_pMaterialSystem );
-			pRenderContext->Bind( m_pWhite );
-		}
 	}
 }
 
@@ -1641,7 +1602,7 @@ bool CMatSystemSurface::AddCustomFontFile( const char *fontFileName )
 
 	// try and use the optimal custom font loader, will makes sure fonts are unloaded properly
 	// this function is in a newer version of the gdi library (win2k+), so need to try get it directly
-#if !defined( _X360 )
+
 	bool successfullyAdded = false;
 	HMODULE gdiModule = ::LoadLibrary("gdi32.dll");
 	if (gdiModule)
@@ -1667,9 +1628,6 @@ bool CMatSystemSurface::AddCustomFontFile( const char *fontFileName )
 	}
 	Assert( success );
 	return success;
-#else
-	return true;
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1678,7 +1636,7 @@ bool CMatSystemSurface::AddCustomFontFile( const char *fontFileName )
 bool CMatSystemSurface::AddBitmapFontFile( const char *fontFileName )
 {
 	bool bFound = false;
-	bFound = ( ( g_pFullFileSystem->GetDVDMode() == DVDMODE_STRICT ) || g_pFullFileSystem->FileExists( fontFileName, IsX360() ? "GAME" : NULL ) );
+	bFound = ( ( g_pFullFileSystem->GetDVDMode() == DVDMODE_STRICT ) || g_pFullFileSystem->FileExists( fontFileName, NULL ) );
 	if ( !bFound )
 	{
 		Msg( "Couldn't find bitmap font file '%s'\n", fontFileName );
@@ -2767,12 +2725,6 @@ void CMatSystemSurface::PaintTraverse(VPANEL panel)
 //-----------------------------------------------------------------------------
 void CMatSystemSurface::Begin3DPaint( int iLeft, int iTop, int iRight, int iBottom )
 {
-	if ( IsX360() )
-	{
-		Assert( 0 );
-		return;
-	}
-
 	Assert( iRight > iLeft );
 	Assert( iBottom > iTop );
 
@@ -2832,12 +2784,6 @@ void CMatSystemSurface::Begin3DPaint( int iLeft, int iTop, int iRight, int iBott
 
 void CMatSystemSurface::End3DPaint()
 {
-	if ( IsX360() )
-	{
-		Assert( 0 );
-		return;
-	}
-
 	// Can't use this feature when drawing into the 3D world
 	Assert( !m_bDrawingIn3DWorld );
 	Assert( m_bIn3DPaintMode );
@@ -3540,7 +3486,6 @@ void CMatSystemSurface::SetPanelForInput( VPANEL vpanel )
 	}
 }
 
-#if !defined( _X360 )
 static bool GetIconSize( ICONINFO& iconInfo, int& w, int& h )
 {
 	w = h = 0;
@@ -3640,13 +3585,11 @@ static bool ShouldMakeUnique( char const *extension )
 		return true;
 	return false;
 }
-#endif // !_X360
 
 vgui::IImage *CMatSystemSurface::GetIconImageForFullPath( char const *pFullPath )
 {
 	vgui::IImage *newIcon = NULL;
 
-#if !defined( _X360 )
 	SHFILEINFO info = { 0 };
 	DWORD_PTR dwResult = SHGetFileInfo( 
 		pFullPath,
@@ -3698,7 +3641,7 @@ vgui::IImage *CMatSystemSurface::GetIconImageForFullPath( char const *pFullPath 
 
 		DestroyIcon( info.hIcon );
 	}
-#endif
+
 	return newIcon;
 }
 

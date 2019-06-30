@@ -1286,7 +1286,7 @@ void CL_TakeSnapshotAndSwap()
 		}
 
 		char extension[MAX_OSPATH];
-		Q_snprintf( extension, sizeof( extension ), "%s.%s", GetPlatformExt(), cl_takejpeg ? "jpg" : "tga" );
+		Q_snprintf( extension, sizeof( extension ), "%s", cl_takejpeg ? "jpg" : "tga" );
 
 		// Using a subdir? If so, create it
 		if ( cl_snapshot_subdirname[0] )

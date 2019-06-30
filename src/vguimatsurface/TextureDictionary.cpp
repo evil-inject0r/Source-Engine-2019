@@ -484,16 +484,6 @@ void CMatSystemTexture::SetSubTextureRGBA( int drawX, int drawY, unsigned const 
 	
 	m_pRegen->UpdateBackingBits( subRect, rgba );
 	pTexture->Download( &subRect );
-
-	if ( IsX360() )
-	{	
-		// xboxissue - no need to persist "backing bits", saves memory
-		// the texture (commonly font page) "backing bits" are allocated during UpdateBackingBits() which get blitted
-		// into by procedural regeneration in preparation for download() which then subrect blits
-		// out of and into target texture (d3d upload)
-		// the "backing bits" are then no longer required
-		m_pRegen->DeleteTextureBits();
-	}
 }
 
 void CMatSystemTexture::SetCRC( CRC32_t val )

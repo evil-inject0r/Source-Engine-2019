@@ -791,7 +791,7 @@ void ForceAlignment( IZip *pak, bool bAlign, bool bCompatibleFormat, unsigned in
 static void WritePakFileLump( void )
 {
 	CUtlBuffer buf( 0, 0 );
-	GetPakFile()->ActivateByteSwapping( IsX360() );
+	GetPakFile()->ActivateByteSwapping( false );
 	GetPakFile()->SaveToBuffer( buf );
 
 	// must respect pak file alignment
@@ -2246,7 +2246,7 @@ void LoadBSPFile( const char *filename )
 	int paksize = CopyVariableLump<byte>( FIELD_CHARACTER, LUMP_PAKFILE, ( void ** )&pakbuffer );
 	if ( paksize > 0 )
 	{
-		GetPakFile()->ActivateByteSwapping( IsX360() );
+		GetPakFile()->ActivateByteSwapping( false );
 		GetPakFile()->ParseFromBuffer( pakbuffer, paksize );
 	}
 	else
@@ -4215,14 +4215,14 @@ void SwapPakfileLumpToDisk( const char *pInFilename )
 	int paksize = CopyVariableLump<byte>( FIELD_CHARACTER, LUMP_PAKFILE, ( void ** )&pakbuffer );
 	if ( paksize > 0 )
 	{
-		GetPakFile()->ActivateByteSwapping( IsX360() );
+		GetPakFile()->ActivateByteSwapping( false );
 		GetPakFile()->ParseFromBuffer( pakbuffer, paksize );
 
 		ConvertPakFileContents( pInFilename );
 	}
 	free( pakbuffer );
 
-	SetAlignedLumpPosition( LUMP_PAKFILE, XBOX_DVD_SECTORSIZE );
+	SetAlignedLumpPosition( LUMP_PAKFILE );
 	WritePakFileLump();
 
 	ReleasePakFileLumps();
@@ -4684,7 +4684,7 @@ bool SwapBSPFile( const char *pInFilename, const char *pOutFilename, bool bSwapO
 	g_pBSPHeader->lumps[LUMP_MAP_FLAGS].version = mapCRC;
 
 	// Pad out the end of the file to a sector boundary for optimal IO
-	AlignFilePosition( g_hBSPFile, XBOX_DVD_SECTORSIZE );
+	AlignFilePosition( g_hBSPFile, LUMP_ALIGNMENT );
 
 	// Warn of any lumps that didn't get swapped
 	for ( int i = 0; i < HEADER_LUMPS; ++i )
@@ -4907,12 +4907,12 @@ bool SetPakFileLump( const char *pBSPFilename, const char *pNewFilename, void *p
 
 	// Always write the pak file at the end
 	// Pad out the end of the file to a sector boundary for optimal IO
-	g_pBSPHeader->lumps[LUMP_PAKFILE].fileofs = AlignFilePosition( g_hBSPFile, XBOX_DVD_SECTORSIZE );
+	g_pBSPHeader->lumps[LUMP_PAKFILE].fileofs = AlignFilePosition( g_hBSPFile, LUMP_ALIGNMENT );
 	g_pBSPHeader->lumps[LUMP_PAKFILE].filelen = pakSize;
 	SafeWrite( g_hBSPFile, pPakData, pakSize );
 
 	// Pad out the end of the file to a sector boundary for optimal IO
-	AlignFilePosition( g_hBSPFile, XBOX_DVD_SECTORSIZE );
+	AlignFilePosition( g_hBSPFile, LUMP_ALIGNMENT );
 
 	// Write the updated header
 	g_pFileSystem->Seek( g_hBSPFile, 0, FILESYSTEM_SEEK_HEAD );

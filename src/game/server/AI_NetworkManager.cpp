@@ -925,14 +925,8 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 		return false;
 	}
 
-	if ( IsX360() && ( filesystem->GetDVDMode() == DVDMODE_STRICT ) )
-	{
-		// dvd build process validates and guarantees correctness, timestamps are allowed to be wrong
-		return true;
-	}
-
-	Q_snprintf( szBspFilename, sizeof( szBspFilename ), "maps/%s%s.bsp" ,szMapName, GetPlatformExt() );
-	Q_snprintf( szGraphFilename, sizeof( szGraphFilename ), "maps/graphs/%s%s.ain", szMapName, GetPlatformExt() );
+	Q_snprintf( szBspFilename, sizeof( szBspFilename ), "maps/%s.bsp" ,szMapName );
+	Q_snprintf( szGraphFilename, sizeof( szGraphFilename ), "maps/graphs/%s.ain", szMapName );
 	
 	int iCompare;
 	if ( engine->CompareFileTime( szBspFilename, szGraphFilename, &iCompare ) )

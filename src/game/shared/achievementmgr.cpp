@@ -208,10 +208,6 @@ void CAchievementMgr::PostInit()
 	if ( !g_AchievementSaveThread.IsAlive() )
 	{
 		g_AchievementSaveThread.Start();
-		if ( IsX360() )
-		{
-			ThreadSetAffinity( (ThreadHandle_t)g_AchievementSaveThread.GetThreadHandle(), XBOX_PROCESSOR_3 );
-		}
 	}
 #endif //_LINUX
 

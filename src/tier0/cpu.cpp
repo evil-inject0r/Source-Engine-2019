@@ -181,14 +181,7 @@ const tchar* GetProcessorVendorId()
 	memset( VendorID, 0, sizeof(VendorID) );
 	if ( !cpuid(0,unused, VendorIDRegisters[0], VendorIDRegisters[2], VendorIDRegisters[1] ) )
 	{
-		if ( IsPC() )
-		{
-			_tcscpy( VendorID, _T( "Generic_x86" ) ); 
-		}
-		else if ( IsX360() )
-		{
-			_tcscpy( VendorID, _T( "PowerPC" ) ); 
-		}
+		_tcscpy( VendorID, _T( "Generic_x86" ) );
 	}
 	else
 	{

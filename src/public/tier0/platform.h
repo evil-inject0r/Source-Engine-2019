@@ -21,23 +21,6 @@
 #define COMPILER_CLANG 1
 #endif
 
-#if defined( _X360 )
-	#define NO_STEAM
-	#define NO_VOICE
-	// for the 360, the ppc platform and the rtos are tightly coupled
-	// setup the 360 environment here !once! for much less leaf module include wackiness
-	// these are critical order and purposely appear *before* anything else
-	#define _XBOX
-#include <xtl.h>
-	#include <xaudio2.h>
-	#include <xbdm.h>
-#include <Xgraphics.h>
-	#include <xui.h>
-	#include <pmcpbsetup.h>
-#include <XMAHardwareAbstraction.h>
-	#undef _XBOX
-#endif
-
 #include "wchartypes.h"
 #include "basetypes.h"
 #include "tier0/valve_off.h"
@@ -203,12 +186,6 @@ typedef signed char int8;
 //-----------------------------------------------------------------------------
 // Set up platform type defines.
 //-----------------------------------------------------------------------------
-// Remove:
-#define IsGameConsole()	false
-// _GAMECONSOLE
-// _PS3
-// PLATFORM_X360
-#define IsPC()			true	// remove this since it will always be pc
 
 #ifdef PLATFORM_64BITS
 	#define IsPlatform64Bits()	true
@@ -277,11 +254,8 @@ typedef unsigned int		uint;
 // Note: NJS: This is not enabled for regular PC, due to not knowing the implications of exporting a class with no no vtable.
 //       It's probable that this shouldn't be an issue, but an experiment should be done to verify this.
 //
-#ifndef _X360
 #define abstract_class class
-#else
-#define abstract_class class NO_VTABLE
-#endif
+
 
 
 // MSVC CRT uses 0x7fff while gcc uses MAX_INT, leading to mismatches between platforms
@@ -1271,10 +1245,6 @@ PLATFORM_INTERFACE bool Is64BitOS();
 // XBOX Components valid in PC compilation space
 //-----------------------------------------------------------------------------
 
-#define XBOX_DVD_SECTORSIZE			2048
-#define XBOX_DVD_ECC_SIZE			32768 // driver reads in quantum ECC blocks
-#define XBOX_HDD_SECTORSIZE			512
-
 // Custom windows messages for Xbox input
 #define WM_XREMOTECOMMAND					(WM_USER + 100)
 #define WM_XCONTROLLER_KEY					(WM_USER + 101)
@@ -1301,35 +1271,10 @@ PLATFORM_INTERFACE bool Is64BitOS();
 #define WM_XMP_PLAYBACKBEHAVIORCHANGED		(WM_USER + 122)
 #define WM_XMP_PLAYBACKCONTROLLERCHANGED	(WM_USER + 123)
 
-inline const char *GetPlatformExt( void )
-{
-	return IsX360() ? ".360" : "";
-}
-
-// flat view, 6 hw threads
-#define XBOX_PROCESSOR_0			( 1<<0 )
-#define XBOX_PROCESSOR_1			( 1<<1 )
-#define XBOX_PROCESSOR_2			( 1<<2 )
-#define XBOX_PROCESSOR_3			( 1<<3 )
-#define XBOX_PROCESSOR_4			( 1<<4 )
-#define XBOX_PROCESSOR_5			( 1<<5 )
-
-// core view, 3 cores with 2 hw threads each
-#define XBOX_CORE_0_HWTHREAD_0		XBOX_PROCESSOR_0
-#define XBOX_CORE_0_HWTHREAD_1		XBOX_PROCESSOR_1
-#define XBOX_CORE_1_HWTHREAD_0		XBOX_PROCESSOR_2
-#define XBOX_CORE_1_HWTHREAD_1		XBOX_PROCESSOR_3
-#define XBOX_CORE_2_HWTHREAD_0		XBOX_PROCESSOR_4
-#define XBOX_CORE_2_HWTHREAD_1		XBOX_PROCESSOR_5
-
 //-----------------------------------------------------------------------------
 // Include additional dependant header components.
 //-----------------------------------------------------------------------------
 #include "tier0/fasttimer.h"
-
-#if defined( _X360 )
-#include "xbox/xbox_core.h"
-#endif
 
 //-----------------------------------------------------------------------------
 // Methods to invoke the constructor, copy constructor, and destructor
