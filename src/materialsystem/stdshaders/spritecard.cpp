@@ -130,10 +130,6 @@ BEGIN_VS_SHADER_FLAGS( Spritecard, "Help for Spritecard", SHADER_NOT_EDITABLE )
 
 	SHADER_FALLBACK
 	{
-#ifdef STDSHADER_DX9_DLL_EXPORT
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 90 )
-			return "Wireframe_DX9";
-#endif
 		return 0;
 	}
 

@@ -28,9 +28,6 @@ BEGIN_VS_SHADER_FLAGS( WriteZ_DX9, "Help for WriteZ", SHADER_NOT_EDITABLE )
 
 	SHADER_FALLBACK
 	{
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 90 )
-			return "WriteZ_DX8";
-
 		return 0;
 	}
 

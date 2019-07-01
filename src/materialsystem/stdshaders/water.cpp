@@ -124,10 +124,6 @@ BEGIN_VS_SHADER( Water_DX90,
 
 	SHADER_FALLBACK
 	{
-		if( g_pHardwareConfig->GetDXSupportLevel() < 90 )
-		{
-			return "Water_DX81";
-		}
 		return 0;
 	}
 

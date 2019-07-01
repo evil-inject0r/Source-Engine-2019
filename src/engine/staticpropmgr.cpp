@@ -1961,7 +1961,6 @@ void CStaticPropMgr::DrawStaticProps( IClientRenderable **pProps, int count, boo
 	{
 		// the fast pipeline is only supported on dx8+
 		if ( pipeline_static_props.GetBool() &&	
-			g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 &&
 			g_pMaterialSystemHardwareConfig->SupportsColorOnSecondStream() &&
 			g_pMaterialSystemHardwareConfig->SupportsStaticPlusDynamicLighting() )
 		{

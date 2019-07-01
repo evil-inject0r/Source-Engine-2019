@@ -641,7 +641,7 @@ int CHardwareConfig::GetMaxVertexTextureDimension() const
 
 HDRType_t CHardwareConfig::GetHDRType() const
 {
-	if ( m_bHDREnabled && ( GetDXSupportLevel() >= 90 ) )
+	if ( m_bHDREnabled )
 		return m_Caps.m_HDRType;
 	return HDR_TYPE_NONE;
 }
@@ -653,7 +653,7 @@ HDRType_t CHardwareConfig::GetHardwareHDRType() const
 
 bool CHardwareConfig::SupportsStreamOffset() const
 {
-	return ( (GetDXSupportLevel() >= 90) && m_Caps.m_bSupportsStreamOffset );
+	return m_Caps.m_bSupportsStreamOffset;
 }
 
 int CHardwareConfig::StencilBufferBits() const

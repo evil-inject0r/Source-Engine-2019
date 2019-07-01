@@ -1266,9 +1266,7 @@ bool CClientShadowMgr::Init()
 	bool bTools = CommandLine()->CheckParm( "-tools" ) != NULL;
 	m_nMaxDepthTextureShadows = bTools ? 4 : 1;	// Just one shadow depth texture in games, more in tools
 
-	bool bLowEnd = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 );
-
-	if ( !bLowEnd && r_shadowrendertotexture.GetBool() )
+	if ( r_shadowrendertotexture.GetBool() )
 	{
 		InitRenderToTextureShadows();
 	}
@@ -1280,7 +1278,7 @@ bool CClientShadowMgr::Init()
 		ShutdownDepthTextureShadows();	
 	}
 
-	if ( !bLowEnd && r_flashlightdepthtexture.GetBool() )
+	if ( r_flashlightdepthtexture.GetBool() )
 	{
 		InitDepthTextureShadows();
 	}

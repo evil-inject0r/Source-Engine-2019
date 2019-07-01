@@ -500,7 +500,7 @@ CPixelVisibilitySystem::CPixelVisibilitySystem() : CAutoGameSystem( "CPixelVisib
 // Level init, shutdown
 void CPixelVisibilitySystem::LevelInitPreEntity()
 {
-	m_hwCanTestGlows = r_dopixelvisibility.GetBool() && engine->GetDXSupportLevel() >= 80;
+	m_hwCanTestGlows = r_dopixelvisibility.GetBool();
 	if ( m_hwCanTestGlows )
 	{
 		CMatRenderContextPtr pRenderContext( materials );

@@ -166,7 +166,7 @@ void SpewPerfStats( studiohdr_t *pStudioHdr, const char *pFilename, unsigned int
 			MdlError( "Error allocating %d bytes for Vertex File '%s'\n", vvdSize, fileName );
 		}
 
-		Studio_LoadVertexes( pVvdHdr, pNewVvdHdr, 0, true );
+		Studio_LoadVertexes( pVvdHdr, pNewVvdHdr, 0 );
 
 		// discard original
 		free( pVvdHdr );

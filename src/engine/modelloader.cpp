@@ -936,10 +936,7 @@ bool Map_CheckForHDR( model_t *pModel, const char *pLoadName )
 		bHasHDR = false;
 	}
 	
-	bool bEnableHDR = ( IsX360() && bHasHDR ) ||
-		bHasHDR && 
-		( mat_hdr_level.GetInt() >= 2 ) && 
-		( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 );
+	bool bEnableHDR = bHasHDR && mat_hdr_level.GetInt() >= 2;
 
 	EnableHDR( bEnableHDR );
 
@@ -4039,10 +4036,6 @@ void MarkWaterSurfaces_r( mnode_t *node )
 //-----------------------------------------------------------------------------
 static int SurfFlagsToSortGroup( SurfaceHandle_t surfID, int flags )
 {
-	// If we're on the low end, stick everything into the same sort group
-	if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 )
-		return MAT_SORT_GROUP_STRICTLY_ABOVEWATER;
-
 	if( flags & SURFDRAW_WATERSURFACE )
 		return MAT_SORT_GROUP_WATERSURFACE;
 

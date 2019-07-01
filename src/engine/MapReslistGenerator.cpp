@@ -936,8 +936,6 @@ void CMapReslistGenerator::TrackDeletions( const char *fullPathFileName )
 		TrackDeletions(file);
 		Q_strncpy(ext, ".ani", 10);
 		TrackDeletions(file);
-		Q_strncpy(ext, ".dx80.vtx", 10);
-		TrackDeletions(file);
 		Q_strncpy(ext, ".dx90.vtx", 10);
 		TrackDeletions(file);
 		Q_strncpy(ext, ".sw.vtx", 10);

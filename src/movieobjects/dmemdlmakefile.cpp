@@ -250,7 +250,6 @@ void CDmeMDLMakefile::DestroyOutputElement( CDmElement *pOutput )
 //-----------------------------------------------------------------------------
 static const char *s_pOutputExtensions[] =
 {
-	"dx80.vtx",
 	"dx90.vtx",
 	"sw.vtx",
 	"mdl",

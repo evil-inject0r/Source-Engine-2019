@@ -1359,7 +1359,7 @@ KeyValues* CMaterial::InitializeShader( KeyValues &keyValues, KeyValues &patchKe
 		// I'm not quite sure how this can happen, but we'll see... 
 		Warning( "Shader not specified in material %s\nUsing wireframe instead...\n", GetName() );
 		Assert( 0 );
-		pShaderName = IsPC() ? "Wireframe_DX6" : "Wireframe_DX9";
+		pShaderName = "Wireframe_DX9";
 	}
 	else
 	{

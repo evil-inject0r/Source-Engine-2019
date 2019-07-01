@@ -53,10 +53,6 @@ BEGIN_VS_SHADER( Teeth_DX9, "Help for Teeth_DX9" )
 
 	SHADER_FALLBACK
 	{
-		if( g_pHardwareConfig->GetDXSupportLevel() < 90 || g_pConfig->bSoftwareLighting )
-		{
-			return "Teeth_dx8";
-		}
 		return 0;
 	}
 

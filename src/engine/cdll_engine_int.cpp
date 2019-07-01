@@ -1635,13 +1635,9 @@ void ClientDLL_Init( void )
 			toolframework->ClientInit( g_ClientFactory );
 		}
 
-		// Don't want TF2 running less than DX 8
-		if ( g_pMaterialSystemHardwareConfig && g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 )
+		if ( g_pMaterialSystemHardwareConfig && g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 90 )
 		{
-			if ( ( Q_stricmp( COM_GetModDirectory(), "tf" ) == 0 ) || ( Q_stricmp( COM_GetModDirectory(), "ep2" ) == 0 ) || ( Q_stricmp( COM_GetModDirectory(), "portal" ) == 0 ) )
-			{
-				Sys_Error( "This game has a minimum requirement of DirectX 8.0 to run properly." );
-			}
+			Sys_Error( "Source engine 2019 only supports DirectX 9 and above." );
 		}
 	}
 

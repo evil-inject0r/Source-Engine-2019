@@ -279,7 +279,7 @@ void TokenError( const char *fmt, ... )
 void MdlError( const char *fmt, ... )
 {
 	static char output[1024];
-	static char *knownExtensions[] = {".mdl", ".ani", ".phy", ".sw.vtx", ".dx80.vtx", ".dx90.vtx", ".vvd"};
+	static char *knownExtensions[] = {".mdl", ".ani", ".phy", ".sw.vtx", ".dx90.vtx", ".vvd"};
 	char		fileName[MAX_PATH];
 	char		baseName[MAX_PATH];
 	va_list		args;
@@ -8962,7 +8962,7 @@ bool GenerateAnimations( CDmeMDLMakefile *pMDLMakeFile )
 			}
 			else
 			{
-				MdlError( "Requested unknown animation block name %s\n", animationFiles[i]->m_SourceAnimationName );
+				MdlError( "Requested unknown animation block name %s\n", animationFiles[i]->m_SourceAnimationName.Get() );
 			}
 		}
 

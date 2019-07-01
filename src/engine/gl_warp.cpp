@@ -106,7 +106,6 @@ bool R_LoadNamedSkys( const char *skyname )
 	bool		success = true;
 	char		*skyboxsuffix[ 6 ] = { "rt", "bk", "lf", "ft", "up", "dn" };
 
-	bool bUseDx8Skyboxes = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 90 );
 	for ( int i = 0; i < 6; i++ )
 	{
 		skies[i] = NULL;
@@ -139,7 +138,7 @@ bool R_LoadNamedSkys( const char *skyname )
 		}
 	
 		// Use the new one
-		assert( skies[ i ] );
+		Assert( skies[ i ] );
 		skyboxMaterials[i] = skies[ i ];
 		skyboxMaterials[i]->IncrementReferenceCount();
 	}

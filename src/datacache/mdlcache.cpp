@@ -3144,11 +3144,10 @@ vertexFileHeader_t *CMDLCache::BuildAndCacheVertexData( studiohdr_t *pStudioHdr,
 		}
 	}
 
-	bool bNeedsTangentS = IsX360() || (g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80);
 	int rootLOD = min( pStudioHdr->rootLOD, pRawVvdHdr->numLODs - 1 );
 
 	// determine final cache footprint, possibly truncated due to lod
-	int cacheLength = Studio_VertexDataSize( pRawVvdHdr, rootLOD, bNeedsTangentS );
+	int cacheLength = Studio_VertexDataSize( pRawVvdHdr, rootLOD );
 
 	MdlCacheMsg("MDLCache: Alloc VVD %s\n", GetModelName( handle ) );
 
@@ -3165,7 +3164,7 @@ vertexFileHeader_t *CMDLCache::BuildAndCacheVertexData( studiohdr_t *pStudioHdr,
 	Assert( ((int64)pVvdHdr & 0x1F) == 0 );
 
 	// load minimum vertexes and fixup
-	Studio_LoadVertexes( pRawVvdHdr, pVvdHdr, rootLOD, bNeedsTangentS );
+	Studio_LoadVertexes( pRawVvdHdr, pVvdHdr, rootLOD );
 
 	GetCacheSection( MDLCACHE_VERTEXES )->EndFrameLocking();
 

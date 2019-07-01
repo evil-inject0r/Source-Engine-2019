@@ -3615,7 +3615,7 @@ bool FixupToSortedLODVertexes(studiohdr_t *pStudioHdr)
 	int								numVertexPools;
 	int								VtxLen;
 	int								i;
-	const char						*vtxPrefixes[] = {".dx80.vtx", ".dx90.vtx", ".sw.vtx"};
+	const char						*vtxPrefixes[] = {".dx90.vtx", ".sw.vtx"};
 
 	strcpy( filename, gamedir );
 //	if( *g_pPlatformName )
@@ -3786,13 +3786,13 @@ bool Clamp_VVD_LODS( const char *fileName, int rootLOD )
 
 	len  = LoadFile((char*)fileName, (void **)&pTempVvdHdr);
 
-	int newLength = Studio_VertexDataSize( pTempVvdHdr, rootLOD, true );
+	int newLength = Studio_VertexDataSize( pTempVvdHdr, rootLOD );
 
 	// printf("was %d now %d\n", len, newLength );
 
 	vertexFileHeader_t *pNewVvdHdr = (vertexFileHeader_t *)calloc( newLength, 1 );
 
-	Studio_LoadVertexes( pTempVvdHdr, pNewVvdHdr, rootLOD, true );
+	Studio_LoadVertexes( pTempVvdHdr, pNewVvdHdr, rootLOD );
 
 	if (!g_quiet)
 	{
@@ -4052,7 +4052,7 @@ bool Clamp_RootLOD( studiohdr_t *phdr )
 	char	filename[260];
 	char	tmpFileName[260];
 	int		i;
-	const char						*vtxPrefixes[] = {".dx80.vtx", ".dx90.vtx", ".sw.vtx"};
+	const char						*vtxPrefixes[] = {".dx90.vtx", ".sw.vtx"};
 
 	int rootLOD = g_minLod;
 

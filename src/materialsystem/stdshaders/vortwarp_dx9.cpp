@@ -505,10 +505,7 @@ BEGIN_VS_SHADER( VortWarp_DX9,
 	}
 
 	SHADER_FALLBACK
-	{	
-		if (g_pHardwareConfig->GetDXSupportLevel() < 90)
-			return "vortwarp_DX8";
-
+	{
 		return 0;
 	}
 

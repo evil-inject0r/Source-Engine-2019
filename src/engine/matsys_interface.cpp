@@ -823,33 +823,23 @@ void InitWellKnownRenderTargets( void )
 
 	// Create the render targets upon which mods may rely
 
-	if ( IsPC() )
-	{
-		// Create for all mods as vgui2 uses it for 3D painting
-		g_PowerOfTwoFBTexture.Init( CreatePowerOfTwoFBTexture() );
-	}
+	// Create for all mods as vgui2 uses it for 3D painting
+	g_PowerOfTwoFBTexture.Init( CreatePowerOfTwoFBTexture() );
 
 	// Create these for all mods because the engine references them
-	if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 )
+	if ( g_pMaterialSystemHardwareConfig->GetHDRType() == HDR_TYPE_FLOAT )
 	{
-		if ( IsPC() && g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 && 
-			g_pMaterialSystemHardwareConfig->GetHDRType() == HDR_TYPE_FLOAT )
-		{
-			// Used for building HDR Cubemaps
-			g_BuildCubemaps16BitTexture.Init( CreateBuildCubemaps16BitTexture() );
-		}
-
-		// Used in Bloom effects
-		g_QuarterSizedFBTexture0.Init( CreateQuarterSizedFBTexture( 0, 0 ) );
-		g_QuarterSizedFBTexture1.Init( CreateQuarterSizedFBTexture( 1, 0 ) );			
+		// Used for building HDR Cubemaps
+		g_BuildCubemaps16BitTexture.Init( CreateBuildCubemaps16BitTexture() );
 	}
 
-	if ( IsPC() )
-	{
-		g_TeenyFBTexture0.Init( CreateTeenyFBTexture( 0 ) );
-		g_TeenyFBTexture1.Init( CreateTeenyFBTexture( 1 ) );
-		g_TeenyFBTexture2.Init( CreateTeenyFBTexture( 2 ) );
-	}
+	// Used in Bloom effects
+	g_QuarterSizedFBTexture0.Init( CreateQuarterSizedFBTexture( 0, 0 ) );
+	g_QuarterSizedFBTexture1.Init( CreateQuarterSizedFBTexture( 1, 0 ) );			
+
+	g_TeenyFBTexture0.Init( CreateTeenyFBTexture( 0 ) );
+	g_TeenyFBTexture1.Init( CreateTeenyFBTexture( 1 ) );
+	g_TeenyFBTexture2.Init( CreateTeenyFBTexture( 2 ) );
 
 	g_FullFrameFBTexture0.Init( CreateFullFrameFBTexture( 0 ) );
 	g_FullFrameFBTexture1.Init( CreateFullFrameFBTexture( 1 ) );
@@ -885,7 +875,7 @@ void InitWellKnownRenderTargets( void )
 void ShutdownWellKnownRenderTargets( void )
 {
 #if !defined( SWDS )
-	if ( IsPC() && mat_debugalttab.GetBool() )
+	if ( mat_debugalttab.GetBool() )
 	{
 		Warning( "mat_debugalttab: ShutdownWellKnownRenderTargets\n" );
 	}
@@ -932,7 +922,7 @@ void ShutdownWellKnownRenderTargets( void )
 //-----------------------------------------------------------------------------
 static void InitDebugMaterials( void )
 {
-	if ( IsPC() && mat_debugalttab.GetBool() )
+	if ( mat_debugalttab.GetBool() )
 	{
 		Warning( "mat_debugalttab: InitDebugMaterials\n" );
 	}
@@ -963,37 +953,30 @@ static void InitDebugMaterials( void )
 
 	g_pMaterialWriteZ = GL_LoadMaterial( "engine/writez", TEXTURE_GROUP_OTHER );
 
-	if( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 )
-	{
-		// Materials for writing to shadow depth buffer
-		KeyValues *pVMTKeyValues = new KeyValues( "DepthWrite" );
-		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
-		pVMTKeyValues->SetInt( "$alphatest", 0 );
-		pVMTKeyValues->SetInt( "$nocull", 0 );
-		g_pMaterialDepthWrite[0][0] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite00", TEXTURE_GROUP_OTHER, pVMTKeyValues );
+	// Materials for writing to shadow depth buffer
+	KeyValues *pVMTKeyValues = new KeyValues( "DepthWrite" );
+	pVMTKeyValues->SetInt( "$no_fullbright", 1 );
+	pVMTKeyValues->SetInt( "$alphatest", 0 );
+	pVMTKeyValues->SetInt( "$nocull", 0 );
+	g_pMaterialDepthWrite[0][0] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite00", TEXTURE_GROUP_OTHER, pVMTKeyValues );
 
-		pVMTKeyValues = new KeyValues( "DepthWrite" );
-		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
-		pVMTKeyValues->SetInt( "$alphatest", 0 );
-		pVMTKeyValues->SetInt( "$nocull", 1 );
-		g_pMaterialDepthWrite[0][1] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite01", TEXTURE_GROUP_OTHER, pVMTKeyValues );
+	pVMTKeyValues = new KeyValues( "DepthWrite" );
+	pVMTKeyValues->SetInt( "$no_fullbright", 1 );
+	pVMTKeyValues->SetInt( "$alphatest", 0 );
+	pVMTKeyValues->SetInt( "$nocull", 1 );
+	g_pMaterialDepthWrite[0][1] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite01", TEXTURE_GROUP_OTHER, pVMTKeyValues );
 
-		pVMTKeyValues = new KeyValues( "DepthWrite" );
-		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
-		pVMTKeyValues->SetInt( "$alphatest", 1 );
-		pVMTKeyValues->SetInt( "$nocull", 0 );
-		g_pMaterialDepthWrite[1][0] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite10", TEXTURE_GROUP_OTHER, pVMTKeyValues );
+	pVMTKeyValues = new KeyValues( "DepthWrite" );
+	pVMTKeyValues->SetInt( "$no_fullbright", 1 );
+	pVMTKeyValues->SetInt( "$alphatest", 1 );
+	pVMTKeyValues->SetInt( "$nocull", 0 );
+	g_pMaterialDepthWrite[1][0] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite10", TEXTURE_GROUP_OTHER, pVMTKeyValues );
 
-		pVMTKeyValues = new KeyValues( "DepthWrite" );
-		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
-		pVMTKeyValues->SetInt( "$alphatest", 1 );
-		pVMTKeyValues->SetInt( "$nocull", 1 );
-		g_pMaterialDepthWrite[1][1] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite11", TEXTURE_GROUP_OTHER, pVMTKeyValues );
-	}
-	else
-	{
-		g_pMaterialDepthWrite[0][0] = g_pMaterialDepthWrite[0][1] = g_pMaterialDepthWrite[1][0] = g_pMaterialDepthWrite[1][1] = NULL;
-	}
+	pVMTKeyValues = new KeyValues( "DepthWrite" );
+	pVMTKeyValues->SetInt( "$no_fullbright", 1 );
+	pVMTKeyValues->SetInt( "$alphatest", 1 );
+	pVMTKeyValues->SetInt( "$nocull", 1 );
+	g_pMaterialDepthWrite[1][1] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite11", TEXTURE_GROUP_OTHER, pVMTKeyValues );
 #endif
 }
 
@@ -1002,7 +985,7 @@ static void InitDebugMaterials( void )
 //-----------------------------------------------------------------------------
 static void ShutdownDebugMaterials( void )
 {
-	if ( IsPC() && mat_debugalttab.GetBool() )
+	if ( mat_debugalttab.GetBool() )
 	{
 		Warning( "mat_debugalttab: ShutdownDebugMaterials\n" );
 	}
@@ -1057,44 +1040,6 @@ static void ShutdownDebugMaterials( void )
 //-----------------------------------------------------------------------------
 void InitStartupScreen()
 {
-	if ( !IsX360() )
-		return;
-
-	int width, height;
-	materials->GetBackBufferDimensions( width, height );
-	float aspectRatio = (float)width/(float)height;
-	bool bIsWidescreen = aspectRatio >= 1.5999f;
-
-	// NOTE: Brutal hackery, this code is duplicated in gameui.dll
-	// but I have to do this prior to gameui being loaded.
-	// 360 uses hi-res game specific backgrounds
-	char gameName[MAX_PATH];
-	char filename[MAX_PATH];
-	V_FileBase( com_gamedir, gameName, sizeof( gameName ) );
-	V_snprintf( filename, sizeof( filename ), "vgui/appchooser/background_%s%s", gameName, ( bIsWidescreen ? "_widescreen" : "" ) );
-
-	ITexture *pTexture = materials->FindTexture( filename, TEXTURE_GROUP_OTHER );
-
-	CMatRenderContextPtr pRenderContext( g_pMaterialSystem );
-	pRenderContext->SetNonInteractiveTempFullscreenBuffer( pTexture, MATERIAL_NON_INTERACTIVE_MODE_STARTUP );
-
-	pTexture = materials->FindTexture( "//platform/materials/engine/box", TEXTURE_GROUP_OTHER );
-
-	KeyValues *modinfo = new KeyValues("ModInfo");
-	if ( modinfo->LoadFromFile( g_pFileSystem, "gameinfo.txt" ) )
-	{
-		if ( V_stricmp( modinfo->GetString("type", "singleplayer_only" ), "multiplayer_only" ) == 0 )
-		{
-			pRenderContext->SetNonInteractivePacifierTexture( pTexture, 0.5f, 0.9f, 0.1f );
-		}
-		else
-		{
-			pRenderContext->SetNonInteractivePacifierTexture( pTexture, 0.5f, 0.86f, 0.1f );
-		}
-	}
-	modinfo->deleteThis();
-
-	BeginLoadingUpdates( MATERIAL_NON_INTERACTIVE_MODE_STARTUP );
 }
 
 

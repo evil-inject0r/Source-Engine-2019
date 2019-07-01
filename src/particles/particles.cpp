@@ -2620,15 +2620,13 @@ bool CParticleSystemMgr::Init( IParticleSystemQuery *pQuery )
 		AddParticleOperator( FUNCTION_CHILDREN, &s_ChildOperatorDefinition );
 
 		m_pShadowDepthMaterial = NULL;
-		if( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 )
-		{
-			KeyValues *pVMTKeyValues = new KeyValues( "DepthWrite" );
-			pVMTKeyValues->SetInt( "$no_fullbright", 1 );
-			pVMTKeyValues->SetInt( "$model", 0 );
-			pVMTKeyValues->SetInt( "$alphatest", 0 );
-			m_pShadowDepthMaterial = g_pMaterialSystem->CreateMaterial( "__particlesDepthWrite", pVMTKeyValues );
-		}
 
+		KeyValues *pVMTKeyValues = new KeyValues( "DepthWrite" );
+		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
+		pVMTKeyValues->SetInt( "$model", 0 );
+		pVMTKeyValues->SetInt( "$alphatest", 0 );
+		m_pShadowDepthMaterial = g_pMaterialSystem->CreateMaterial( "__particlesDepthWrite", pVMTKeyValues );
+	
 		SeedRandSIMD( 12345678 );
 		m_bDidInit = true;
 	}
@@ -2919,15 +2917,7 @@ bool CParticleSystemMgr::ReadParticleConfigFile( const char *pFileName, bool bPr
 			pExt = "pcf";
 		}
 		
-		if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 90 )
-		{
-			Q_snprintf( pFallbackBuf, sizeof(pFallbackBuf), "%s_dx80.%s", pTemp, pExt );
-			if ( g_pFullFileSystem->FileExists( pFallbackBuf ) )
-			{
-				pFileName = pFallbackBuf;
-			}
-		}
-		else if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() == 90 &&  g_pMaterialSystemHardwareConfig->PreferReducedFillrate() )
+		if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() == 90 &&  g_pMaterialSystemHardwareConfig->PreferReducedFillrate() )
 		{
 			Q_snprintf( pFallbackBuf, sizeof(pFallbackBuf), "%s_dx90_slow.%s", pTemp, pExt );
 			if ( g_pFullFileSystem->FileExists( pFallbackBuf ) )

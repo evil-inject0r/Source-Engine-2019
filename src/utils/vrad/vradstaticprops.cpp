@@ -1897,7 +1897,7 @@ const vertexFileHeader_t * mstudiomodel_t::CacheVertexData( void *pModelData )
 	}
 
 	// load vertexes and run fixups
-	Studio_LoadVertexes( pVvdHdr, pNewVvdHdr, 0, true );
+	Studio_LoadVertexes( pVvdHdr, pNewVvdHdr, 0 );
 
 	// discard original
 	free( pVvdHdr );

@@ -118,35 +118,32 @@ void CStudioRender::InitDebugMaterials( void )
 		g_pMaterialSystem->FindMaterial( "//platform/materials/debug/debugworldwireframe", TEXTURE_GROUP_OTHER, true );
 	m_pMaterialWorldWireframe->IncrementReferenceCount();
 
-	if( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 )
-	{
-		KeyValues *pVMTKeyValues = new KeyValues( "DepthWrite" );
-		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
-		pVMTKeyValues->SetInt( "$alphatest", 0 );
-		pVMTKeyValues->SetInt( "$nocull", 0 );
-		m_pDepthWrite[0][0] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite00", TEXTURE_GROUP_OTHER, pVMTKeyValues );
+	KeyValues *pVMTKeyValues = new KeyValues( "DepthWrite" );
+	pVMTKeyValues->SetInt( "$no_fullbright", 1 );
+	pVMTKeyValues->SetInt( "$alphatest", 0 );
+	pVMTKeyValues->SetInt( "$nocull", 0 );
+	m_pDepthWrite[0][0] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite00", TEXTURE_GROUP_OTHER, pVMTKeyValues );
 
-		pVMTKeyValues = new KeyValues( "DepthWrite" );
-		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
-		pVMTKeyValues->SetInt( "$alphatest", 0 );
-		pVMTKeyValues->SetInt( "$nocull", 1 );
-		m_pDepthWrite[0][1] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite01", TEXTURE_GROUP_OTHER, pVMTKeyValues );
+	pVMTKeyValues = new KeyValues( "DepthWrite" );
+	pVMTKeyValues->SetInt( "$no_fullbright", 1 );
+	pVMTKeyValues->SetInt( "$alphatest", 0 );
+	pVMTKeyValues->SetInt( "$nocull", 1 );
+	m_pDepthWrite[0][1] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite01", TEXTURE_GROUP_OTHER, pVMTKeyValues );
 
-		pVMTKeyValues = new KeyValues( "DepthWrite" );
-		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
-		pVMTKeyValues->SetInt( "$alphatest", 1 );
-		pVMTKeyValues->SetInt( "$nocull", 0 );
-		m_pDepthWrite[1][0] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite10", TEXTURE_GROUP_OTHER, pVMTKeyValues );
+	pVMTKeyValues = new KeyValues( "DepthWrite" );
+	pVMTKeyValues->SetInt( "$no_fullbright", 1 );
+	pVMTKeyValues->SetInt( "$alphatest", 1 );
+	pVMTKeyValues->SetInt( "$nocull", 0 );
+	m_pDepthWrite[1][0] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite10", TEXTURE_GROUP_OTHER, pVMTKeyValues );
 
-		pVMTKeyValues = new KeyValues( "DepthWrite" );
-		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
-		pVMTKeyValues->SetInt( "$alphatest", 1 );
-		pVMTKeyValues->SetInt( "$nocull", 1 );
-		m_pDepthWrite[1][1] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite11", TEXTURE_GROUP_OTHER, pVMTKeyValues );
+	pVMTKeyValues = new KeyValues( "DepthWrite" );
+	pVMTKeyValues->SetInt( "$no_fullbright", 1 );
+	pVMTKeyValues->SetInt( "$alphatest", 1 );
+	pVMTKeyValues->SetInt( "$nocull", 1 );
+	m_pDepthWrite[1][1] = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite11", TEXTURE_GROUP_OTHER, pVMTKeyValues );
 
-		pVMTKeyValues = new KeyValues( "EyeGlint" );
-		m_pGlintBuildMaterial = g_pMaterialSystem->CreateMaterial( "___glintbuildmaterial", pVMTKeyValues );
-	}
+	pVMTKeyValues = new KeyValues( "EyeGlint" );
+	m_pGlintBuildMaterial = g_pMaterialSystem->CreateMaterial( "___glintbuildmaterial", pVMTKeyValues );
 
 #endif // _WIN32
 }

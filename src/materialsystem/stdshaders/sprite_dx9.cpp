@@ -43,8 +43,6 @@ BEGIN_VS_SHADER( Sprite_DX9,
 
 	SHADER_FALLBACK
 	{
-		if (g_pHardwareConfig->GetDXSupportLevel() < 90)
-			return "Sprite_DX8";
 		return 0;
 	}
 	SHADER_INIT_PARAMS()

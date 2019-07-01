@@ -2989,24 +2989,20 @@ inline void Studio_SetRootLOD( studiohdr_t *pStudioHdr, int rootLOD )
 }
 
 // Determines allocation requirements for vertexes
-inline int Studio_VertexDataSize( const vertexFileHeader_t *pVvdHdr, int rootLOD, bool bNeedsTangentS )
+inline int Studio_VertexDataSize( const vertexFileHeader_t *pVvdHdr, int rootLOD )
 {
 	// the quantity of vertexes necessary for root lod and all lower detail lods
 	// add one extra vertex to each section
 	// the extra vertex allows prefetch hints to read ahead 1 vertex without faulting
 	int numVertexes = pVvdHdr->numLODVertexes[rootLOD] + 1;
-	int dataLength  = pVvdHdr->vertexDataStart + numVertexes*sizeof(mstudiovertex_t);
-	if (bNeedsTangentS)
-	{
-		dataLength += numVertexes*sizeof(Vector4D);
-	}
+	int dataLength  = pVvdHdr->vertexDataStart + numVertexes*sizeof(mstudiovertex_t) + numVertexes * sizeof(Vector4D);
 
 	// allocate this much
 	return dataLength;
 }
 
 // Load the minimum quantity of verts and run fixups
-inline int Studio_LoadVertexes( const vertexFileHeader_t *pTempVvdHdr, vertexFileHeader_t *pNewVvdHdr, int rootLOD, bool bNeedsTangentS )
+inline int Studio_LoadVertexes( const vertexFileHeader_t *pTempVvdHdr, vertexFileHeader_t *pNewVvdHdr, int rootLOD )
 {
 	int					i;
 	int					target;
@@ -3024,16 +3020,8 @@ inline int Studio_LoadVertexes( const vertexFileHeader_t *pTempVvdHdr, vertexFil
 	}
 
 	// fixup data starts
-	if (bNeedsTangentS)
-	{
-		// tangent data follows possibly reduced vertex data
-		pNewVvdHdr->tangentDataStart = pNewVvdHdr->vertexDataStart + numVertexes*sizeof(mstudiovertex_t);
-	}
-	else
-	{
-		// no tangent data will be available, mark for identification
-		pNewVvdHdr->tangentDataStart = 0;
-	}
+	// tangent data follows possibly reduced vertex data
+	pNewVvdHdr->tangentDataStart = pNewVvdHdr->vertexDataStart + numVertexes*sizeof(mstudiovertex_t);
 
 	if (!pNewVvdHdr->numFixups)
 	{		
@@ -3044,14 +3032,11 @@ inline int Studio_LoadVertexes( const vertexFileHeader_t *pTempVvdHdr, vertexFil
 			(byte *)pTempVvdHdr+pTempVvdHdr->vertexDataStart,
 			numVertexes*sizeof(mstudiovertex_t) );
 
-		if (bNeedsTangentS)
-		{
-			// transfer tangent data to cache memory
-			memcpy(
-				(byte *)pNewVvdHdr+pNewVvdHdr->tangentDataStart, 
-				(byte *)pTempVvdHdr+pTempVvdHdr->tangentDataStart,
-				numVertexes*sizeof(Vector4D) );
-		}
+		// transfer tangent data to cache memory
+		memcpy(
+			(byte *)pNewVvdHdr+pNewVvdHdr->tangentDataStart, 
+			(byte *)pTempVvdHdr+pTempVvdHdr->tangentDataStart,
+			numVertexes*sizeof(Vector4D) );
 
 		return numVertexes;
 	}
@@ -3074,14 +3059,11 @@ inline int Studio_LoadVertexes( const vertexFileHeader_t *pTempVvdHdr, vertexFil
 			(mstudiovertex_t *)((byte *)pTempVvdHdr+pTempVvdHdr->vertexDataStart) + pFixupTable[i].sourceVertexID,
 			pFixupTable[i].numVertexes*sizeof(mstudiovertex_t) );
 
-		if (bNeedsTangentS)
-		{
-			// copy tangents
-			memcpy(
-				(Vector4D *)((byte *)pNewVvdHdr+pNewVvdHdr->tangentDataStart) + target,
-				(Vector4D *)((byte *)pTempVvdHdr+pTempVvdHdr->tangentDataStart) + pFixupTable[i].sourceVertexID,
-				pFixupTable[i].numVertexes*sizeof(Vector4D) );
-		}
+		// copy tangents
+		memcpy(
+			(Vector4D *)((byte *)pNewVvdHdr+pNewVvdHdr->tangentDataStart) + target,
+			(Vector4D *)((byte *)pTempVvdHdr+pTempVvdHdr->tangentDataStart) + pFixupTable[i].sourceVertexID,
+			pFixupTable[i].numVertexes*sizeof(Vector4D) );
 
 		// data is placed consecutively
 		target += pFixupTable[i].numVertexes;

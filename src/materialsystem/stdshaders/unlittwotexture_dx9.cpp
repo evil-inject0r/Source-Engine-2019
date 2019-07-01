@@ -37,10 +37,6 @@ BEGIN_VS_SHADER( UnlitTwoTexture_DX9, "Help for UnlitTwoTexture_DX9" )
 
 	SHADER_FALLBACK
 	{
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 90)
-		{
-			return "UnlitTwoTexture_DX8";
-		}
 		return 0;
 	}
 
