@@ -156,13 +156,6 @@ public:
 	void			Swap( CUtlBuffer &buf );
 	void			Swap( CUtlMemory<uint8> &mem );
 
-	FORCEINLINE void ActivateByteSwappingIfBigEndian( void )
-	{
-		if ( IsX360() )
-			ActivateByteSwapping( true );
-	}
-
-
 	// Controls endian-ness of binary utlbufs - default matches the current platform
 	void			ActivateByteSwapping( bool bActivate );
 	void			SetBigEndian( bool bigEndian );

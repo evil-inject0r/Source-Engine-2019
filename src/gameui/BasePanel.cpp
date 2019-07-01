@@ -1065,30 +1065,13 @@ void CBasePanel::DrawBackgroundImage()
 	}
 
 	int iImageID = m_iBackgroundImageID;
-	if ( IsX360() )
-	{
-		if ( m_ExitingFrameCount )
-		{
-			if ( !m_bRestartSameGame )
-			{
-				iImageID = m_iProductImageID;
-			}
-		}
-		else if ( m_bUseRenderTargetImage )
-		{
-			// the render target image must be opaque, the alpha channel contents are unknown
-			// it is strictly an opaque background image and never used as an overlay
-			iImageID = m_iRenderTargetImageID;
-			alpha = 255;
-		}
-	}
-
+	
 	surface()->DrawSetColor( 255, 255, 255, alpha );
 	surface()->DrawSetTexture( iImageID );
 	surface()->DrawTexturedRect( 0, 0, wide, tall );
 
 	// 360 always use the progress bar, TCR Requirement, and never this loading plaque
-	if ( IsPC() && ( m_bRenderingBackgroundTransition || m_eBackgroundState == BACKGROUND_LOADING ) )
+	if ( m_bRenderingBackgroundTransition || m_eBackgroundState == BACKGROUND_LOADING )
 	{
 		// draw the loading image over the top
 		surface()->DrawSetColor(255, 255, 255, alpha);

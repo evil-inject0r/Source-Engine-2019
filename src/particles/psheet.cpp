@@ -26,7 +26,6 @@ CSheet::CSheet( CUtlBuffer &buf )
 	memset( m_bSequenceIsCopyOfAnotherSequence, 0, sizeof( m_bSequenceIsCopyOfAnotherSequence ) );
 
 	// lets read a sheet
-	buf.ActivateByteSwappingIfBigEndian();
 	int nVersion = buf.GetInt();								// version#
 	int nNumCoordsPerFrame = (nVersion)?MAX_IMAGES_PER_FRAME_ON_DISK:1;
 

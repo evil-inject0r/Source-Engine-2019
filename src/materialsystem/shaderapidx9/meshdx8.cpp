@@ -16,7 +16,7 @@
 #include "tier0/systeminformation.h"
 
 // fixme - stick this in a header file.
-#if defined( _DEBUG ) && !defined( _X360 )
+#if defined( _DEBUG )
 // define this if you want to range check all indices when drawing
 #define CHECK_INDICES
 #endif
@@ -1124,11 +1124,8 @@ void CIndexBufferDx8::Free()
 		--s_nBufferCount;
 #endif
 
-#if !defined( _X360 )
 		Dx9Device()->Release( m_pIndexBuffer );
-#else
-		m_pIndexBuffer->Release();
-#endif
+
 		m_pIndexBuffer = NULL;
 
 		if ( !m_bIsDynamic )
@@ -1495,7 +1492,7 @@ bool CVertexBufferDx9::Allocate()
 	g_VBAllocTracker->CountVB( m_pVertexBuffer, m_bIsDynamic, m_nBufferSize, VertexSize(), GetVertexFormat() );
 
 #ifdef VPROF_ENABLED
-	if ( IsX360() || !m_bIsDynamic )
+	if ( !m_bIsDynamic )
 	{
 		Assert( m_pGlobalCounter );
 		*m_pGlobalCounter += m_nBufferSize;
@@ -1522,7 +1519,7 @@ void CVertexBufferDx9::Free()
 	g_VBAllocTracker->UnCountVB( m_pVertexBuffer );
 
 #ifdef VPROF_ENABLED
-		if ( IsX360() || !m_bIsDynamic )
+		if ( !m_bIsDynamic )
 		{
 			Assert( m_pGlobalCounter );
 			*m_pGlobalCounter -= m_nBufferSize;
@@ -2663,7 +2660,7 @@ void CMeshDX9::UseVertexBuffer( CVertexBuffer* pBuffer )
 //-----------------------------------------------------------------------------
 void CMeshDX9::SetPrimitiveType( MaterialPrimitiveType_t type )
 {
-	Assert( IsX360() || ( type != MATERIAL_INSTANCED_QUADS ) );
+	Assert( type != MATERIAL_INSTANCED_QUADS );
 	if ( !ShaderUtil()->OnSetPrimitiveType( this, type ) )
 	{
 		return;
@@ -4390,7 +4387,7 @@ void CBufferedMeshDX9::Draw( int nFirstIndex, int nIndexCount )
 
 void CBufferedMeshDX9::SetPrimitiveType( MaterialPrimitiveType_t type )
 {
-	Assert( IsX360() || ( type != MATERIAL_INSTANCED_QUADS ) );
+	Assert( type != MATERIAL_INSTANCED_QUADS );
 	Assert( type != MATERIAL_HETEROGENOUS );
 
 	if (type != GetPrimitiveType())
@@ -4665,9 +4662,6 @@ void CMeshMgr::CleanUp()
 //-----------------------------------------------------------------------------
 void CMeshMgr::FillVertexIDBuffer( CVertexBuffer *pVertexIDBuffer, int nCount )
 {
-	if ( IsX360() )
-		return;
-
 	// Fill the buffer with the values 0->(nCount-1)
 	int nBaseVertexIndex = 0;
 	float *pBuffer = (float*)pVertexIDBuffer->Lock( nCount, nBaseVertexIndex );	
@@ -4683,9 +4677,6 @@ void CMeshMgr::FillVertexIDBuffer( CVertexBuffer *pVertexIDBuffer, int nCount )
 //-----------------------------------------------------------------------------
 void CMeshMgr::CreateVertexIDBuffer()
 {
-	if ( IsX360() )
-		return;
-
 	DestroyVertexIDBuffer();
 
 	// Track mesh allocations

@@ -646,7 +646,7 @@ void CImportVMT::ExpandPatchFile( KeyValues *pKeyValues )
 		if( pIncludeFileName )
 		{
 			KeyValues * includeKeyValues = new KeyValues( "vmt" );
-			bool success = includeKeyValues->LoadFromFile( g_pFullFileSystem, pIncludeFileName, IsX360() ? "GAME" : NULL );
+			bool success = includeKeyValues->LoadFromFile( g_pFullFileSystem, pIncludeFileName, NULL );
 			if( success )
 			{
 				KeyValues *pInsertSection = pKeyValues->FindKey( "insert" );

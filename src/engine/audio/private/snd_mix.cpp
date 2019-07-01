@@ -263,13 +263,6 @@ void S_TransferStereo16( void *pOutput, const portable_samplepair_t *pfront, int
 {
 	int		lpos;
 	
-	if ( IsX360() )
-	{
-		// not the right path for 360
-		Assert( 0 );
-		return;
-	}
-
 	Assert( pOutput );
 
 	snd_vol = S_GetMasterVolume()*256;
@@ -334,13 +327,6 @@ void S_TransferPaintBuffer(void *pOutput, const portable_samplepair_t *pfront, i
 	int			snd_vol;
 	const int 	*p;
  
-	if ( IsX360() )
-	{
-		// not the right path for 360
-		Assert( 0 );
-		return;
-	}
-
 	Assert( pOutput );
 
 	p = (const int *) pfront;

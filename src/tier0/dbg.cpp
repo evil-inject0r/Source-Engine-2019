@@ -826,7 +826,7 @@ void COM_TimestampedLog( char const *fmt, ... )
 
 	if ( !s_bChecked )
 	{
-		s_bShouldLog = ( IsX360() || CommandLine()->CheckParm( "-profile" ) ) ? true : false;
+		s_bShouldLog = CommandLine()->CheckParm( "-profile" ) ? true : false;
 		s_bChecked = true;
 	}
 	if ( !s_bShouldLog )
@@ -841,23 +841,16 @@ void COM_TimestampedLog( char const *fmt, ... )
 	va_end( argptr );
 
 	float curStamp = Plat_FloatTime();
-
-#if defined( _X360 )
-	XBX_rTimeStampLog( curStamp, string );
-#endif
-
-	if ( IsPC() )
+	
+	if ( !s_bFirstWrite )
 	{
-		if ( !s_bFirstWrite )
-		{
-			unlink( "timestamped.log" );
-			s_bFirstWrite = true;
-		}
-
-		FILE* fp = fopen( "timestamped.log", "at+" );
-		fprintf( fp, "%8.4f / %8.4f:  %s\n", curStamp, curStamp - s_LastStamp, string );
-		fclose( fp );
+		unlink( "timestamped.log" );
+		s_bFirstWrite = true;
 	}
+
+	FILE* fp = fopen( "timestamped.log", "at+" );
+	fprintf( fp, "%8.4f / %8.4f:  %s\n", curStamp, curStamp - s_LastStamp, string );
+	fclose( fp );
 
 	s_LastStamp = curStamp;
 }
