@@ -155,3 +155,10 @@ build/CMakeFiles/
 # libraries we want
 !zlib.lib
 !bzip2.lib
+
+!/src/thirdparty/**/*.lib
+!/src/thirdparty/**/*.cpp
+!/src/thirdparty/**/*.h
+!/src/thirdparty/**/*.vpc
+# is this a good idea?
+!/src/thirdparty/**/*.dll
