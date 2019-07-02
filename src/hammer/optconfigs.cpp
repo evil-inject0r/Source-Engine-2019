@@ -271,7 +271,7 @@ void COPTConfigs::OnGdfileEdit(void)
 	char szBuf[MAX_PATH];
 	GetWindowsDirectory(szBuf, MAX_PATH);
 	strcat(szBuf, "\\notepad.exe");
-	_spawnl(_P_WAIT, szBuf, szBuf, str, NULL);
+	_spawnl(_P_WAIT, szBuf, szBuf, str.GetString(), NULL);
 
 	m_pLastSelConfig->LoadGDFiles();
 	UpdateEntityLists();

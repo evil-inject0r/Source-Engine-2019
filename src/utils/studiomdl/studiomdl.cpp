@@ -416,7 +416,8 @@ void MdlExceptionFilter( unsigned long code )
 	SetUnhandledExceptionFilter( MdlSecondExceptionFilter );
 
 	//DWORD code = ExceptionInfo->ExceptionRecord->ExceptionCode;
-
+#pragma warning(push)
+#pragma warning(disable: 4838)
 	#define ERR_RECORD( name ) { name, #name }
 	struct
 	{
@@ -446,6 +447,7 @@ void MdlExceptionFilter( unsigned long code )
 		ERR_RECORD( EXCEPTION_STACK_OVERFLOW ),
 		ERR_RECORD( EXCEPTION_ACCESS_VIOLATION ),
 	};
+#pragma warning(pop) // 4838
 
 	int nErrors = sizeof( errors ) / sizeof( errors[0] );
 	{

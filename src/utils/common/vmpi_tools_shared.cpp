@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -286,6 +286,8 @@ void VMPI_ExceptionFilter( unsigned long uCode, void *pvExceptionInfo )
 	SetUnhandledExceptionFilter( VMPI_SecondExceptionFilter );
 
 	//DWORD code = ExceptionInfo->ExceptionRecord->ExceptionCode;
+#pragma warning(push)
+#pragma warning(disable: 4838)
 
 	#define ERR_RECORD( name ) { name, #name }
 	struct
@@ -316,6 +318,8 @@ void VMPI_ExceptionFilter( unsigned long uCode, void *pvExceptionInfo )
 		ERR_RECORD( EXCEPTION_STACK_OVERFLOW ),
 		ERR_RECORD( EXCEPTION_ACCESS_VIOLATION ),
 	};
+
+#pragma warning(pop) // 4838
 
 	int nErrors = sizeof( errors ) / sizeof( errors[0] );
 	int i=0;
