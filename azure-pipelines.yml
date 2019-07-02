@@ -38,3 +38,16 @@ steps:
     solution: '**/*.sln'
     configuration: 'Release'
     maximumCpuCount: true
+
+# copy files from $(BuildConfiguration) folders
+# some files may not be copied
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.Repository.LocalPath)'
+    contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)'
+
+# publish artifacts
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: drop
