@@ -37,3 +37,4 @@ steps:
   inputs:
     solution: '**/*.sln'
     configuration: 'Release'
+    maximumCpuCount: true
