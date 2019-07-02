@@ -162,3 +162,5 @@ build/CMakeFiles/
 !/src/thirdparty/**/*.vpc
 # is this a good idea?
 !/src/thirdparty/**/*.dll
+
+!/src/lib/common/**/libspeex.lib
