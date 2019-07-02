@@ -504,7 +504,6 @@ public:
 	virtual const char			*GetMostRecentSaveGame( void );
 	virtual void				SetMostRecentSaveGame( const char *lpszFilename );
 
-	virtual void				StartXboxExitingProcess();
 	virtual bool				IsSaveInProgress();
 	
 	virtual uint				OnStorageDeviceAttached( void );
@@ -867,10 +866,6 @@ float CEngineClient::Time()
 
 void CEngineClient::Sound_ExtraUpdate( void )
 {
-	// On xbox this is not necessary except for long pauses, so unhook this one
-	if ( IsX360() )
-		return;
-
 	VPROF_BUDGET( "CEngineClient::Sound_ExtraUpdate()", VPROF_BUDGETGROUP_OTHER_SOUND );
 
 	S_ExtraUpdate();
@@ -1228,10 +1223,6 @@ void CEngineClient::GetUILanguage( char *dest, int destlen )
 	{
 		V_strncpy( dest, pStr, destlen );
 	}
-	else if ( IsX360() )
-	{
-		dest[0] = 0;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1390,30 +1381,6 @@ void CEngineClient::SetMostRecentSaveGame( const char *lpszFilename )
 	saverestore->SetMostRecentSaveGame( lpszFilename );
 }
 
-//-----------------------------------------------------------------------------
-// Called by gameui to hint the engine that an exiting process has started.
-// The Engine needs to stabilize to a safe quiet state. More frames are going
-// to and have to run, but the true exit will occur.
-//-----------------------------------------------------------------------------
-void CEngineClient::StartXboxExitingProcess()
-{
-	if ( IsPC() )
-	{
-		// not for PC
-		return;
-	}
-
-	g_pInputSystem->StopRumble();
-
-	// save out the achievements
-	g_pAchievementMgr->SaveGlobalStateIfDirty( false );
-
-	S_StopAllSounds( true );
-
-	// Shutdown QMS, need to go back to single threaded
-	Host_AllowQueuedMaterialSystem( false );
-}
-
 bool CEngineClient::IsSaveInProgress()
 {
 	return saverestore->IsSaveInProgress();
@@ -1434,8 +1401,6 @@ uint CEngineClient::OnStorageDeviceAttached( void )
 //-----------------------------------------------------------------------------
 void CEngineClient::OnStorageDeviceDetached( void )
 {
-	XBX_SetStorageDeviceId( XBX_INVALID_STORAGE_ID );
-	g_pXboxSystem->CloseContainers();
 }
 
 void CEngineClient::ResetDemoInterpolation( void )

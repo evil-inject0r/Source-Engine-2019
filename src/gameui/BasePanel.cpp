@@ -973,8 +973,6 @@ void CBasePanel::StartExitingProcess()
 	{
 		pPanel->CloseAllDialogs( false );
 	}
-
-	engine->StartXboxExitingProcess();
 }
 
 //-----------------------------------------------------------------------------
