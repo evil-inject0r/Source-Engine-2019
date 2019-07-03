@@ -51,13 +51,8 @@ sub PatchCRC
 my $txtfilename = shift;
 my $arg = shift;
 
-my $is360 = 0;
 my $platformextension = "";
-if( $arg =~ m/-x360/i )
-{
-	$is360 = 1;
-	$platformextension = ".360";
-}
+
 
 # Get the changelist number for the Shader Auto Checkout changelist. Will create the changelist if it doesn't exist.
 #my $changelistnumber = `valve_p4_create_changelist.cmd ..\\..\\..\\game\\hl2\\shaders \"Shader Auto Checkout VCS\"`;

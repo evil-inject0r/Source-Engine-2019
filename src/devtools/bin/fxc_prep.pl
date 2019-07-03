@@ -52,18 +52,9 @@ while( 1 )
 	{
 		shift;
 	}
-	elsif( $fxc_filename =~ m/-nv3x/i )
-	{
-		$nvidia = 1;
-	}
 	elsif( $fxc_filename =~ m/-ps20a/i )
 	{
 		$ps2a = 1;
-	}
-	elsif( $fxc_filename =~ m/-x360/i )
-	{
-		# enable x360
-		$g_x360 = 1;
 	}
 	elsif( $fxc_filename =~ m/-novcs/i )
 	{
@@ -720,14 +711,8 @@ sub CreateCFuncToCreateCompileCommandLine
 
 #print "--------\n";
 
-if ( $g_x360 )
-{
-	$fxctmp = "fxctmp9_360_tmp";
-}
-else
-{
-	$fxctmp = "fxctmp9_tmp";
-}
+
+$fxctmp = "fxctmp9_tmp";
 
 if( !stat $fxctmp )
 {
@@ -887,11 +872,6 @@ if( $g_produceCompiledVcs && !$dynamic_compile )
 	if( $nvidia )
 	{
 		print FOUT "/DNV3X=1 "; # enable NV3X codepath
-	}
-	if ( $g_x360 )
-	{
-		print FOUT "/D_X360=1 "; # shaders can identify X360 centric code
-		# print FOUT "/Xbe:2- "; # use the less-broken old back end
 	}
 	if( $debug )
 	{
