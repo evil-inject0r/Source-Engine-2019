@@ -33,11 +33,10 @@ const char * WINAPI GetDllVersion( void );
 #define DX_PROXY_INC_CONFIG
 #pragma message ( "Compiling DX_PROXY for DX9_V00_PC" )
 
-#pragma comment ( lib, "d3d9" )
+#pragma comment ( lib, "../../thirdparty/dx9sdk/lib/d3dx9" )
+#include "../../thirdparty/dx9sdk/include/d3dx9shader.h"
 
-#pragma comment(lib, "D3DCompiler")
-#pragma comment(lib, "dxguid.lib")
-#include "d3dcompiler.h"
+
 
 #endif // #ifdef DX9_V00_PC
 
@@ -64,11 +63,8 @@ const char * WINAPI GetDllVersion( void );
 
 #pragma comment( lib, "delayimp" )
 
-#pragma comment(lib, "d3d9")
-#pragma comment(lib, "D3DCompiler")
-#pragma comment(lib, "dxguid.lib")
-//#include "d3dx9shader.h"
-#include "d3dcompiler.h"
+#pragma comment ( lib, "../../thirdparty/dx10sdk/lib/x86/d3dx9" )
+#include "../../thirdparty/dx10sdk/include/d3dx9shader.h"
 
 #endif // #ifdef DX9_V30_PC
 
@@ -284,13 +280,14 @@ char s_dummyBuffer[ 512 ];
 HRESULT WINAPI
 Proxy_D3DXCompileShaderFromFile(
 								LPCSTR                          pSrcFile,
-								CONST D3D_SHADER_MACRO*         pDefines,
-								ID3DInclude						*pInclude,
+								CONST D3DXMACRO*                pDefines,
+								LPD3DXINCLUDE                   pInclude,
 								LPCSTR                          pFunctionName,
 								LPCSTR                          pProfile,
 								DWORD                           Flags,
-								ID3DBlob						**ppShader,
-								ID3DBlob						** ppErrorMsgs)
+								LPD3DXBUFFER*                   ppShader,
+								LPD3DXBUFFER*                   ppErrorMsgs,
+								LPD3DXCONSTANTTABLE*            ppConstantTable )
 {
 	if ( !pInclude )
 		pInclude = &s_incDxImpl;
@@ -298,21 +295,19 @@ Proxy_D3DXCompileShaderFromFile(
 	// Open the top-level file via our include interface
 	LPCVOID lpcvData;
 	UINT numBytes;
-	HRESULT hr = pInclude->Open( (D3D_INCLUDE_TYPE) 0, pSrcFile, NULL, &lpcvData, &numBytes );
+	HRESULT hr = pInclude->Open( ( D3DXINCLUDE_TYPE ) 0, pSrcFile, NULL, &lpcvData, &numBytes
+#if defined( DX9_V00_X360 )
+		, s_dummyBuffer, sizeof( s_dummyBuffer )
+#endif
+		);
 	if ( FAILED( hr ) )
 		return hr;
 
 	LPCSTR pShaderData = ( LPCSTR ) lpcvData;
 
-	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
-	flags |= D3DCOMPILE_DEBUG;
-#endif
-
-#if defined( DX9_V00_PC ) || defined( DX9_V30_PC )
-	//#pragma comment(linker, "/EXPORT:Proxy_D3DXCompileShaderFromFile=?Proxy_D3DXCompileShaderFromFile@@YGJPBDPBU_D3DXMACRO@@PAUID3DXInclude@@00KPAPAUID3DXBuffer@@3PAPAUID3DXConstantTable@@@Z")
-	hr = D3DCompile(pShaderData, numBytes, "", pDefines, pInclude, pFunctionName, pProfile, flags, 0, ppShader, ppErrorMsgs);
-	//hr = D3DXCompileShader( pShaderData, numBytes, pDefines, pInclude, pFunctionName, pProfile, Flags, ppShader, ppErrorMsgs, ppConstantTable );
+#if defined( DX9_V00_PC ) || defined( DX9_V30_PC ) || defined( DX9_V00_X360 )
+	#pragma comment(linker, "/EXPORT:Proxy_D3DXCompileShaderFromFile=?Proxy_D3DXCompileShaderFromFile@@YGJPBDPBU_D3DXMACRO@@PAUID3DXInclude@@00KPAPAUID3DXBuffer@@3PAPAUID3DXConstantTable@@@Z")
+	hr = D3DXCompileShader( pShaderData, numBytes, pDefines, pInclude, pFunctionName, pProfile, Flags, ppShader, ppErrorMsgs, ppConstantTable );
 #endif
 
 #if defined( DX10_V00_PC )
