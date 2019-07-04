@@ -4,19 +4,15 @@
 // STATIC: "REFLECT"						"0..1"
 // STATIC: "REFRACT"						"0..1"
 // STATIC: "ABOVEWATER"						"0..1"
-// STATIC: "BLURRY_REFRACT"					"0..1"	[ps30]
+// STATIC: "BLURRY_REFRACT"					"0..1"
 
 // When we turn NORMAL_DECODE_MODE on, this shader only needs 0..1, not 0..2
 // STATIC: "NORMAL_DECODE_MODE"				"0..0"
 
 // DYNAMIC: "PIXELFOGTYPE"					"0..1"
-// DYNAMIC: "WRITE_DEPTH_TO_DESTALPHA"		"0..1"	[ps30]
+// DYNAMIC: "WRITE_DEPTH_TO_DESTALPHA"		"0..1"
 // SKIP: $MULTITEXTURE && $BASETEXTURE
 
-#if defined(SHADER_MODEL_PS_3_0)
-#	define BLURRY_REFRACT 0
-#	define WRITE_DEPTH_TO_DESTALPHA 0
-#endif
 
 #include "water_ps2x_helper.h"
 

@@ -27,8 +27,6 @@ BEGIN_VS_SHADER( DecalModulate_dx9,
 	
 	SHADER_FALLBACK
 	{
-		if (g_pHardwareConfig->GetDXSupportLevel() < 90)
-			return "DecalModulate_DX6";
 		return 0;
 	}
 
@@ -36,14 +34,12 @@ BEGIN_VS_SHADER( DecalModulate_dx9,
 	{
 		SET_FLAGS( MATERIAL_VAR_NO_DEBUG_OVERRIDE );
 
-#ifndef _X360
 		if ( g_pHardwareConfig->HasFastVertexTextures() )
 		{
 			// The vertex shader uses the vertex id stream
 			SET_FLAGS2( MATERIAL_VAR2_USES_VERTEXID );
 			SET_FLAGS2( MATERIAL_VAR2_SUPPORTS_HW_SKINNING );
 		}
-#endif
 	}
 
 	SHADER_INIT
@@ -93,20 +89,18 @@ BEGIN_VS_SHADER( DecalModulate_dx9,
 
 			// Set stream format (note that this shader supports compression)
 			unsigned int flags = VERTEX_POSITION | VERTEX_FORMAT_COMPRESSED;
-#ifndef _X360
+
 			// The VS30 shader offsets decals along the normal (for morphed geom)
 			flags |= g_pHardwareConfig->HasFastVertexTextures() ? VERTEX_NORMAL : 0;
-#endif
+
 			int pTexCoordDim[3] = { 2, 0, 3 };
 			int nTexCoordCount = 1;
 			int userDataSize = 0;
 
-#ifndef _X360
 			if ( g_pHardwareConfig->HasFastVertexTextures() )
 			{
 				nTexCoordCount = 3;
 			}
-#endif
 
 			pShaderShadow->VertexShaderVertexFormat( flags, nTexCoordCount, pTexCoordDim, userDataSize );
 		}

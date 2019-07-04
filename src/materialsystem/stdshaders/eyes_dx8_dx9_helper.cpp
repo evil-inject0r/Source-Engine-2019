@@ -22,7 +22,7 @@
 
 ConVar r_flashlight_version2( "r_flashlight_version2", "0" );
 
-void InitParamsEyes_DX8_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, 
+void InitParamsEyes( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, 
 							Eyes_DX8_DX9_Vars_t &info )
 {
 	if ( g_pHardwareConfig->SupportsBorderColor() )
@@ -44,7 +44,7 @@ void InitParamsEyes_DX8_DX9( CBaseVSShader *pShader, IMaterialVar** params, cons
 	}
 }
 
-void InitEyes_DX8_DX9( CBaseVSShader *pShader, IMaterialVar** params, Eyes_DX8_DX9_Vars_t &info )
+void InitEyes( CBaseVSShader *pShader, IMaterialVar** params, Eyes_DX8_DX9_Vars_t &info )
 {
 	pShader->LoadTexture( FLASHLIGHTTEXTURE );
 	pShader->LoadTexture( info.m_nBaseTexture );
@@ -90,7 +90,7 @@ static void SetDepthFlashlightParams( CBaseVSShader *pShader, IShaderDynamicAPI 
 }
 
 
-static void DrawFlashlight( bool bDX9, CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI, 
+static void DrawFlashlight( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI, 
 						   IShaderShadow* pShaderShadow, Eyes_DX8_DX9_Vars_t &info, VertexCompressionType_t vertexCompression )
 {
 	if( pShaderShadow )
@@ -114,32 +114,30 @@ static void DrawFlashlight( bool bDX9, CBaseVSShader *pShader, IMaterialVar** pa
 		pShaderShadow->EnableAlphaWrites( false );
 
 #ifdef STDSHADER_DX9_DLL_EXPORT
-		if ( bDX9 )
-		{
-			int nShadowFilterMode = g_pHardwareConfig->GetShadowFilterMode();	// Based upon vendor and device dependent formats
+
+		int nShadowFilterMode = g_pHardwareConfig->GetShadowFilterMode();	// Based upon vendor and device dependent formats
 			
-			// The vertex shader uses the vertex id stream
-			SET_FLAGS2( MATERIAL_VAR2_USES_VERTEXID );
+		// The vertex shader uses the vertex id stream
+		SET_FLAGS2( MATERIAL_VAR2_USES_VERTEXID );
 
-			DECLARE_STATIC_VERTEX_SHADER( eyes_flashlight_vs30 );
-			SET_STATIC_VERTEX_SHADER( eyes_flashlight_vs30 );
+		DECLARE_STATIC_VERTEX_SHADER( eyes_flashlight_vs30 );
+		SET_STATIC_VERTEX_SHADER( eyes_flashlight_vs30 );
 
-			DECLARE_STATIC_PIXEL_SHADER( eyes_flashlight_ps30 );
-			SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
-			SET_STATIC_PIXEL_SHADER( eyes_flashlight_ps30 );
+		DECLARE_STATIC_PIXEL_SHADER( eyes_flashlight_ps30 );
+		SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
+		SET_STATIC_PIXEL_SHADER( eyes_flashlight_ps30 );
 
-			// On DX9, get the gamma read and write correct
-			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, true );			// Spot
-			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER1, true );			// Base
-			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER3, true );			// Iris
-			pShaderShadow->EnableSRGBWrite( true );
+		// On DX9, get the gamma read and write correct
+		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, true );			// Spot
+		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER1, true );			// Base
+		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER3, true );			// Iris
+		pShaderShadow->EnableSRGBWrite( true );
 
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				pShaderShadow->EnableTexture( SHADER_SAMPLER4, true );			// Shadow depth map
-				pShaderShadow->SetShadowDepthFiltering( SHADER_SAMPLER4 );
-				pShaderShadow->EnableTexture( SHADER_SAMPLER5, true );			// Shadow noise rotation map
-			}
+		if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
+		{
+			pShaderShadow->EnableTexture( SHADER_SAMPLER4, true );			// Shadow depth map
+			pShaderShadow->SetShadowDepthFiltering( SHADER_SAMPLER4 );
+			pShaderShadow->EnableTexture( SHADER_SAMPLER5, true );			// Shadow noise rotation map
 		}
 #endif
 		
@@ -151,11 +149,7 @@ static void DrawFlashlight( bool bDX9, CBaseVSShader *pShader, IMaterialVar** pa
 		// Specify that we have XYZ texcoords that need to be divided by W before the pixel shader.
 		// NOTE Tried to divide XY by Z, but doesn't work.
 		// The dx9.0c runtime says that we shouldn't have a non-zero dimension when using vertex and pixel shaders.
-		if ( !bDX9 )
-		{
-			pShaderAPI->SetTextureTransformDimension( SHADER_TEXTURE_STAGE0, 0, true );
-		}
-		
+
 		VMatrix worldToTexture;
 		ITexture *pFlashlightDepthTexture;
 		FlashlightState_t flashlightState = pShaderAPI->GetFlashlightStateEx( worldToTexture, &pFlashlightDepthTexture );
@@ -165,45 +159,39 @@ static void DrawFlashlight( bool bDX9, CBaseVSShader *pShader, IMaterialVar** pa
 		pShaderAPI->BindStandardTexture( SHADER_SAMPLER2, TEXTURE_NORMALIZATION_CUBEMAP );
 		pShader->BindTexture( SHADER_SAMPLER3, info.m_nIris, info.m_nIrisFrame );
 
-		if ( bDX9 )
-		{
-			pShader->SetHWMorphVertexShaderState( VERTEX_SHADER_SHADER_SPECIFIC_CONST_10, VERTEX_SHADER_SHADER_SPECIFIC_CONST_11, SHADER_VERTEXTEXTURE_SAMPLER0 );
+		pShader->SetHWMorphVertexShaderState( VERTEX_SHADER_SHADER_SPECIFIC_CONST_10, VERTEX_SHADER_SHADER_SPECIFIC_CONST_11, SHADER_VERTEXTEXTURE_SAMPLER0 );
 
-			DECLARE_DYNAMIC_VERTEX_SHADER( eyes_flashlight_vs30 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, pShaderAPI->GetCurrentNumBones() > 0 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( MORPHING, pShaderAPI->IsHWMorphingEnabled() );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
-			SET_DYNAMIC_VERTEX_SHADER( eyes_flashlight_vs30 );
+		DECLARE_DYNAMIC_VERTEX_SHADER( eyes_flashlight_vs30 );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, pShaderAPI->GetCurrentNumBones() > 0 );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( MORPHING, pShaderAPI->IsHWMorphingEnabled() );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+		SET_DYNAMIC_VERTEX_SHADER( eyes_flashlight_vs30 );
 
 //			float vPSConst[4] = {params[info.m_nDilation]->GetFloatValue(), 0.0f, 0.0f, 0.0f};
 //			pShaderAPI->SetPixelShaderConstant( 0, vPSConst, 1 );
 
-			VMatrix worldToTexture;
-			ITexture *pFlashlightDepthTexture;
-			FlashlightState_t flashlightState = pShaderAPI->GetFlashlightStateEx( worldToTexture, &pFlashlightDepthTexture );
-			SetFlashLightColorFromState( flashlightState, pShaderAPI );
+		SetFlashLightColorFromState( flashlightState, pShaderAPI );
 
-			if( pFlashlightDepthTexture && g_pConfig->ShadowDepthTexture() && flashlightState.m_bEnableShadows )
-			{
-				pShader->BindTexture( SHADER_SAMPLER4, pFlashlightDepthTexture, 0 );
-				pShaderAPI->BindStandardTexture( SHADER_SAMPLER5, TEXTURE_SHADOW_NOISE_2D );
-			}
-
-			pShaderAPI->SetPixelShaderFogParams( PSREG_FOG_PARAMS );
-
-			float vEyePos_SpecExponent[4];
-			pShaderAPI->GetWorldSpaceCameraPosition( vEyePos_SpecExponent );
-			vEyePos_SpecExponent[3] = 0.0f;
-			pShaderAPI->SetPixelShaderConstant( PSREG_EYEPOS_SPEC_EXPONENT, vEyePos_SpecExponent, 1 );
-
-			DECLARE_DYNAMIC_PIXEL_SHADER( eyes_flashlight_ps30 );
-			SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-			SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, flashlightState.m_bEnableShadows );
-			SET_DYNAMIC_PIXEL_SHADER( eyes_flashlight_ps30 );
-
-			SetDepthFlashlightParams( pShader, pShaderAPI, worldToTexture, flashlightState );
+		if( pFlashlightDepthTexture && g_pConfig->ShadowDepthTexture() && flashlightState.m_bEnableShadows )
+		{
+			pShader->BindTexture( SHADER_SAMPLER4, pFlashlightDepthTexture, 0 );
+			pShaderAPI->BindStandardTexture( SHADER_SAMPLER5, TEXTURE_SHADOW_NOISE_2D );
 		}
+
+		pShaderAPI->SetPixelShaderFogParams( PSREG_FOG_PARAMS );
+
+		float vEyePos_SpecExponent[4];
+		pShaderAPI->GetWorldSpaceCameraPosition( vEyePos_SpecExponent );
+		vEyePos_SpecExponent[3] = 0.0f;
+		pShaderAPI->SetPixelShaderConstant( PSREG_EYEPOS_SPEC_EXPONENT, vEyePos_SpecExponent, 1 );
+
+		DECLARE_DYNAMIC_PIXEL_SHADER( eyes_flashlight_ps30 );
+		SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
+		SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, flashlightState.m_bEnableShadows );
+		SET_DYNAMIC_PIXEL_SHADER( eyes_flashlight_ps30 );
+
+		SetDepthFlashlightParams( pShader, pShaderAPI, worldToTexture, flashlightState );
 
 		// This uses from VERTEX_SHADER_SHADER_SPECIFIC_CONST_0 to VERTEX_SHADER_SHADER_SPECIFIC_CONST_5
 		pShader->SetFlashlightVertexShaderConstants( false, -1, false, -1, false );
@@ -216,7 +204,7 @@ static void DrawFlashlight( bool bDX9, CBaseVSShader *pShader, IMaterialVar** pa
 	pShader->Draw();
 }
 
-static void DrawUsingVertexShader( bool bDX9, CBaseVSShader *pShader, IMaterialVar** params, 
+static void DrawUsingVertexShader( CBaseVSShader *pShader, IMaterialVar** params, 
 								  IShaderDynamicAPI *pShaderAPI, IShaderShadow* pShaderShadow,
 								  Eyes_DX8_DX9_Vars_t &info, VertexCompressionType_t vertexCompression )
 {
@@ -322,21 +310,21 @@ static void DrawUsingVertexShader( bool bDX9, CBaseVSShader *pShader, IMaterialV
 	pShader->Draw();
 }
 
-static void DrawEyes_DX8_DX9_Internal( bool bDX9, CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
+static void DrawEyes_Internal( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
 	IShaderShadow* pShaderShadow, bool bHasFlashlight, Eyes_DX8_DX9_Vars_t &info, VertexCompressionType_t vertexCompression )
 {
 	if( !bHasFlashlight )
 	{
-		DrawUsingVertexShader( bDX9, pShader, params, pShaderAPI, pShaderShadow, info, vertexCompression );
+		DrawUsingVertexShader( pShader, params, pShaderAPI, pShaderShadow, info, vertexCompression );
 	}
 	else
 	{
-		DrawFlashlight( bDX9, pShader, params, pShaderAPI, pShaderShadow, info, vertexCompression );
+		DrawFlashlight( pShader, params, pShaderAPI, pShaderShadow, info, vertexCompression );
 	}
 }
 
 extern ConVar r_flashlight_version2;
-void DrawEyes_DX8_DX9( bool bDX9, CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
+void DrawEyes( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
 					  IShaderShadow* pShaderShadow, Eyes_DX8_DX9_Vars_t &info, VertexCompressionType_t vertexCompression )
 {
 	SHADOW_STATE
@@ -346,13 +334,13 @@ void DrawEyes_DX8_DX9( bool bDX9, CBaseVSShader *pShader, IMaterialVar** params,
 	bool bHasFlashlight = pShader->UsingFlashlight( params );
 	if( bHasFlashlight && (r_flashlight_version2.GetInt() ) )
 	{
-		DrawEyes_DX8_DX9_Internal( bDX9, pShader, params, pShaderAPI, pShaderShadow, false, info, vertexCompression );
+		DrawEyes_Internal( pShader, params, pShaderAPI, pShaderShadow, false, info, vertexCompression );
 		if ( pShaderShadow )
 		{
 			pShader->SetInitialShadowState( );
 		}
 	}
-	DrawEyes_DX8_DX9_Internal( bDX9, pShader, params, pShaderAPI, pShaderShadow, bHasFlashlight, info, vertexCompression );
+	DrawEyes_Internal( pShader, params, pShaderAPI, pShaderShadow, bHasFlashlight, info, vertexCompression );
 }
 
 

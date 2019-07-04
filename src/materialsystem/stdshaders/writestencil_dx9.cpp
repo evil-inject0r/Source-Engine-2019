@@ -7,9 +7,8 @@
 
 #include "BaseVSShader.h"
 
-#include "writez_vs20.inc"
-#include "white_ps20.inc"
-#include "white_ps20b.inc"
+#include "writez_vs30.inc"
+#include "white_ps30.inc"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -42,8 +41,8 @@ BEGIN_VS_SHADER_FLAGS( WriteStencil_DX9, "Help for WriteStencil", SHADER_NOT_EDI
 			pShaderShadow->EnableAlphaWrites( false );	//	Write ONLY to stencil
 			pShaderShadow->EnableDepthWrites( false );	//
 
-			DECLARE_STATIC_VERTEX_SHADER( writez_vs20 );
-			SET_STATIC_VERTEX_SHADER( writez_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( writez_vs30 );
+			SET_STATIC_VERTEX_SHADER( writez_vs30 );
 
 			//No pixel shader, doubles fill rate.
 
@@ -55,10 +54,10 @@ BEGIN_VS_SHADER_FLAGS( WriteStencil_DX9, "Help for WriteStencil", SHADER_NOT_EDI
 		}
 		DYNAMIC_STATE
 		{
-			DECLARE_DYNAMIC_VERTEX_SHADER( writez_vs20 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( writez_vs30 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
-			SET_DYNAMIC_VERTEX_SHADER( writez_vs20 );
+			SET_DYNAMIC_VERTEX_SHADER( writez_vs30 );
 
 			//No pixel shader, doubles fill rate.
 		}

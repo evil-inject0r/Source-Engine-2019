@@ -8,9 +8,8 @@
 
 #include "BaseVSShader.h"
 
-#include "shatteredglass_ps20.inc"
-#include "shatteredglass_ps20b.inc"
-#include "shatteredglass_vs20.inc"
+#include "shatteredglass_ps30.inc"
+#include "shatteredglass_vs30.inc"
 
 BEGIN_VS_SHADER( ShatteredGlass,
 			  "Help for ShatteredGlass" )
@@ -196,31 +195,19 @@ BEGIN_VS_SHADER( ShatteredGlass,
 
 			pShaderShadow->VertexShaderVertexFormat( flags, 3, 0, 0 );
 
-			DECLARE_STATIC_VERTEX_SHADER( shatteredglass_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( shatteredglass_vs30 );
 			SET_STATIC_VERTEX_SHADER_COMBO( ENVMAP_MASK,  bHasEnvmapMask );
-			SET_STATIC_VERTEX_SHADER( shatteredglass_vs20 );
+			SET_STATIC_VERTEX_SHADER( shatteredglass_vs30 );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( shatteredglass_ps20b );
-				SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
-				SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  bHasVertexColor );
-				SET_STATIC_PIXEL_SHADER_COMBO( ENVMAPMASK,  bHasEnvmapMask );
-				SET_STATIC_PIXEL_SHADER_COMBO( BASEALPHAENVMAPMASK,  bHasBaseAlphaEnvmapMask );
-				SET_STATIC_PIXEL_SHADER_COMBO( HDRTYPE,  g_pHardwareConfig->GetHDRType() );
-				SET_STATIC_PIXEL_SHADER( shatteredglass_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( shatteredglass_ps20 );
-				SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
-				SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  bHasVertexColor );
-				SET_STATIC_PIXEL_SHADER_COMBO( ENVMAPMASK,  bHasEnvmapMask );
-				SET_STATIC_PIXEL_SHADER_COMBO( BASEALPHAENVMAPMASK,  bHasBaseAlphaEnvmapMask );
-				SET_STATIC_PIXEL_SHADER_COMBO( HDRTYPE,  g_pHardwareConfig->GetHDRType() );
-				SET_STATIC_PIXEL_SHADER( shatteredglass_ps20 );
-			}
-
+			
+			DECLARE_STATIC_PIXEL_SHADER( shatteredglass_ps30 );
+			SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
+			SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  bHasVertexColor );
+			SET_STATIC_PIXEL_SHADER_COMBO( ENVMAPMASK,  bHasEnvmapMask );
+			SET_STATIC_PIXEL_SHADER_COMBO( BASEALPHAENVMAPMASK,  bHasBaseAlphaEnvmapMask );
+			SET_STATIC_PIXEL_SHADER_COMBO( HDRTYPE,  g_pHardwareConfig->GetHDRType() );
+			SET_STATIC_PIXEL_SHADER( shatteredglass_ps30 );
+			
 			DefaultFog();
 		}
 		DYNAMIC_STATE
@@ -250,25 +237,15 @@ BEGIN_VS_SHADER( ShatteredGlass,
 			MaterialFogMode_t fogType = pShaderAPI->GetSceneFogMode();
 			int fogIndex = ( fogType == MATERIAL_FOG_LINEAR_BELOW_FOG_Z ) ? 1 : 0;
 
-			DECLARE_DYNAMIC_VERTEX_SHADER( shatteredglass_vs20 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( shatteredglass_vs30 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG,  fogIndex );
-			SET_DYNAMIC_VERTEX_SHADER( shatteredglass_vs20 );
-
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( shatteredglass_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( HDRENABLED,  IsHDREnabled() );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER( shatteredglass_ps20b );
-			}
-			else
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( shatteredglass_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( HDRENABLED,  IsHDREnabled() );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-				SET_DYNAMIC_PIXEL_SHADER( shatteredglass_ps20 );
-			}
-
+			SET_DYNAMIC_VERTEX_SHADER( shatteredglass_vs30 );
+						
+			DECLARE_DYNAMIC_PIXEL_SHADER( shatteredglass_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( HDRENABLED,  IsHDREnabled() );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
+			SET_DYNAMIC_PIXEL_SHADER( shatteredglass_ps30 );
+			
 			SetEnvMapTintPixelShaderDynamicState( 0, ENVMAPTINT, -1 );
 			SetModulationPixelShaderDynamicState( 1 );
 			SetPixelShaderConstant( 2, ENVMAPCONTRAST );

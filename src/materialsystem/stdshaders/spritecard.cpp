@@ -10,11 +10,9 @@
 #include "convar.h"
 
 // STDSHADER_DX9_DLL_EXPORT
-#include "spritecard_ps20.inc"
-#include "spritecard_ps20b.inc"
-#include "spritecard_vs20.inc"
-#include "splinecard_vs20.inc"
-
+#include "spritecard_ps30.inc"
+#include "spritecard_vs30.inc"
+#include "splinecard_vs30.inc"
 
 #include "tier0/icommandline.h" //command line
 
@@ -252,45 +250,28 @@ BEGIN_VS_SHADER_FLAGS( Spritecard, "Help for Spritecard", SHADER_NOT_EDITABLE )
 			
 			if ( nSplineType )
 			{
-				DECLARE_STATIC_VERTEX_SHADER( splinecard_vs20 );
-				SET_STATIC_VERTEX_SHADER( splinecard_vs20 );
+				DECLARE_STATIC_VERTEX_SHADER( splinecard_vs30 );
+				SET_STATIC_VERTEX_SHADER( splinecard_vs30 );
 			}
 			else
 			{
-				DECLARE_STATIC_VERTEX_SHADER( spritecard_vs20 );
+				DECLARE_STATIC_VERTEX_SHADER( spritecard_vs30 );
 				SET_STATIC_VERTEX_SHADER_COMBO( DUALSEQUENCE, bSecondSequence );
-				SET_STATIC_VERTEX_SHADER( spritecard_vs20 );
+				SET_STATIC_VERTEX_SHADER( spritecard_vs30 );
 			}
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( spritecard_ps20b );
-				SET_STATIC_PIXEL_SHADER_COMBO( ADDBASETEXTURE2, bAdditive2ndTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( ADDSELF, bAddSelf );
-				SET_STATIC_PIXEL_SHADER_COMBO( ANIMBLEND, bBlendFrames );
-				SET_STATIC_PIXEL_SHADER_COMBO( DUALSEQUENCE, bSecondSequence );
-				SET_STATIC_PIXEL_SHADER_COMBO( SEQUENCE_BLEND_MODE, bSecondSequence ? params[SEQUENCE_BLEND_MODE]->GetIntValue() : 0 );
-				SET_STATIC_PIXEL_SHADER_COMBO( MAXLUMFRAMEBLEND1, params[MAXLUMFRAMEBLEND1]->GetIntValue() );
-				SET_STATIC_PIXEL_SHADER_COMBO( MAXLUMFRAMEBLEND2, bSecondSequence? params[MAXLUMFRAMEBLEND1]->GetIntValue() : 0 );
-				SET_STATIC_PIXEL_SHADER_COMBO( COLORRAMP, bUseRampTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( EXTRACTGREENALPHA, bExtractGreenAlpha );
-				SET_STATIC_PIXEL_SHADER_COMBO( DEPTHBLEND, bDepthBlend );
-				SET_STATIC_PIXEL_SHADER( spritecard_ps20b );
-			}
-			else
-			{
-				DECLARE_STATIC_PIXEL_SHADER( spritecard_ps20 );
-				SET_STATIC_PIXEL_SHADER_COMBO( ADDBASETEXTURE2, bAdditive2ndTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( DUALSEQUENCE, bSecondSequence );
-				SET_STATIC_PIXEL_SHADER_COMBO( ADDSELF, bAddSelf );
-				SET_STATIC_PIXEL_SHADER_COMBO( ANIMBLEND, bBlendFrames );
-				SET_STATIC_PIXEL_SHADER_COMBO( SEQUENCE_BLEND_MODE, bSecondSequence ? params[SEQUENCE_BLEND_MODE]->GetIntValue() : 0 );
-				SET_STATIC_PIXEL_SHADER_COMBO( MAXLUMFRAMEBLEND1, params[MAXLUMFRAMEBLEND1]->GetIntValue() );
-				SET_STATIC_PIXEL_SHADER_COMBO( MAXLUMFRAMEBLEND2, bSecondSequence? params[MAXLUMFRAMEBLEND1]->GetIntValue() : 0 );
-				SET_STATIC_PIXEL_SHADER_COMBO( COLORRAMP, bUseRampTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( EXTRACTGREENALPHA, bExtractGreenAlpha );
-				SET_STATIC_PIXEL_SHADER( spritecard_ps20 );
-			}
+			DECLARE_STATIC_PIXEL_SHADER( spritecard_ps30 );
+			SET_STATIC_PIXEL_SHADER_COMBO( ADDBASETEXTURE2, bAdditive2ndTexture );
+			SET_STATIC_PIXEL_SHADER_COMBO( ADDSELF, bAddSelf );
+			SET_STATIC_PIXEL_SHADER_COMBO( ANIMBLEND, bBlendFrames );
+			SET_STATIC_PIXEL_SHADER_COMBO( DUALSEQUENCE, bSecondSequence );
+			SET_STATIC_PIXEL_SHADER_COMBO( SEQUENCE_BLEND_MODE, bSecondSequence ? params[SEQUENCE_BLEND_MODE]->GetIntValue() : 0 );
+			SET_STATIC_PIXEL_SHADER_COMBO( MAXLUMFRAMEBLEND1, params[MAXLUMFRAMEBLEND1]->GetIntValue() );
+			SET_STATIC_PIXEL_SHADER_COMBO( MAXLUMFRAMEBLEND2, bSecondSequence? params[MAXLUMFRAMEBLEND1]->GetIntValue() : 0 );
+			SET_STATIC_PIXEL_SHADER_COMBO( COLORRAMP, bUseRampTexture );
+			SET_STATIC_PIXEL_SHADER_COMBO( EXTRACTGREENALPHA, bExtractGreenAlpha );
+			SET_STATIC_PIXEL_SHADER_COMBO( DEPTHBLEND, bDepthBlend );
+			SET_STATIC_PIXEL_SHADER( spritecard_ps30 );
 
 			pShaderShadow->EnableSRGBWrite( true );
 
@@ -351,14 +332,14 @@ BEGIN_VS_SHADER_FLAGS( Spritecard, "Help for Spritecard", SHADER_NOT_EDITABLE )
 
 			if ( nSplineType )
 			{
-				DECLARE_DYNAMIC_VERTEX_SHADER( splinecard_vs20 );
-				SET_DYNAMIC_VERTEX_SHADER( splinecard_vs20 );
+				DECLARE_DYNAMIC_VERTEX_SHADER( splinecard_vs30 );
+				SET_DYNAMIC_VERTEX_SHADER( splinecard_vs30 );
 			}
 			else
 			{
-				DECLARE_DYNAMIC_VERTEX_SHADER( spritecard_vs20 );
+				DECLARE_DYNAMIC_VERTEX_SHADER( spritecard_vs30 );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( ORIENTATION, nOrientation );
-				SET_DYNAMIC_VERTEX_SHADER( spritecard_vs20 );
+				SET_DYNAMIC_VERTEX_SHADER( spritecard_vs30 );
 			}
 		}
 		Draw( );

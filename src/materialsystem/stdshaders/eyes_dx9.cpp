@@ -55,14 +55,11 @@ BEGIN_VS_SHADER( Eyes_dx9, "Help for Eyes" )
 	{
 		Eyes_DX8_DX9_Vars_t info;
 		SetupVars( info );
-		InitParamsEyes_DX8_DX9( this, params, pMaterialName, info );
+		InitParamsEyes( this, params, pMaterialName, info );
 	}
 
 	SHADER_FALLBACK
 	{
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 90 )
-			return "Eyes_dx8";
-
 		return 0;
 	}
 
@@ -70,7 +67,7 @@ BEGIN_VS_SHADER( Eyes_dx9, "Help for Eyes" )
 	{
 		Eyes_DX8_DX9_Vars_t info;
 		SetupVars( info );
-		InitEyes_DX8_DX9( this, params, info );
+		InitEyes( this, params, info );
 	}
 
 
@@ -78,7 +75,7 @@ BEGIN_VS_SHADER( Eyes_dx9, "Help for Eyes" )
 	{
 		Eyes_DX8_DX9_Vars_t info;
 		SetupVars( info );
-		DrawEyes_DX8_DX9( true, this, params, pShaderAPI, pShaderShadow, info, vertexCompression );
+		DrawEyes( this, params, pShaderAPI, pShaderShadow, info, vertexCompression );
 	}
 END_SHADER
 

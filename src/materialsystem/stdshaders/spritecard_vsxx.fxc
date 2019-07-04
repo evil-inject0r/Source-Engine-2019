@@ -1,5 +1,4 @@
-//  STATIC: "DUALSEQUENCE"			"0..1" [vs20]
-//  STATIC: "DUALSEQUENCE"			"0..0" [vs11]
+//  STATIC: "DUALSEQUENCE"			"0..1" [vs30]
 
 //	DYNAMIC: "ORIENTATION"			"0..2"
 
@@ -163,11 +162,7 @@ VS_OUTPUT main( CONST_PC VS_INPUT v
 	}
 #endif
 
-#if SHADER_MODEL_VS_1_1
-	float4 tint = v.vTint;
-#else
 	float4 tint = GammaToLinear( v.vTint );
-#endif
 
 	float2 sc_yaw;
 	sincos( YAW, sc_yaw.y, sc_yaw.x );
@@ -188,7 +183,7 @@ VS_OUTPUT main( CONST_PC VS_INPUT v
 	float l = length(v2p);
 	rad=max(rad, MINIMUM_SIZE_FACTOR * l);
 	// now, perform fade out
-#ifndef SHADER_MODEL_VS_1_1
+
 	if ( rad > START_FADE_SIZE_FACTOR * l )
 	{
 		if ( rad > END_FADE_SIZE_FACTOR *l )
@@ -201,17 +196,14 @@ VS_OUTPUT main( CONST_PC VS_INPUT v
 			tint *= 1-(rad-START_FADE_SIZE_FACTOR*l)/(END_FADE_SIZE_FACTOR*l-START_FADE_SIZE_FACTOR*l);
 		}
 	}
-#endif
 
 
-#ifndef SHADER_MODEL_VS_1_1
 	// perform far fade
 	float tscale =  1-min(1, max(0, (l-START_FAR_FADE)*FAR_FADE_FACTOR) );
 	tint *= tscale;
 
 	if ( tscale <= 0)
 		rad = 0;											// cull so we emit 0-sized sprite
-#endif
 
 	rad=min(rad, MAXIMUM_SIZE_FACTOR * l);
 
@@ -243,13 +235,10 @@ VS_OUTPUT main( CONST_PC VS_INPUT v
 		worldPos += (x1*rad)*right;
 		worldPos.z += (y1*rad)*up.z;
 		
-#ifndef SHADER_MODEL_VS_1_1
 		if (l < rad*2 )
 		{
 			tint *= smoothstep(rad/2,rad,l);
 		}
-#endif
-
 	}
 	projPos  = mul( float4(worldPos, 1.0f), cViewProj );
 #endif
@@ -288,8 +277,6 @@ VS_OUTPUT main( CONST_PC VS_INPUT v
 #endif
 
 
-#if !defined( SHADER_MODEL_VS_1_1 ) 
-
 	o.blendfactor1 = float4( 0.0f, 0.0f, 0.0f, 0.0f );
 
 	if ( g_bExtractGreenAlpha )
@@ -311,7 +298,6 @@ VS_OUTPUT main( CONST_PC VS_INPUT v
 			o.blendfactor1.g = 1 - o.blendfactor1.a;					// 1.0 .. 0.5
 		}
 	}
-#endif
 
 	// Map projected position to the refraction texture
 	float2 vScreenPos;
@@ -323,5 +309,3 @@ VS_OUTPUT main( CONST_PC VS_INPUT v
 	o.argbcolor = tint;
 	return o;
 }
-
-

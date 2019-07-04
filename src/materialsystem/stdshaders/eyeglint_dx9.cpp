@@ -24,10 +24,6 @@ SHADER_INIT
 
 SHADER_FALLBACK
 {
-	if ( g_pHardwareConfig->GetDXSupportLevel() < 90 )
-	{
-		return "Wireframe";
-	}
 	return 0;
 }
 

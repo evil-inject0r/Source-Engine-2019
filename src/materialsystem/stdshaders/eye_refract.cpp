@@ -158,11 +158,6 @@ BEGIN_VS_SHADER( EyeRefract_dx9, "Help for Eyes" )
 
 	SHADER_FALLBACK
 	{
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 90 )
-		{
-			return "Eyes_dx8";
-		}
-
 		return 0;
 	}
 

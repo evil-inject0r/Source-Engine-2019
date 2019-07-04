@@ -41,7 +41,9 @@ struct VS_OUTPUT
 {
     float4 vProjPos_POSITION		: POSITION;
 
+#if !defined( SHADER_MODEL_VS_3_0 )
 	float  vFog						: FOG;
+#endif
 	float4 vBumpTexCoord			: TEXCOORD0;
 	float3 vTangentEyeVect			: TEXCOORD1;
 	float3 vWorldNormal				: TEXCOORD2; 
@@ -62,7 +64,7 @@ VS_OUTPUT main( const VS_INPUT v )
 	VS_OUTPUT o = ( VS_OUTPUT )0;
 
 #if COLORMODULATE
-	o.vColor = v.vColor;
+	// o.vColor = v.vColor;
 #endif
 
 	float3 worldNormal, worldPos, worldTangentS, worldTangentT;
@@ -105,10 +107,13 @@ VS_OUTPUT main( const VS_INPUT v )
 	o.vRefractXYW = float3(vRefractPos.x, vRefractPos.y, vProjPos.w);
 
 	// Compute fog based on the position
-	float3 vWorldPos = mul( v.vPos, cModel[0] );
+	float3 vWorldPos = mul4x3( v.vPos, cModel[0] );
+#if !defined( SHADER_MODEL_VS_3_0 )
+	//o.vFog = CalcFixedFunctionFog( vWorldPos, FOGTYPE_RANGE );
 	o.fogFactorW = CalcFog( vWorldPos, vProjPos, FOGTYPE_RANGE );
 	o.vFog = o.fogFactorW;
-
+#endif
+	
 	// Eye vector
 	float3 vWorldEyeVect = normalize( cEyePos - vWorldPos );
 	o.vWorldViewVector.xyz = -vWorldEyeVect.xyz;

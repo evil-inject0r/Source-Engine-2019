@@ -53,7 +53,7 @@ const float4 cLightScale : register( c30 );
 #define GAMMA_LIGHT_SCALE (cLightScale.w)
 
 // Flashlight constants
-#if defined(SHADER_MODEL_PS_2_0) || defined(SHADER_MODEL_PS_2_B) || defined(SHADER_MODEL_PS_3_0)
+#if defined(SHADER_MODEL_PS_3_0)
  const float4 cFlashlightColor       : register( c28 );
  const float4 cFlashlightScreenScale : register( c31 ); // .zw are currently unused
  #define flFlashlightNoLambertValue cFlashlightColor.w // This is either 0.0 or 2.0

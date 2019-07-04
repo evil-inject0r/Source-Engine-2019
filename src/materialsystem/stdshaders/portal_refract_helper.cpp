@@ -5,7 +5,7 @@
 #include "convar.h"
 
 // Auto generated inc files
-#include "portal_refract_vs20.inc"
+#include "portal_refract_vs30.inc"
 #include "portal_refract_ps30.inc"
 
 void InitParamsPortalRefract( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, PortalRefractVars_t &info )
@@ -66,9 +66,9 @@ void DrawPortalRefract( CBaseVSShader *pShader, IMaterialVar** params,
 		pShaderShadow->VertexShaderVertexFormat( VERTEX_POSITION | VERTEX_NORMAL, 1, NULL, 4 );
 
 		// Vertex Shader
-		DECLARE_STATIC_VERTEX_SHADER( portal_refract_vs20 );
+		DECLARE_STATIC_VERTEX_SHADER( portal_refract_vs30 );
 		SET_STATIC_VERTEX_SHADER_COMBO( STAGE, nStage );
-		SET_STATIC_VERTEX_SHADER( portal_refract_vs20 );
+		SET_STATIC_VERTEX_SHADER( portal_refract_vs30 );
 
 		// Pixel Shader
 		DECLARE_STATIC_PIXEL_SHADER( portal_refract_ps30 );
@@ -104,8 +104,8 @@ void DrawPortalRefract( CBaseVSShader *pShader, IMaterialVar** params,
 	DYNAMIC_STATE
 	{
 		// Set Vertex Shader Combos
-		DECLARE_DYNAMIC_VERTEX_SHADER( portal_refract_vs20 );
-		SET_DYNAMIC_VERTEX_SHADER( portal_refract_vs20 );
+		DECLARE_DYNAMIC_VERTEX_SHADER( portal_refract_vs30 );
+		SET_DYNAMIC_VERTEX_SHADER( portal_refract_vs30 );
 
 		// Set Vertex Shader Constants 
 		if ( IS_PARAM_DEFINED( info.m_nTextureTransform ) )
