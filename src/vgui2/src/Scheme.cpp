@@ -358,17 +358,11 @@ HScheme  CSchemeManager::LoadSchemeFromFileEx( VPANEL sizingPanel, const char *f
 		return 0;
 	}
 	
-	if ( IsX360() )
+
+	ConVarRef cl_hud_minmode( "cl_hud_minmode", true );
+	if ( cl_hud_minmode.IsValid() && cl_hud_minmode.GetBool() )
 	{
-		data->ProcessResolutionKeys( g_pSurface->GetResolutionKey() );
-	}
-	if ( IsPC() )
-	{
-		ConVarRef cl_hud_minmode( "cl_hud_minmode", true );
-		if ( cl_hud_minmode.IsValid() && cl_hud_minmode.GetBool() )
-		{
-			data->ProcessResolutionKeys( "_minmode" );
-		}
+		data->ProcessResolutionKeys( "_minmode" );
 	}
 
 	CScheme *newScheme = new CScheme();

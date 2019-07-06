@@ -164,13 +164,6 @@ void CSoundEmitterSystemBase::Shutdown()
 //-----------------------------------------------------------------------------
 static void AccumulateFileNameAndTimestampIntoChecksum( CRC32_t *crc, char const *filename )
 {
-	if ( IsX360() )
-	{
-		// this is an expensive i/o operation due to search path fall through
-		// 360 doesn't need or use the checksums
-		return;
-	}
-
 	long ft = filesystem->GetFileTime( filename, "GAME" );
 	CRC32_ProcessBuffer( crc, &ft, sizeof( ft ) );
 	CRC32_ProcessBuffer( crc, filename, Q_strlen( filename ) );

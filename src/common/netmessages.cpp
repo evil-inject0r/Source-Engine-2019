@@ -654,11 +654,6 @@ bool SVC_VoiceData::WriteToBuffer( bf_write &buffer )
 	buffer.WriteByte( m_nFromClient );
 	buffer.WriteByte( m_bProximity );
 	buffer.WriteWord( m_nLength );
-
-	if ( IsX360() )
-	{
-		buffer.WriteLongLong( m_xuid );
-	}
 	
 	return buffer.WriteBits( m_DataOut, m_nLength );
 }
@@ -670,11 +665,6 @@ bool SVC_VoiceData::ReadFromBuffer( bf_read &buffer )
 	m_nFromClient = buffer.ReadByte();
 	m_bProximity = !!buffer.ReadByte();
 	m_nLength = buffer.ReadWord();
-
-	if ( IsX360() )
-	{
-		m_xuid =  buffer.ReadLongLong();
-	}
 
 	m_DataIn = buffer;
 	return buffer.SeekRelative( m_nLength );
@@ -1612,8 +1602,6 @@ const char *MM_JoinResponse::ToString( void ) const
 // transmission of structures instead of their component parts
 bool MM_Migrate::WriteToBuffer( bf_write &buffer )
 {
-	Assert( IsX360() );
-
 	buffer.WriteUBitLong( GetType(), NETMSG_TYPE_BITS );
 	buffer.WriteByte( m_MsgType );
 	buffer.WriteLongLong( m_Id );
@@ -1625,8 +1613,6 @@ bool MM_Migrate::WriteToBuffer( bf_write &buffer )
 
 bool MM_Migrate::ReadFromBuffer( bf_read &buffer )
 {
-	Assert( IsX360() );
-
 	m_MsgType = buffer.ReadByte();
 	m_Id = buffer.ReadLongLong();
 	buffer.ReadBytes( &m_sessionId, sizeof( m_sessionId ) );

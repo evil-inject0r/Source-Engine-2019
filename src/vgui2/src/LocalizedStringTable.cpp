@@ -325,12 +325,6 @@ bool CLocalizedStringTable::AddFile( const char *szFileName, const char *pPathID
 		// We want to walk them in reverse order so newer files are "overrides" for older ones, so we add them to a list in reverse order
 		for ( char *path = strtok( searchPaths, ";" ); path; path = strtok( NULL, ";" ) )
 		{
-			if ( IsX360() && ( g_pFullFileSystem->GetDVDMode() == DVDMODE_STRICT ) && !V_stristr( path, ".zip" ) )
-			{
-				// only want zip paths
-				continue;
-			} 
-
 			char fullpath[MAX_PATH];
 			Q_snprintf( fullpath, sizeof( fullpath ), "%s%s", path, fileName );
 			Q_FixSlashes( fullpath );

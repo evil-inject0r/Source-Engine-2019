@@ -1103,8 +1103,8 @@ void Test( bool bDistribute, bool bSleep = true, bool bFinishExecute = false, bo
 		for ( g_iSleep = -10; g_iSleep <= 10; g_iSleep += 10 )
 		{
 			Msg( "ThreadPoolTest:         Testing! Sleep %d, interleave %d \n", g_iSleep, bInterleavePushPop );
-			int nMaxThreads = ( IsX360() ) ? 6 : 8;
-			int nIncrement = ( IsX360() ) ? 1 : 2;
+			int nMaxThreads = 8;
+			int nIncrement = 2;
 			for ( int i = 1; i <= nMaxThreads; i += nIncrement )
 			{
 				CCountJob::m_nCount = 0;
@@ -1286,11 +1286,9 @@ void RunThreadPoolTests()
 	for ( int i = 0; i < 2; i++ )
 	{
 		bool bToCompletion = ( i % 2 != 0 );
-		if ( !IsX360() )
-		{
-			Msg( "ThreadPoolTest:     Non-distribute\n" );
-			ThreadPoolTest::Test( false, true, bToCompletion );
-		}
+
+		Msg( "ThreadPoolTest:     Non-distribute\n" );
+		ThreadPoolTest::Test( false, true, bToCompletion );
 
 		Msg( "ThreadPoolTest:     Distribute\n" );
 		ThreadPoolTest::Test( true, true, bToCompletion  );
@@ -1316,11 +1314,9 @@ void RunThreadPoolTests()
 	for ( int i = 0; i < 2; i++ )
 	{
 		bool bToCompletion = true;// = ( i % 2 != 0 );
-		if ( !IsX360() )
-		{
-			Msg( "ThreadPoolTest:     Non-distribute\n" );
-			ThreadPoolTest::Test( false, true, bToCompletion, true );
-		}
+
+		Msg( "ThreadPoolTest:     Non-distribute\n" );
+		ThreadPoolTest::Test( false, true, bToCompletion, true );
 
 		Msg( "ThreadPoolTest:     Distribute\n" );
 		ThreadPoolTest::Test( true, true, bToCompletion, true );

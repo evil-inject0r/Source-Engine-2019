@@ -2779,21 +2779,6 @@ void Panel::OnKeyCodePressed(KeyCode code)
 
 void Panel::OnKeyCodeTyped(KeyCode code)
 {
-	// handle focus change
-	if ( IsX360() )
-	{
-		if ( code == KEY_XSTICK1_RIGHT || code == KEY_XBUTTON_RIGHT )
-		{
-			RequestFocusNext();
-			return;
-		}
-		else if ( code == KEY_XSTICK1_LEFT || code == KEY_XBUTTON_LEFT )
-		{
-			RequestFocusPrev();
-			return;
-		}
-	}
-	
 	if (code == KEY_TAB)
 	{
 		// if shift is down goto previous tab position, otherwise goto next
@@ -3106,7 +3091,7 @@ bool Panel::RequestFocusNext(VPANEL panel)
 void Panel::RequestFocus(int direction)
 {
 	// NOTE: This doesn't make any sense if we don't have keyboard input enabled
-	Assert( IsX360() || IsKeyBoardInputEnabled() );
+	Assert( IsKeyBoardInputEnabled() );
 //	ivgui()->DPrintf2("RequestFocus(%s, %s)\n", GetName(), GetClassName());
 	OnRequestFocus(GetVPanel(), NULL);
 }
@@ -4628,11 +4613,11 @@ void Panel::PreparePanelMap( PanelMap_t *panelMap )
 //-----------------------------------------------------------------------------
 void Panel::OnDelete()
 {
-	Assert( IsX360() || ( IsPC() && _heapchk() == _HEAPOK ) );
+	Assert( _heapchk() == _HEAPOK );
 
 	delete this;
 
-	Assert( IsX360() || ( IsPC() && _heapchk() == _HEAPOK ) );
+	Assert( _heapchk() == _HEAPOK );
 }
 
 //-----------------------------------------------------------------------------

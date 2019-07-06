@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: Core implementation of vgui
 //
@@ -422,7 +422,7 @@ void CVGui::RunFrame()
 	}
 
 	// update cursor positions
-	if ( IsPC() && !IsReentrant() )
+	if ( !IsReentrant() )
 	{
 		VPROF( "update cursor positions" );
 		int cursorX, cursorY;
@@ -479,7 +479,7 @@ void CVGui::RunFrame()
 		// make sure the hierarchy is up to date
 		g_pSurface->SolveTraverse(g_pSurface->GetEmbeddedPanel());
 		g_pSurface->ApplyChanges();
-		Assert( IsX360() || ( IsPC() && _heapchk() == _HEAPOK ) );
+		Assert( _heapchk() == _HEAPOK );
 	}
 
 	if ( bIsReentrant )

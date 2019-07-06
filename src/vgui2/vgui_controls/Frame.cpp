@@ -2048,16 +2048,6 @@ void Frame::OnKeyCodeTyped(KeyCode code)
 	bool ctrl = (input()->IsKeyDown(KEY_LCONTROL) || input()->IsKeyDown(KEY_RCONTROL));
 	bool alt = (input()->IsKeyDown(KEY_LALT) || input()->IsKeyDown(KEY_RALT));
 	
-	if ( IsX360() )
-	{
-		vgui::Panel *pMap = FindChildByName( "ControllerMap" );
-		if ( pMap && pMap->IsKeyBoardInputEnabled() )
-		{
-			pMap->OnKeyCodeTyped( code );
-			return;
-		}
-	}
-
 	if ( ctrl && shift && alt && code == KEY_B)
 	{
 		// enable build mode

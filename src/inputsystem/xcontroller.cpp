@@ -283,14 +283,7 @@ void CInputSystem::PostXKeyEvent( int userId, xKey_t xKey, int nSample )
 	case XK_STICK1_DOWN:
 		{
 			code = (AnalogCode_t)JOYSTICK_AXIS( nMsgUserId, JOY_AXIS_Y );
-			if ( IsX360() )
-			{
-				value = ( xKey == XK_STICK1_DOWN ) ? -nSample : nSample;
-			}
-			else
-			{
-				value = ( xKey == XK_STICK1_UP ) ? -nSample : nSample;
-			}
+			value = ( xKey == XK_STICK1_UP ) ? -nSample : nSample;
 			nSampleThreshold = JOYSTICK_ANALOG_BUTTON_THRESHOLD;
 		}
 		break;
@@ -308,14 +301,7 @@ void CInputSystem::PostXKeyEvent( int userId, xKey_t xKey, int nSample )
 	case XK_STICK2_DOWN:
 		{
 			code = (AnalogCode_t)JOYSTICK_AXIS( nMsgUserId, JOY_AXIS_R );
-			if ( IsX360() )
-			{
-				value = ( xKey == XK_STICK2_DOWN ) ? -nSample : nSample;
-			}
-			else
-			{
-				value = ( xKey == XK_STICK2_UP ) ? -nSample : nSample;
-			}
+			value = ( xKey == XK_STICK2_UP ) ? -nSample : nSample;
 			nSampleThreshold = JOYSTICK_ANALOG_BUTTON_THRESHOLD;
 		}
 		break;

@@ -22,15 +22,13 @@
 #include <set>
 #include <limits.h>
 #include "tier0/threadtools.h"
-#ifdef _X360
-#include "xbox/xbox_console.h"
-#endif
+
 #if ( !defined(_DEBUG) && defined(USE_MEM_DEBUG) )
 #pragma message ("USE_MEM_DEBUG is enabled in a release build. Don't check this in!")
 #endif
 #if (defined(_DEBUG) || defined(USE_MEM_DEBUG))
 
-#if defined(_WIN32) && ( !defined(_X360) && !defined(_WIN64) )
+#if defined(_WIN32) && ( !defined(_WIN64) )
 // #define USE_STACK_WALK
 // or:
 // #define USE_STACK_WALK_DETAILED
@@ -38,13 +36,8 @@
 
 //-----------------------------------------------------------------------------
 
-#ifndef _X360
 #define DebugAlloc	malloc
 #define DebugFree	free
-#else
-#define DebugAlloc	DmAllocatePool
-#define DebugFree	DmFreePool
-#endif
 
 int g_DefaultHeapFlags = _CrtSetDbgFlag( _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_ALLOC_MEM_DF );
 
@@ -1261,10 +1254,6 @@ void CDbgMemAlloc::DumpStatsFileBase( char const *pchFileBase )
 	if (m_OutputFunc == DefaultHeapReportFunc)
 	{
 		char *pPath = "";
-		if ( IsX360() )
-		{
-			pPath = "D:\\";
-		}
 
 #if defined( _MEMTEST )
 		char szXboxName[32];

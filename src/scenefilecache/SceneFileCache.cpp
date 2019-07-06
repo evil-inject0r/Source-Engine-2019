@@ -75,7 +75,7 @@ void CSceneFileCache::Disconnect()
 
 InitReturnVal_t CSceneFileCache::Init()
 {
-	const char *pSceneImageName = IsX360() ? "scenes/scenes.360.image" : "scenes/scenes.image";
+	const char *pSceneImageName = "scenes/scenes.image";
 
 	if ( m_SceneImageFile.TellMaxPut() == 0 )
 	{
@@ -92,21 +92,6 @@ InitReturnVal_t CSceneFileCache::Init()
 		}
 		else
 		{
-			if ( IsX360() )
-			{
-				if ( filesystem->GetDVDMode() == DVDMODE_STRICT )
-				{
-					// mandatory
-					Error( "CSceneFileCache: Failed to load %s\n", pSceneImageName );
-				}
-				else
-				{
-					// relaxed
-					Warning( "CSceneFileCache: Failed to load %s, scene playback disabled.\n", pSceneImageName );
-					return INIT_OK;
-				}
-			}
-
 			m_SceneImageFile.Purge();
 		}
 	}
