@@ -125,8 +125,7 @@ void ASISTRUCT::Clear()
 	ASI_stream_open = NULL;
 	ASI_stream_process = NULL;
 	ASI_stream_close = NULL;
-	ASI_stream_attribute = NULL;
-	ASI_stream_set_preference = NULL;
+	ASI_stream_property = NULL;
 	ASI_stream_seek = NULL;
 	OUTPUT_BITS = NULL;
 	OUTPUT_CHANNELS = NULL;
@@ -158,19 +157,18 @@ bool ASISTRUCT::Init( void *pCallbackObject, const char *pInputFileType, const c
 	// Get the decoder.
 	RIB_INTERFACE_ENTRY RECVSTR[] =
 	{
-		{ RIB_FUNCTION,   "ASI_stream_attribute",		(U32) &ASI_stream_attribute,		RIB_NONE },
-		{ RIB_FUNCTION,   "ASI_stream_open",			(U32) &ASI_stream_open,				RIB_NONE },
-		{ RIB_FUNCTION,   "ASI_stream_close",			(U32) &ASI_stream_close,			RIB_NONE },
-		{ RIB_FUNCTION,   "ASI_stream_process",			(U32) &ASI_stream_process,			RIB_NONE },
-		{ RIB_FUNCTION,   "ASI_stream_set_preference",	(U32) &ASI_stream_set_preference,	RIB_NONE },
-		{ RIB_ATTRIBUTE,  "Output sample rate",         (U32) &OUTPUT_RATE,					RIB_NONE },
-		{ RIB_ATTRIBUTE,  "Output sample width",		(U32) &OUTPUT_BITS,					RIB_NONE },
-		{ RIB_ATTRIBUTE,  "Output channels",			(U32) &OUTPUT_CHANNELS,				RIB_NONE },
-		{ RIB_ATTRIBUTE,  "Input sample rate",          (U32) &INPUT_RATE,					RIB_NONE },
-		{ RIB_ATTRIBUTE,  "Input channels",				(U32) &INPUT_CHANNELS,				RIB_NONE },
-		{ RIB_ATTRIBUTE,  "Input sample width",			(U32) &INPUT_BITS,					RIB_NONE },
-		{ RIB_ATTRIBUTE,  "Minimum input block size",	(U32) &INPUT_BLOCK_SIZE,			RIB_NONE },
-		{ RIB_ATTRIBUTE,  "Position",					(U32) &POSITION,					RIB_NONE },
+		{ RIB_FUNCTION,  "ASI_stream_property",			(U32) &ASI_stream_property,			RIB_NONE },
+		{ RIB_FUNCTION,  "ASI_stream_open",				(U32) &ASI_stream_open,				RIB_NONE },
+		{ RIB_FUNCTION,  "ASI_stream_close",			(U32) &ASI_stream_close,			RIB_NONE },
+		{ RIB_FUNCTION,  "ASI_stream_process",			(U32) &ASI_stream_process,			RIB_NONE },
+		{ RIB_PROPERTY,  "Output sample rate",			(U32) &OUTPUT_RATE,					RIB_NONE },
+		{ RIB_PROPERTY,  "Output sample width",			(U32) &OUTPUT_BITS,					RIB_NONE },
+		{ RIB_PROPERTY,  "Output channels",				(U32) &OUTPUT_CHANNELS,				RIB_NONE },
+		{ RIB_PROPERTY,  "Input sample rate",			(U32) &INPUT_RATE,					RIB_NONE },
+		{ RIB_PROPERTY,  "Input channels",				(U32) &INPUT_CHANNELS,				RIB_NONE },
+		{ RIB_PROPERTY,  "Input sample width",			(U32) &INPUT_BITS,					RIB_NONE },
+		{ RIB_PROPERTY,  "Minimum input block size",	(U32) &INPUT_BLOCK_SIZE,			RIB_NONE },
+		{ RIB_PROPERTY,  "Position",					(U32) &POSITION,					RIB_NONE },
 	};
 
 	RIBRESULT result = RIB_request( m_pProvider->GetProviderHandle(), "ASI stream", RECVSTR );
@@ -225,9 +223,10 @@ bool ASISTRUCT::IsActive() const
 }
 
 
-unsigned int ASISTRUCT::GetAttribute( HATTRIB attribute )
+unsigned int ASISTRUCT::GetProperty( HPROPERTY attribute )
 {
-	return ASI_stream_attribute( m_stream, attribute );
+	U32 nValue = 0;
+	return ASI_stream_property( m_stream, attribute, &nValue, nullptr, nullptr );
 }
 
 void ASISTRUCT::Seek( int position )
@@ -236,11 +235,6 @@ void ASISTRUCT::Seek( int position )
 		Error( "ASI_stream_seek called, but it doesn't exist." );
 
 	ASI_stream_seek( m_stream, (S32)position );
-}
-
-void ASISTRUCT::SetAttribute( HATTRIB attribute, unsigned int value )
-{
-	ASI_stream_set_preference( m_stream, attribute, &value );
 }
 
 

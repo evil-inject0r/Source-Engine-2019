@@ -288,7 +288,7 @@ void FrameEncoder_Miles::FigureOutFrameSizes()
 {
 	// Figure out the frame sizes. It is probably not prudent in general to assume fixed frame sizes with Miles codecs
 	// but it works with the voxware codec right now and simplifies things a lot.
-	m_nRawBytes = (int)m_Encoder.GetAttribute( m_Encoder.INPUT_BLOCK_SIZE );
+	m_nRawBytes = (int)m_Encoder.GetProperty( m_Encoder.INPUT_BLOCK_SIZE );
 	
 	char uncompressed[1024];
 	char compressed[1024];

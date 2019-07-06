@@ -13,7 +13,7 @@
 #include "tier0/memdbgon.h"
 
 
-static S32 AILCALLBACK AudioStreamEventCB( U32 user, void FAR *dest, S32 bytes_requested, S32 offset )
+static S32 AILCALLBACK AudioStreamEventCB(UINTa user, void* dest, S32 bytes_requested, S32 offset )
 {
 	IAudioStreamEvent *pThis = static_cast<IAudioStreamEvent*>( (void *)user);
 	return pThis->StreamRequestData( dest, bytes_requested, offset );
@@ -62,25 +62,25 @@ int	CMilesMP3::Decode( void *pBuffer, unsigned int bufferSize )
 
 int CMilesMP3::GetOutputBits()
 {
-	return m_decoder.GetAttribute( m_decoder.OUTPUT_BITS );
+	return m_decoder.GetProperty( m_decoder.OUTPUT_BITS );
 }
 
 
 int CMilesMP3::GetOutputRate()
 {
-	return m_decoder.GetAttribute( m_decoder.OUTPUT_RATE );
+	return m_decoder.GetProperty( m_decoder.OUTPUT_RATE );
 }
 
 
 int CMilesMP3::GetOutputChannels()
 {
-	return m_decoder.GetAttribute( m_decoder.OUTPUT_CHANNELS );
+	return m_decoder.GetProperty( m_decoder.OUTPUT_CHANNELS );
 }
 
 
 unsigned int CMilesMP3::GetPosition()
 {
-	return m_decoder.GetAttribute( m_decoder.POSITION );
+	return m_decoder.GetProperty( m_decoder.POSITION );
 }
 
 // NOTE: Only supports seeking forward right now

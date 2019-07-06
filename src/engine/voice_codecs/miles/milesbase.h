@@ -19,24 +19,24 @@
 
 class CProvider
 {
-public:					   
-				CProvider( HPROVIDER hProvider );
+public:
+	CProvider(HPROVIDER hProvider);
 
-	static CProvider*	FindProvider( HPROVIDER hProvider );
+	static CProvider* FindProvider(HPROVIDER hProvider);
 	static void			FreeAllProviders();
 
 	HPROVIDER	GetProviderHandle();
-	
+
 private:
-	
-				~CProvider();
+
+	~CProvider();
 
 private:
 
 	HPROVIDER	m_hProvider;
 
-	static CProvider	*s_pHead;
-	CProvider			*m_pNext;
+	static CProvider* s_pHead;
+	CProvider* m_pNext;
 };
 
 
@@ -44,28 +44,27 @@ private:
 class ASISTRUCT
 {
 public:
-				ASISTRUCT();
-				~ASISTRUCT();
+	ASISTRUCT();
+	~ASISTRUCT();
 
-	bool		Init( void *pCallbackObject, const char *pInputFileType, 
-						const char *pOutputFileType, AILASIFETCHCB cb );
+	bool		Init(void* pCallbackObject, const char* pInputFileType,
+		const char* pOutputFileType, AILASIFETCHCB cb);
 	void		Shutdown();
-	int			Process( void *pBuffer, unsigned int bufferSize );
+	int			Process(void* pBuffer, unsigned int bufferSize);
 	bool		IsActive() const;
-	unsigned int GetAttribute( HATTRIB attribute );
-	void		SetAttribute( HATTRIB attribute, unsigned int value );
-	void		Seek( int position );
+	unsigned int GetProperty(HPROPERTY attribute);
+	void		Seek(int position);
 
 public:
-	HATTRIB			OUTPUT_BITS;
-	HATTRIB			OUTPUT_CHANNELS;
-	HATTRIB			OUTPUT_RATE;
+	HPROPERTY			OUTPUT_BITS;
+	HPROPERTY			OUTPUT_CHANNELS;
+	HPROPERTY			OUTPUT_RATE;
 
-	HATTRIB			INPUT_BITS;
-	HATTRIB			INPUT_CHANNELS;
-	HATTRIB			INPUT_RATE;
-	HATTRIB			INPUT_BLOCK_SIZE;
-	HATTRIB			POSITION;
+	HPROPERTY			INPUT_BITS;
+	HPROPERTY			INPUT_CHANNELS;
+	HPROPERTY			INPUT_RATE;
+	HPROPERTY			INPUT_BLOCK_SIZE;
+	HPROPERTY			POSITION;
 
 private:
 	void		Clear();
@@ -75,11 +74,10 @@ private:
 	ASI_STREAM_PROCESS			ASI_stream_process;
 	ASI_STREAM_CLOSE			ASI_stream_close;
 	ASI_STREAM_SEEK				ASI_stream_seek;
-	ASI_STREAM_SET_PREFERENCE	ASI_stream_set_preference;
-	ASI_STREAM_ATTRIBUTE		ASI_stream_attribute;
+	ASI_STREAM_PROPERTY			ASI_stream_property;
 
 	HASISTREAM					m_stream;
-	CProvider					*m_pProvider;
+	CProvider* m_pProvider;
 };
 
 
