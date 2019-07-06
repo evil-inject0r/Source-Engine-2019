@@ -355,7 +355,7 @@ int CHardwareConfig::NeedsShaderSRGBConversion() const
 bool CHardwareConfig::UsesSRGBCorrectBlending() const
 {
 	int cValue = r_shader_srgb.GetInt();
-	return ( cValue == 0 ) && ( ( m_Caps.m_bDX10Card ) || IsX360() );
+	return ( cValue == 0 ) && ( m_Caps.m_bDX10Card );
 }
 
 static ConVar mat_disablehwmorph( "mat_disablehwmorph", "0", 0, "Disables HW morphing for particular mods" );
