@@ -8,8 +8,8 @@
 #ifndef COMMON_HLSL_CONSTS_H_
 #define COMMON_HLSL_CONSTS_H_
 
-#define PSHADER_VECT_SCALE 1.0
-#define VSHADER_VECT_SCALE 1.0
+#define PSHADER_VECT_SCALE 1.0f
+#define VSHADER_VECT_SCALE 1.0f
 
 // GR - HDR luminance maps to 0..n range
 // IMPORTANT: Keep the same value as in materialsystem_global.h

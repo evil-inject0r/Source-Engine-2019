@@ -18,6 +18,25 @@ $Configuration
 	}
 }
 
+$Configuration "Debug"
+{
+    $General
+    {
+        $OutputDirectory					".\Debug_shaderapidx10\$_SUBDIRSUFFIX"
+        $IntermediateDirectory				".\Debug_shaderapidx10\$_SUBDIRSUFFIX"
+    }    
+}
+
+$Configuration "Release"
+{
+    $General
+    {
+        $OutputDirectory					".\Release_shaderapidx10\$_SUBDIRSUFFIX"
+        $IntermediateDirectory				".\Release_shaderapidx10\$_SUBDIRSUFFIX"
+    }  
+}
+
+
 $Project "shaderapidx10"
 {
 	$Folder	"Source Files"

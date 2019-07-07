@@ -26,10 +26,20 @@ $Configuration
 
 $Configuration "Debug"
 {
+    $General
+    {
+        $OutputDirectory					".\Debug_dx9\$_SUBDIRSUFFIX"
+        $IntermediateDirectory				".\Debug_dx9\$_SUBDIRSUFFIX"
+    }    
 }
 
 $Configuration "Release"
 {
+    $General
+    {
+        $OutputDirectory					".\Release_dx9\$_SUBDIRSUFFIX"
+        $IntermediateDirectory				".\Release_dx9\$_SUBDIRSUFFIX"
+    }  
 }
 
 $Project "shaderapidx9"
