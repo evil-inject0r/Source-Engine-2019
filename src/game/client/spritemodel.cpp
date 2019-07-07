@@ -218,6 +218,7 @@ static unsigned int spriteOrientationCache = 0;
 bool CEngineSprite::Init( const char *pName )
 {
 	m_hAVIMaterial = AVIMATERIAL_INVALID;
+	m_hBIKMaterial = BIKMATERIAL_INVALID;
 	m_width = m_height = m_numFrames = 1;
 
 	const char *pExt = Q_GetFileExtension( pName );
@@ -232,6 +233,16 @@ bool CEngineSprite::Init( const char *pName )
 		m_material = avi->GetMaterial( m_hAVIMaterial );
 		avi->GetFrameSize( m_hAVIMaterial, &m_width, &m_height );
 		m_numFrames = avi->GetFrameCount( m_hAVIMaterial );
+	}
+	else if (bIsBIK)
+	{
+		m_hBIKMaterial = bik->CreateMaterial(pName, pName, "GAME");
+		if (m_hBIKMaterial == BIKMATERIAL_INVALID)
+			return false;
+
+		m_material = bik->GetMaterial(m_hBIKMaterial);
+		bik->GetFrameSize(m_hBIKMaterial, &m_width, &m_height);
+		m_numFrames = bik->GetFrameCount(m_hBIKMaterial);
 	}
 	else
 	{
@@ -281,6 +292,12 @@ void CEngineSprite::Shutdown( void )
 	{
 		avi->DestroyAVIMaterial( m_hAVIMaterial );
 		m_hAVIMaterial = AVIMATERIAL_INVALID;
+	}
+
+	if (m_hBIKMaterial != BIKHANDLE_INVALID)
+	{
+		bik->DestroyMaterial(m_hBIKMaterial);
+		m_hBIKMaterial = BIKMATERIAL_INVALID;
 	}
 
 	if ( m_material )
