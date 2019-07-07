@@ -64,10 +64,8 @@ $Project "stdshader_dbg"
 	$File	"_buildallshaders.bat"
 	$File	"_buildshaders.bat"
 
-	$Shaders	"_shaderlist_dx9_20b.txt"
 	$Shaders	"_shaderlist_dx9_30.txt"
 	//$Shaders	"_shaderlist_dx10.txt" // none yet
 	
-	//$Shaders	"stdshader_flashlight_dx9_20b.txt"
 	$Shaders	"_shaderlist_flashlight_dx9_30.txt"
 }

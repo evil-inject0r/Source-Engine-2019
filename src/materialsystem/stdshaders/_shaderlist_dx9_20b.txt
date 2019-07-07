@@ -1,9 +1,0 @@
-//
-// Shader Model 2.0 shaders collection
-//
-//  These shaders compile as shader model 2.0
-//  using the new compiler.
-//	    _ps20.vcs
-//	    _ps20b.vcs
-//	    _vs20.vcs
-//

@@ -181,7 +181,6 @@ $Project "stdshader_dx9"
 	$File	"_buildallshaders.bat"
 	$File	"_buildshaders.bat"
 
-	$Shaders	"_shaderlist_dx9_20b.txt"
 	$Shaders	"_shaderlist_dx9_30.txt"
 	//$Shaders	"_shaderlist_dx10.txt" // none yet
 	
