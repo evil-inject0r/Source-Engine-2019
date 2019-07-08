@@ -25,6 +25,24 @@ $Configuration
 	}
 }
 
+$Configuration "Debug"
+{
+    $General
+    {
+        $OutputDirectory					".\Debug_speex\$_SUBDIRSUFFIX"
+        $IntermediateDirectory				".\Debug_speex\$_SUBDIRSUFFIX"
+    }    
+}
+
+$Configuration "Release"
+{
+    $General
+    {
+        $OutputDirectory					".\Release_speex\$_SUBDIRSUFFIX"
+        $IntermediateDirectory				".\Release_speex\$_SUBDIRSUFFIX"
+    }  
+}
+
 $Project "vaudio_speex"
 {
 	$Folder	"Source Files"
@@ -42,10 +60,6 @@ $Project "vaudio_speex"
 		$File	"VoiceEncoder_Speex.h"
 	}
 
-	$Folder	"Resource Files"
-	{
-	}
-	
 	$Folder	"Link Libraries"
 	{
 		$Lib	"$LIBCOMMON\libspeex"

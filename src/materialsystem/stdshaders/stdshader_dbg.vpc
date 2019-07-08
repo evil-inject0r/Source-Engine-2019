@@ -24,6 +24,24 @@ $Configuration
 	}
 }
 
+$Configuration "Debug"
+{
+    $General
+    {
+        $OutputDirectory					".\Debug_dbg\$_SUBDIRSUFFIX"
+        $IntermediateDirectory				".\Debug_dbg\$_SUBDIRSUFFIX"
+    }    
+}
+
+$Configuration "Release"
+{
+    $General
+    {
+        $OutputDirectory					".\Release_dbg\$_SUBDIRSUFFIX"
+        $IntermediateDirectory				".\Release_dbg\$_SUBDIRSUFFIX"
+    }  
+}
+
 $Project "stdshader_dbg"
 {
 	$Folder	"Source Files"
