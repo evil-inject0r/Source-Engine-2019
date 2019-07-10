@@ -340,7 +340,7 @@ void UpdatePopupMenuState()
 }
 
 
-int CALLBACK SetPasswordDlgProc(
+INT_PTR CALLBACK SetPasswordDlgProc(
   HWND hwndDlg,  // handle to dialog box
   UINT uMsg,     // message
   WPARAM wParam, // first message parameter

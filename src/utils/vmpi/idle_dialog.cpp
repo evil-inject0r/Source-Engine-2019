@@ -32,7 +32,7 @@ void CIdleDialog::StartIdleProcessing( DWORD msInterval )
 }
 
 
-LONG CIdleDialog::OnStartIdle( UINT_PTR, LONG )
+LRESULT CIdleDialog::OnStartIdle( WPARAM, LPARAM )
 {
 	MSG msg;
 	

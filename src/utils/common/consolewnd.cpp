@@ -49,7 +49,7 @@ private:
 		LPARAM lParam  // second message parameter
 		);	
 	
-	static int		CALLBACK StaticWindowProc(
+	static INT_PTR		CALLBACK StaticWindowProc(
 		HWND hwndDlg,  // handle to dialog box
 		UINT uMsg,     // message
 		WPARAM wParam, // first message parameter
@@ -227,7 +227,7 @@ int	CConsoleWnd::WindowProc(
 }
 
 
-int	CConsoleWnd::StaticWindowProc(
+INT_PTR	CConsoleWnd::StaticWindowProc(
 	HWND hwndDlg,  // handle to dialog box
 	UINT uMsg,     // message
 	WPARAM wParam, // first message parameter
