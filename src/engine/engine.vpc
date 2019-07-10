@@ -150,7 +150,7 @@ $Configuration
 
 	$Linker
 	{
-		$AdditionalDependencies			"$BASE winmm.lib wsock32.lib ws2_32.lib wininet.lib vfw32.lib Rpcrt4.lib dsound.lib dxguid.lib dinput8.lib" [$WINDOWS]
+		$AdditionalDependencies			"$BASE winmm.lib wsock32.lib ws2_32.lib wininet.lib vfw32.lib Rpcrt4.lib" [$WINDOWS]
 		$AdditionalLibraryDirectories	"$BASE;$LIBCOMMON\vc7;$SRCDIR\thirdparty\dx9sdk\lib" [$WINDOWS]
 	}
 }
@@ -1195,13 +1195,22 @@ $Project "engine"
 		$Lib	"$LIBPUBLIC\tier3"
 		$Lib	"$LIBPUBLIC\vtf"
 		$Lib	"$LIBPUBLIC\vgui_controls"
-		$Lib	$LIBPUBLIC\steam_api
+		$Lib	"$LIBPUBLIC\steam_api"
 		
 		$Lib	"$LIBCOMMON\bzip2"
         $Lib    "$LIBCOMMON\binkw32" [$WIN32]
         $Lib    "$LIBCOMMON\binkw64" [$WIN64]
 		$Lib	"$LIBCOMMON\jpeglib"
 
-        $Lib    $LIBCOMMON\nvtc64 [$WIN64]
+        $Lib    "$LIBCOMMON\nvtc64" [$WIN64]
+
+
+        $Lib    "$SRCDIR\thirdparty\dx9sdk\lib\dsound" [$WIN32 && !$WIN64]
+        $Lib    "$SRCDIR\thirdparty\dx9sdk\lib\dxguid" [$WIN32 && !$WIN64]
+        $Lib    "$SRCDIR\thirdparty\dx9sdk\lib\dinput8" [$WIN32 && !$WIN64]
+
+        $Lib    "$SRCDIR\thirdparty\dx9sdk\lib\x64\dsound" [$WIN64 && !$WIN32]
+        $Lib    "$SRCDIR\thirdparty\dx9sdk\lib\x64\dxguid" [$WIN64 && !$WIN32]
+        $Lib    "$SRCDIR\thirdparty\dx9sdk\lib\x64\dinput8" [$WIN64 && !$WIN32]
 	}
 }

@@ -111,7 +111,11 @@ $Project "shaderapidx9"
 		$Lib	"$LIBPUBLIC\bitmap"
 		$Lib	"$LIBPUBLIC\mathlib"
 		$Lib	"$LIBPUBLIC\tier2"
-		
 		$Lib	"$LIBCOMMON\bzip2"
-	}
+
+        $File	"$SRCDIR\thirdparty\dx9sdk\lib\d3d9.lib" [$WIN32 && !$WIN64]
+		$File	"$SRCDIR\thirdparty\dx9sdk\lib\d3dx9.lib" [$WIN32 && !$WIN64]
+        $File	"$SRCDIR\thirdparty\dx9sdk\lib\x64\d3d9.lib" [$WIN64 && !$WIN32]
+        $File	"$SRCDIR\thirdparty\dx9sdk\lib\x64\d3dx9.lib" [$WIN64 && !$WIN32]		
+    }
 }
