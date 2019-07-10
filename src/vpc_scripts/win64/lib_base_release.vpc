@@ -11,7 +11,8 @@ $MacroRequired				"OUTLIBNAME"
 $MacroRequired				"OUTLIBDIR"
 $MacroRequiredAllowEmpty	"GAMENAME"
 $MacroRequiredAllowEmpty	"INTERMEDIATESUBDIR"
-$MacroRequired				"_SUBDIRSUFFIX"		"$INTERMEDIATESUBDIR$GAMENAME$PLATSUBDIR"
+$MacroRequiredAllowEmpty	"_STATICSUBDIR"
+$Macro						"_SUBDIRSUFFIX"		"$INTERMEDIATESUBDIR$_STATICSUBDIR$GAMENAME$PLATSUBDIR"
 
 $Configuration "Release"
 {

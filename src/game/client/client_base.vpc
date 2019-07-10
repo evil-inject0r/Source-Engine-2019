@@ -15,8 +15,8 @@ $Configuration	"Debug"
 {
 	$General
 	{
-		$OutputDirectory			".\Debug_$GAMENAME"			[$WINDOWS]
-		$IntermediateDirectory		".\Debug_$GAMENAME"			[$WINDOWS]
+		$OutputDirectory			".\Debug_$GAMENAME\$PLATSUBDIR"			[$WINDOWS]
+		$IntermediateDirectory		".\Debug_$GAMENAME\$PLATSUBDIR"			[$WINDOWS]
 	}
 }
 
@@ -24,8 +24,8 @@ $Configuration	"Release"
 {
 	$General
 	{
-		$OutputDirectory			".\Release_$GAMENAME"		[$WINDOWS]
-		$IntermediateDirectory		".\Release_$GAMENAME"		[$WINDOWS]
+		$OutputDirectory			".\Release_$GAMENAME\$PLATSUBDIR"		[$WINDOWS]
+		$IntermediateDirectory		".\Release_$GAMENAME\$PLATSUBDIR"		[$WINDOWS]
 	}
 }
 

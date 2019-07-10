@@ -11,6 +11,7 @@ $MacroRequired				"OUTLIBNAME"
 $MacroRequired				"OUTLIBDIR"
 $MacroRequiredAllowEmpty	"GAMENAME"
 $MacroRequiredAllowEmpty	"INTERMEDIATESUBDIR"
+$MacroRequiredAllowEmpty	"_STATICSUBDIR"
 $Macro						"_SUBDIRSUFFIX"		"$INTERMEDIATESUBDIR$_STATICSUBDIR$GAMENAME$PLATSUBDIR"
 
 $Configuration "Debug"
