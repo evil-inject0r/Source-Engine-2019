@@ -9,14 +9,17 @@ $IgnoreRedundancyWarning	"ON"
 $MacroRequired				"SRCDIR"
 $MacroRequired				"OUTLIBNAME"
 $MacroRequired				"OUTLIBDIR"
+$MacroRequiredAllowEmpty	"GAMENAME"
+$MacroRequiredAllowEmpty	"INTERMEDIATESUBDIR"
+$Macro						"_SUBDIRSUFFIX"		"$INTERMEDIATESUBDIR$_STATICSUBDIR$GAMENAME$PLATSUBDIR"
 
 $Configuration "Debug"
 {
 	$General	
 	{
 		// General
-		$OutputDirectory					".\Debug\x64"
-		$IntermediateDirectory				".\Debug\x64"
+		$OutputDirectory					".\Debug\$_SUBDIRSUFFIX"
+		$IntermediateDirectory				".\Debug\$_SUBDIRSUFFIX"
 		$ExtensionsToDeleteOnClean
 		$BuildLogFile
 		$InheritedProjectPropertySheets

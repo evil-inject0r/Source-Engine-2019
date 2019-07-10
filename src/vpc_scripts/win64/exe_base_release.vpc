@@ -9,14 +9,17 @@ $IgnoreRedundancyWarning	"ON"
 $MacroRequired				"SRCDIR"
 $MacroRequired				"OUTBINNAME"
 $MacroRequired				"OUTBINDIR"
+$MacroRequiredAllowEmpty	"GAMENAME"
+$MacroRequiredAllowEmpty	"INTERMEDIATESUBDIR"
+$Macro						"_SUBDIRSUFFIX"		"$INTERMEDIATESUBDIR$_STATICSUBDIR$GAMENAME$PLATSUBDIR"
 
 $Configuration "Release"
 {
 	$General
 	{
 		// General
-		$OutputDirectory						".\Release\x64"
-		$IntermediateDirectory					".\Release\x64"
+		$OutputDirectory						".\Release\$_SUBDIRSUFFIX"
+		$IntermediateDirectory					".\Release\$_SUBDIRSUFFIX"
 		$ExtensionsToDeleteOnClean
 		$BuildLogFile
 		$InheritedProjectPropertySheets

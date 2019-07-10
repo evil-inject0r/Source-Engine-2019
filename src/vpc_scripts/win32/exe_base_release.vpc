@@ -18,7 +18,6 @@ $MacroRequired				"LIBCOMMON"
 $MacroRequired				"PLATSUBDIR"
 $MacroRequiredAllowEmpty	"GAMENAME"
 $MacroRequiredAllowEmpty	"INTERMEDIATESUBDIR"
-$MacroRequiredAllowEmpty	"_UNITYSUBDIR"
 $MacroRequiredAllowEmpty	"_STATICSUBDIR"
 $Macro						"_SUBDIRSUFFIX"		"$INTERMEDIATESUBDIR$_STATICSUBDIR$GAMENAME$PLATSUBDIR$_UNITYSUBDIR"
 
