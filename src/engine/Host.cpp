@@ -4088,6 +4088,10 @@ void Host_Shutdown(void)
 
 	TRACESHUTDOWN( sv.Shutdown() );
 
+#if !defined( SWDS )
+	TRACESHUTDOWN( Steam3Client().Shutdown() );
+#endif
+
 	TRACESHUTDOWN( NET_Shutdown() );
 
 #ifndef SWDS
