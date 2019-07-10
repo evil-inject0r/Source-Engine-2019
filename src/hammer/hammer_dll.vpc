@@ -699,7 +699,6 @@ $Project "hammer_dll"
 		$Lib	mathlib
 		$Lib	matsys_controls
 		$Lib	movieobjects
-		$Lib	sfmobjects
 		$Lib	raytrace
 		$Lib	tier2
 		$Lib	tier3

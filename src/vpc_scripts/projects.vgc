@@ -461,11 +461,6 @@ $Project "sfmgen"
 	"utils\sfmgen\sfmgen.vpc" [$WINDOWS]
 }
 
-$Project "sfmobjects"
-{
-	"sfmobjects\sfmobjects.vpc" [$WINDOWS]
-}
-
 $Project "shadercompile_dll"
 {
 	"utils\shadercompile\shadercompile_dll.vpc" [$WINDOWS]

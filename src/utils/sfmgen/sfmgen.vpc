@@ -46,6 +46,5 @@ $Project "sfmgen"
 		$Lib	tier2
 		$Lib	tier3
 		$Lib	movieobjects
-		$Lib	sfmobjects
 	}
 }
