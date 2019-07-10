@@ -148,7 +148,7 @@ $Configuration "Debug"
 		// Input
 		$AdditionalDependencies
 		$IgnoreAllDefaultLibraries
-		$IgnoreSpecificLibrary				"libc;libcd;libcmt"
+		$IgnoreSpecificLibrary				"libc;libcmt"
 		$ModuleDefinitionFile
 		$AddModuleToAssembly
 		$EmbedManagedResourceFile
