@@ -1062,21 +1062,33 @@ public:
 
 	ENTITYFUNCPTR TouchSet( ENTITYFUNCPTR func, char *name ) 
 	{ 
-		COMPILE_TIME_ASSERT( sizeof(func) == 4 );
+#ifdef PLATFORM_64BITS
+		COMPILE_TIME_ASSERT(sizeof(func) == 8);
+#else
+		COMPILE_TIME_ASSERT(sizeof(func) == 4);
+#endif // PLATFORM_64BITS
 		m_pfnTouch = func; 
 		FunctionCheck( *(reinterpret_cast<void **>(&m_pfnTouch)), name ); 
 		return func;
 	}
 	USEPTR	UseSet( USEPTR func, char *name ) 
 	{ 
-		COMPILE_TIME_ASSERT( sizeof(func) == 4 );
+#ifdef PLATFORM_64BITS
+		COMPILE_TIME_ASSERT(sizeof(func) == 8);
+#else
+		COMPILE_TIME_ASSERT(sizeof(func) == 4);
+#endif // PLATFORM_64BITS
 		m_pfnUse = func; 
 		FunctionCheck( *(reinterpret_cast<void **>(&m_pfnUse)), name ); 
 		return func;
 	}
 	ENTITYFUNCPTR	BlockedSet( ENTITYFUNCPTR func, char *name ) 
 	{ 
-		COMPILE_TIME_ASSERT( sizeof(func) == 4 );
+#ifdef PLATFORM_64BITS
+		COMPILE_TIME_ASSERT(sizeof(func) == 8);
+#else
+		COMPILE_TIME_ASSERT(sizeof(func) == 4);
+#endif // PLATFORM_64BITS
 		m_pfnBlocked = func; 
 		FunctionCheck( *(reinterpret_cast<void **>(&m_pfnBlocked)), name ); 
 		return func;

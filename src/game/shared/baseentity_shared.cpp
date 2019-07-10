@@ -731,8 +731,12 @@ BASEPTR	CBaseEntity::ThinkSet( BASEPTR func, float thinkTime, const char *szCont
 {
 #if !defined( CLIENT_DLL )
 #ifdef _DEBUG
-	COMPILE_TIME_ASSERT( sizeof(func) == 4 );
-#endif
+#ifdef PLATFORM_64BITS
+	COMPILE_TIME_ASSERT( sizeof(func) == 8 );
+#else
+	COMPILE_TIME_ASSERT(sizeof(func) == 4);
+#endif // PLATFORM_64BITS
+#endif // _DEBUG
 #endif
 
 	// Old system?
