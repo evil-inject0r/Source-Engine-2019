@@ -110,15 +110,6 @@ $Project "tier0"
 		$File	"systeminformation.cpp"
 		$File	"thread.cpp"		[$WINDOWS||$POSIX]
 		$File	"threadtools.cpp"
-		{
-			$Configuration
-			{
-				$Compiler
-				{
-					$Create/UsePrecompiledHeader	"Create Precompiled Header (/Yc)"
-				}
-			}
-		}
 		$File	"tslist.cpp"
 		$File	"vcrmode.cpp"			[$WINDOWS||$POSIX]
 		$File	"vprof.cpp"

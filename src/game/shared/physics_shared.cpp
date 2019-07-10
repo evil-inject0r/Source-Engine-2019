@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Game & Client shared functions moved from physics.cpp
 //
@@ -981,7 +981,7 @@ void PhysFrictionSound( CBaseEntity *pEntity, IPhysicsObject *pObject, float ene
 	if ( psurf->sounds.scrapeSmooth && phit->audio.roughnessFactor < psurf->audio.roughThreshold )
 	{
 		soundName = psurf->sounds.scrapeSmooth;
-		soundHandle = &psurf->soundhandles.scrapeRough;
+		soundHandle = &psurf->soundhandles.scrapeSmooth;
 	}
 
 	const char *pSoundName = physprops->GetString( soundName );

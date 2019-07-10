@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -52,6 +52,10 @@ void LoadMaterialSystemInterface( CreateInterfaceFn fileSystemFactory )
 	{
 		Error( "Could not start the empty shader (shaderapiempty.dll)!" );
 	}
+
+    // loads game shader dlls from game directory
+	// i.e. allows you to use custom lightmapped shaders in hammer
+	g_pMaterialSystem->ModInit(); 
 }
 
 void InitMaterialSystem( const char *materialBaseDirPath, CreateInterfaceFn fileSystemFactory )
@@ -65,8 +69,9 @@ void ShutdownMaterialSystem( )
 {
 	if ( g_pMaterialSystem )
 	{
-		g_pMaterialSystem->Shutdown();
-		g_pMaterialSystem = NULL;
+		g_pMaterialSystem->ModShutdown();
+        g_pMaterialSystem->Shutdown();
+        g_pMaterialSystem = NULL;
 	}
 }
 

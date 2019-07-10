@@ -81,9 +81,7 @@ CBudgetPanelEngine::~CBudgetPanelEngine()
 void CBudgetPanelEngine::PostChildPaint()
 {
 	int r = 255;
-	int g = 0; 
-
-	int nDXSupportLevel = g_pMaterialSystemHardwareConfig->GetDXSupportLevel();
+	int g = 0;
 	if (g_fFrameRate >= 60)
 	{
 		r = 0;
