@@ -20,8 +20,6 @@ $Configuration	"Debug"
 	{
 		$OutputDirectory		"Debug_Stdio"		[$WIN32||$LINUX]
 		$IntermediateDirectory	"Debug_Stdio"		[$WIN32||$LINUX]
-		$OutputDirectory		"Debug_Stdio_360"	[$X360]
-		$IntermediateDirectory	"Debug_Stdio_360"	[$X360]
 	}
 }
 
@@ -31,8 +29,6 @@ $Configuration	"Release"
 	{		
 		$OutputDirectory		"Release_Stdio"		[$WIN32||$LINUX]
 		$IntermediateDirectory	"Release_Stdio"		[$WIN32||$LINUX]
-		$OutputDirectory		"Release_Stdio_360"	[$X360]
-		$IntermediateDirectory	"Release_Stdio_360"	[$X360]
 	}
 }
 
@@ -40,7 +36,7 @@ $Configuration
 {
 	$Compiler
 	{
-		$PreprocessorDefinitions	"$BASE;FILESYSTEM_STDIO_EXPORTS;DONT_PROTECT_FILEIO_FUNCTIONS;PROTECTED_THINGS_ENABLE;_USE_32BIT_TIME_T"
+		$PreprocessorDefinitions	"$BASE;FILESYSTEM_STDIO_EXPORTS;DONT_PROTECT_FILEIO_FUNCTIONS;PROTECTED_THINGS_ENABLE"
 	}
 }
 

@@ -15,13 +15,13 @@ $Configuration "Debug"
 	$Compiler
 	{
 		$AdditionalIncludeDirectories		"$BASE,.\,..\,..\..\common,..\mysql\include"
-		$PreprocessorDefinitions			"$BASE;PROTECTED_THINGS_DISABLE;WINVER=0x400"
+		$PreprocessorDefinitions			"$BASE;PROTECTED_THINGS_DISABLE;WINVER=0x502"
 	}
 	
 	$Linker
 	{
-		$AdditionalDependencies				"nafxcw.lib libcmt.lib"
-		$IgnoreSpecificLibrary				"nafxcwd.lib libcmtd.lib"
+		$AdditionalDependencies				"nafxcwd.lib libcmtd.lib"
+		$IgnoreSpecificLibrary				"nafxcw.lib libcmt.lib"
 	}
 }
 
@@ -30,7 +30,7 @@ $Configuration "Release"
 	$Compiler
 	{
 		$AdditionalIncludeDirectories		"$BASE,.\,..\,..\..\common,..\mysql\include"
-		$PreprocessorDefinitions			"$BASE;PROTECTED_THINGS_DISABLE;WINVER=0x400"
+		$PreprocessorDefinitions			"$BASE;PROTECTED_THINGS_DISABLE;WINVER=0x502"
 		$EnableC++Exceptions				"Yes (/EHsc)"
 	}
 	

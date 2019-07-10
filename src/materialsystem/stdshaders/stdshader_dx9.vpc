@@ -184,7 +184,6 @@ $Project "stdshader_dx9"
 
 	$Folder	"Link Libraries"
 	{
-        $Lib    $LIBCOMMMON\nvtc64       [$WIN64]
 		$Lib	mathlib
 		$Lib	shaderlib
 	}
