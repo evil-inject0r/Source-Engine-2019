@@ -1,14 +1,14 @@
 # Source Engine 2019
-Custom Source Engine branch based on Source Engine 2007 currently available on Windows in x86.
+Custom Source Engine branch based on Source Engine 2007 currently available on Windows in x86. Forked from [Quiver](https://github.com/quiverteam/Engine).
 
 **Pull this repository with recursive submodules (`git clone --recursive`) to clone hl2r**
 
 
 [![Build Status](https://dev.azure.com/evil-inject0r/source%20engine%202019/_apis/build/status/evil-inject0r.Source-Engine-2019?branchName=master)](https://dev.azure.com/evil-inject0r/source%20engine%202019/_build/latest?definitionId=1&branchName=master)
 
-## Building
+# Building
 
-### Windows
+## Windows
 
 1. Install [Visual Studio 2019 Community](https://visualstudio.microsoft.com/downloads/), Make sure to go to Individual components and install `C++ MFC for v142 build tools (x86 and x64)`
 
@@ -18,15 +18,19 @@ Custom Source Engine branch based on Source Engine 2007 currently available on W
 
 4. Run src/materialsystem/stdshaders/buildallshaders.bat, then build stdshader projects.
 
-5. Edit game/make_dir_junction.bat with your HL2 install directory if needed and Run. This is needed because the VPK support is a bit different from Source 2013.
+
+## 64-bit
+
+64-bit support is being worked on. In the current state the entire codebase compiles as 64-bit but it cannot be started at this point. Feel free to contribute with a pull request.
+
+Run ``createallprojects-x64.bat`` to create 64-bit projects. To build 64-bit projects you need to run ``build-solution-x64.bat`` through the [Microsoft Developer Command Prompt for VS2019](https://docs.microsoft.com/en-us/dotnet/framework/tools/developer-command-prompt-for-vs).
 
 You can run the engine with run_mod_hl2.bat or run_hl2r.bat.
 
-### Linux and MacOS
+## Linux
 
-Linux and MacOS support is currently being worked on in the posix-support branch. Feel free to contribute with pull-requests!
+Linux support is currently being worked on in the posix-support branch. Feel free to contribute with pull-requests.
 
-## How you can help
+## Contributing
 
-### Supporting Non-Windows Platforms
-The Source Engine was built heavily Windows-oriented, as it uses DirectX as it's graphics API which is only available on Windows, Xbox, Xbox 360 and the Xbox One. This is the major obstacle in supporting other platforms. To bring support to other platforms; we need an experienced graphics programmer who can work with OpenGL or Vulkan as these graphics APIs are universal, other than that some platform-specific code may be required.
+Feel free to contribute to the project with pull requests. They will be reviewed and merged as fast as possible.
