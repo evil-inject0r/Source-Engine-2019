@@ -1,7 +1,7 @@
 # Source Engine 2019
 Custom Source Engine branch based on Source Engine 2007 currently available on Windows in x86. Forked from [Quiver](https://github.com/quiverteam/Engine).
 
-**Pull this repository with recursive submodules (`git clone --recursive`) to clone hl2r**
+**Pull this repository with recursive submodules (`git clone --recursive`) to clone get prebuilt shaders**
 
 
 [![Build Status](https://dev.azure.com/evil-inject0r/source%20engine%202019/_apis/build/status/evil-inject0r.Source-Engine-2019?branchName=master)](https://dev.azure.com/evil-inject0r/source%20engine%202019/_build/latest?definitionId=1&branchName=master)
@@ -14,9 +14,9 @@ Custom Source Engine branch based on Source Engine 2007 currently available on W
 
 2. Install [Perl](http://strawberryperl.com/), open Perl Command Line and enter `cpan String::CRC32`. This is needed for building shaders.
 
-3. Run src/createallprojects.bat and build the solution either as release or debug.
+3. Run /src/createallprojects.bat and build the solution either as release or debug.
 
-4. Run src/materialsystem/stdshaders/buildallshaders.bat, then build stdshader projects.
+4. Run /src/materialsystem/stdshaders/buildallshaders.bat, then build stdshader projects.
 
 
 ## 64-bit
