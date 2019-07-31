@@ -20,6 +20,16 @@ schedules:
 # build steps
 steps:
 
+# checkout source code
+- checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+  clean: true  # if true, execute `execute git clean -ffdx && git reset --hard HEAD` before fetching
+  #fetchDepth: number  # the depth of commits to ask Git to fetch; defaults to no limit
+  #lfs: boolean  # whether to download Git-LFS files; defaults to false
+  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules; defaults to not checking out submodules
+  submodules: recursive
+  # path: string  # path to check out source code, relative to the agent's build directory (e.g. \_work\1); defaults to a directory called `s`
+  #persistCredentials: boolean  # if 'true', leave the OAuth token in the Git config after the initial fetch; defaults to false
+
 # run vpc first
 - task: CmdLine@2
   displayName: Create solution using VPC
