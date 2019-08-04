@@ -196,20 +196,6 @@ public:
 
 			int iFixedWidth = 245;
 
-#ifdef _X360
-			// In low def we need a smaller highlight
-			XVIDEO_MODE videoMode;
-			XGetVideoMode( &videoMode );
-			if ( !videoMode.fIsHiDef )
-			{
-				iFixedWidth = 240;
-			}
-			else
-			{
-				iFixedWidth = 350;
-			}
-#endif
-
 			SetFixedWidth( iFixedWidth );
 		}
 		else
@@ -298,27 +284,6 @@ public:
 
 	virtual void OnKeyCodePressed( KeyCode code )
 	{
-		if ( IsX360() )
-		{
-			if ( GetAlpha() != 255 )
-			{
-				SetEnabled( false );
-				// inhibit key activity during transitions
-				return;
-			}
-
-			SetEnabled( true );
-
-			if ( code == KEY_XBUTTON_B || code == KEY_XBUTTON_START )
-			{
-				if ( GameUI().IsInLevel() )
-				{
-					GetParent()->OnCommand( "ResumeGame" );
-				}
-				return;
-			}
-		}
-
 		m_KeyRepeat.KeyDown( code );
 
 		BaseClass::OnKeyCodePressed( code );
@@ -542,10 +507,6 @@ CBasePanel::CBasePanel() : Panel(NULL, "BaseGameUIPanel")
 		{
 			m_pConsoleControlSettings->ProcessResolutionKeys( surface()->GetResolutionKey() );
 		}
-
-#ifdef _X360
-		x360_audio_english.SetValue( XboxLaunch()->GetForceEnglish() );
-#endif
 	}
 
 	m_pGameMenuButtons.AddToTail( CreateMenuButton( this, "GameMenuButton", ModInfo().GetGameTitle() ) );
@@ -726,11 +687,6 @@ void CBasePanel::PaintBackground()
 	{
 		// not in the game or loading dialog active or exiting, draw the ui background
 		DrawBackgroundImage();
-	}
-	else if ( IsX360() )
-	{
-		// only valid during loading from level to level
-		m_bUseRenderTargetImage = false;
 	}
 
 	if ( m_flBackgroundFillAlpha )
@@ -1002,13 +958,6 @@ void CBasePanel::OnLevelLoadingStarted()
 	{
 		m_hMatchmakingBasePanel->OnCommand( "LevelLoadingStarted" );
 	}
-
-	if ( IsX360() && m_eBackgroundState == BACKGROUND_LEVEL )
-	{
-		// already in a level going to another level
-		// frame buffer is about to be cleared, copy it off for ui backing purposes
-		m_bCopyFrameBuffer = true;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1029,16 +978,6 @@ void CBasePanel::OnLevelLoadingFinished()
 //-----------------------------------------------------------------------------
 void CBasePanel::DrawBackgroundImage()
 {
-	if ( IsX360() && m_bCopyFrameBuffer )
-	{
-		// force the engine to do an image capture ONCE into this image's render target
-		char filename[MAX_PATH];
-		surface()->DrawGetTextureFile( m_iRenderTargetImageID, filename, sizeof( filename ) );
-		engine->CopyFrameBufferToMaterial( filename );
-		m_bCopyFrameBuffer = false;
-		m_bUseRenderTargetImage = true;
-	}
-
 	int wide, tall;
 	GetSize( wide, tall );
 
@@ -1154,11 +1093,6 @@ void CBasePanel::CreateGameLogo()
 
 void CBasePanel::CheckBonusBlinkState()
 {
-#ifdef _X360
-	// On 360 if we have a storage device at this point and try to read the bonus data it can't find the bonus file!
-	return;
-#endif
-
 	if ( BonusMapsDatabase()->GetBlink() )
 	{
 		if ( GameUI().IsConsoleUI() )
@@ -1221,32 +1155,6 @@ void CBasePanel::RunFrame()
 	{
 		// run the console ui animations
 		m_pConsoleAnimationController->UpdateAnimations( engine->Time() );
-
-		if ( IsX360() && m_ExitingFrameCount && engine->Time() >= m_flTransitionEndTime )
-		{
-			if ( m_ExitingFrameCount > 1 )
-			{
-				m_ExitingFrameCount--;
-				if ( m_ExitingFrameCount == 1 )
-				{
-					// enough frames have transpired, send the single shot quit command
-					// If we kicked off this event from an invite, we need to properly setup the restart to account for that
-					if ( m_bRestartFromInvite )
-					{
-						engine->ClientCmd_Unrestricted( "quit_x360 invite" );
-					}
-					else if ( m_bRestartSameGame )
-					{
-						engine->ClientCmd_Unrestricted( "quit_x360 restart" );
-					}
-					else
-					{
-						// quits to appchooser
-						engine->ClientCmd_Unrestricted( "quit_x360\n" );
-					}
-				}
-			}
-		}
 	}
 
 	UpdateBackgroundState();
@@ -1254,7 +1162,7 @@ void CBasePanel::RunFrame()
 	if ( !m_bPlatformMenuInitialized )
 	{
 		// check to see if the platform is ready to load yet
-		if ( IsX360() || g_VModuleLoader.IsPlatformReady() )
+		if ( g_VModuleLoader.IsPlatformReady() )
 		{
 			m_bPlatformMenuInitialized = true;
 		}
@@ -1392,12 +1300,6 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 	m_BackdropColor = pScheme->GetColor("mainmenu.backdrop", Color(0, 0, 0, 128));
 
 	char filename[MAX_PATH];
-	if ( IsX360() )
-	{
-		// 360 uses FullFrameFB1 RT for map to map transitioning
-		m_iRenderTargetImageID = surface()->CreateNewTextureID();
-		surface()->DrawSetTextureFile( m_iRenderTargetImageID, "console/rt_background", false, false );
-	}
 
 	int screenWide, screenTall;
 	surface()->GetScreenSize( screenWide, screenTall );
@@ -1423,20 +1325,9 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 	m_iBackgroundImageID = surface()->CreateNewTextureID();
 	surface()->DrawSetTextureFile( m_iBackgroundImageID, filename, false, false );
 
-	if ( IsX360() )
-	{
-		// 360 uses a product image during application exit
-		V_snprintf( filename, sizeof( filename ), "vgui/appchooser/background_orange%s", ( bIsWidescreen ? "_widescreen" : "" ) );
-		m_iProductImageID = surface()->CreateNewTextureID();
-		surface()->DrawSetTextureFile( m_iProductImageID, filename, false, false );
-	}
-
-	if ( IsPC() )
-	{
-		// load the loading icon
-		m_iLoadingImageID = surface()->CreateNewTextureID();
-		surface()->DrawSetTextureFile( m_iLoadingImageID, "console/startup_loading", false, false );
-	}
+	// load the loading icon
+	m_iLoadingImageID = surface()->CreateNewTextureID();
+	surface()->DrawSetTextureFile( m_iLoadingImageID, "console/startup_loading", false, false );
 }
 
 //-----------------------------------------------------------------------------
@@ -1465,34 +1356,6 @@ void CBasePanel::OnGameUIActivated()
 		// Layout the first time to avoid focus issues (setting menus visible will grab focus)
 		UpdateGameMenus();
 		m_bEverActivated = true;
-
-#if defined( _X360 )
-		
-		// Open all active containers if we have a valid storage device
-		if ( XBX_GetPrimaryUserId() != XBX_INVALID_USER_ID && XBX_GetStorageDeviceId() != XBX_INVALID_STORAGE_ID && XBX_GetStorageDeviceId() != XBX_STORAGE_DECLINED )
-		{
-			// Open user settings and save game container here
-			uint nRet = engine->OnStorageDeviceAttached();
-			if ( nRet != ERROR_SUCCESS )
-			{
-				// Invalidate the device
-				XBX_SetStorageDeviceId( XBX_INVALID_STORAGE_ID );
-
-				// FIXME: We don't know which device failed!
-				// Pop a dialog explaining that the user's data is corrupt
-				BasePanel()->ShowMessageDialog( MD_STORAGE_DEVICES_CORRUPT );
-			}
-		}
-
-		// determine if we're starting up because of a cross-game invite
-		int fLaunchFlags = XboxLaunch()->GetLaunchFlags();
-		if ( fLaunchFlags & LF_INVITERESTART )
-		{
-			XNKID nSessionID;
-			XboxLaunch()->GetInviteSessionID( &nSessionID );
-			matchmaking->JoinInviteSessionByID( nSessionID );
-		}
-#endif
 
 		// Brute force check to open tf matchmaking ui.
 		if ( GameUI().IsConsoleUI() )
@@ -1525,13 +1388,6 @@ void CBasePanel::OnGameUIActivated()
 		{
 			// Achievement dialog refreshes it's data if the player looks at the pause menu
 			m_hAchievementsDialog->OnCommand( "OnGameUIActivated" );
-		}
-	}
-	else // not the pause menu, update presence
-	{
-		if ( IsX360() )
-		{
-			UpdateRichPresenceInfo();
 		}
 	}
 }
@@ -1713,34 +1569,29 @@ void CBasePanel::RunMenuCommand(const char *command)
 	}
 	else if ( !Q_stricmp( command, "RestartWithNewLanguage" ) )
 	{
-		if ( !IsX360() )
+		char szSteamURL[50];
+		char szAppId[50];
+
+		// hide everything while we quit
+		SetVisible( false );
+		vgui::surface()->RestrictPaintToSinglePanel( GetVPanel() );
+		engine->ClientCmd_Unrestricted( "quit\n" );
+
+		// Construct Steam URL. Pattern is steam://run/<appid>/<language>. (e.g. Ep1 In French ==> steam://run/380/french)
+		V_strcpy(szSteamURL, "steam://run/");
+		itoa( engine->GetAppID(), szAppId, 10 );
+		V_strcat( szSteamURL, szAppId, sizeof( szSteamURL ) );
+		V_strcat( szSteamURL, "/", sizeof( szSteamURL ) );
+		V_strcat( szSteamURL, COptionsSubAudio::GetUpdatedAudioLanguage(), sizeof( szSteamURL ) );
+
+		// Set Steam URL for re-launch in registry. Launcher will check this registry key and exec it in order to re-load the game in the proper language
+		HKEY hKey;
+
+		if ( RegOpenKeyEx( HKEY_CURRENT_USER, "Software\\Valve\\Source", NULL, KEY_WRITE, &hKey) == ERROR_SUCCESS )
 		{
-			char szSteamURL[50];
-			char szAppId[50];
+			RegSetValueEx( hKey, "Relaunch URL", 0, REG_SZ, (const unsigned char *)szSteamURL, sizeof( szSteamURL ) );
 
-			// hide everything while we quit
-			SetVisible( false );
-			vgui::surface()->RestrictPaintToSinglePanel( GetVPanel() );
-			engine->ClientCmd_Unrestricted( "quit\n" );
-
-			// Construct Steam URL. Pattern is steam://run/<appid>/<language>. (e.g. Ep1 In French ==> steam://run/380/french)
-			V_strcpy(szSteamURL, "steam://run/");
-			itoa( engine->GetAppID(), szAppId, 10 );
-			V_strcat( szSteamURL, szAppId, sizeof( szSteamURL ) );
-			V_strcat( szSteamURL, "/", sizeof( szSteamURL ) );
-			V_strcat( szSteamURL, COptionsSubAudio::GetUpdatedAudioLanguage(), sizeof( szSteamURL ) );
-
-			// Set Steam URL for re-launch in registry. Launcher will check this registry key and exec it in order to re-load the game in the proper language
-#ifndef _X360
-			HKEY hKey;
-
-			if ( IsPC() && RegOpenKeyEx( HKEY_CURRENT_USER, "Software\\Valve\\Source", NULL, KEY_WRITE, &hKey) == ERROR_SUCCESS )
-			{
-				RegSetValueEx( hKey, "Relaunch URL", 0, REG_SZ, (const unsigned char *)szSteamURL, sizeof( szSteamURL ) );
-
-				RegCloseKey(hKey);
-			}
-#endif
+			RegCloseKey(hKey);
 		}
 	}
 	else
@@ -1810,7 +1661,7 @@ bool CBasePanel::IsPromptableCommand( const char *command )
 //-------------------------
 // Purpose: Job wrapper
 //-------------------------
-static unsigned PanelJobWrapperFn( void *pvContext )
+static uintp PanelJobWrapperFn( void *pvContext )
 {
 	CBasePanel::CAsyncJobContext *pAsync = reinterpret_cast< CBasePanel::CAsyncJobContext * >( pvContext );
 
@@ -1844,11 +1695,6 @@ void CBasePanel::ExecuteAsync( CAsyncJobContext *pAsync )
 #ifdef _WIN32
 	ThreadHandle_t hHandle = CreateSimpleThread( PanelJobWrapperFn, reinterpret_cast< void * >( pAsync ) );
 	pAsync->m_hThreadHandle = hHandle;
-
-#ifdef _X360
-	ThreadSetAffinity( hHandle, XBOX_PROCESSOR_3 );
-#endif
-
 #else
 	pAsync->ExecuteAsync();
 #endif
@@ -1934,14 +1780,6 @@ void CAsyncCtxOnDeviceAttached::ExecuteAsync()
 	m_ContainerOpenResult = engine->OnStorageDeviceAttached();
 	if ( m_ContainerOpenResult != ERROR_SUCCESS )
 		return;
-
-	// Make the QOS system initialized for multiplayer games
-	if ( !ModInfo().IsSinglePlayerOnly() )
-	{
-#if defined( _X360 )
-		( void ) matchmaking->GetQosWithLIVE();
-#endif
-	}
 }
 
 void CAsyncCtxOnDeviceAttached::Completed()
@@ -2020,52 +1858,6 @@ bool CBasePanel::ValidateStorageDevice( int *pStorageDeviceValidated )
 //-----------------------------------------------------------------------------
 bool CBasePanel::HandleSignInRequest( const char *command )
 {
-#ifdef _X360
-	// If we have a post-prompt command, we're coming back into the call from that prompt
-	bool bQueuedCall = ( m_strPostPromptCommand.IsEmpty() == false );
-
-	XUSER_SIGNIN_INFO info;
-	bool bValidUser = ( XUserGetSigninInfo( XBX_GetPrimaryUserId(), 0, &info ) == ERROR_SUCCESS );
-
-	if ( bValidUser )
-		return true;
-
-	// Queued command means we're returning from a prompt or blade
-	if ( bQueuedCall )
-	{
-		// Blade has returned with nothing
-		if ( m_bUserRefusedSignIn )
-			return true;
-		
-		// User has not denied the storage device, so ask
-		ShowMessageDialog( MD_PROMPT_SIGNIN );
-		m_strPostPromptCommand = command;
-		
-		// Do not run command
-		return false;
-	}
-	else
-	{
-		// If the user refused the sign-in and we respect that on this command, we're done
-		if ( m_bUserRefusedSignIn && CommandRespectsSignInDenied( command ) )
-			return true;
-
-		// If the message is required first, then do that instead
-		if ( CommandRequiresSignIn( command ) )
-		{
-			ShowMessageDialog( MD_PROMPT_SIGNIN_REQUIRED );
-			m_strPostPromptCommand = command;
-			return false;
-		}
-
-		// Pop a blade out
-		xboxsystem->ShowSigninUI( 1, 0 );
-		m_strPostPromptCommand = command;
-		m_bWaitingForUserSignIn = true;
-		m_bUserRefusedSignIn = false;
-		return false;	
-	}
-#endif // _X360
 	return true;
 }
 
@@ -2075,65 +1867,6 @@ bool CBasePanel::HandleSignInRequest( const char *command )
 //-----------------------------------------------------------------------------
 bool CBasePanel::HandleStorageDeviceRequest( const char *command )
 {
-	// If we don't have a valid sign-in, then we do nothing!
-	if ( m_bUserRefusedSignIn )
-		return true;
-
-	// If we have a valid storage device, there's nothing to prompt for
-	if ( XBX_GetStorageDeviceId() != XBX_INVALID_STORAGE_ID && XBX_GetStorageDeviceId() != XBX_STORAGE_DECLINED )
-		return true;
-
-	// If we have a post-prompt command, we're coming back into the call from that prompt
-	bool bQueuedCall = ( m_strPostPromptCommand.IsEmpty() == false );
-	
-	// Are we returning from a prompt?
-	if ( bQueuedCall && m_bStorageBladeShown )
-	{
-		// User has declined
-		if ( m_bUserRefusedStorageDevice )
-			return true;
-
-		// Prompt them
-		ShowMessageDialog( MD_PROMPT_STORAGE_DEVICE );
-		m_strPostPromptCommand = command;
-		
-		// Do not run the command
-		return false;
-	}
-	else
-	{
-		// If the user refused the sign-in and we respect that on this command, we're done
-		if ( m_bUserRefusedStorageDevice && CommandRespectsSignInDenied( command ) )
-			return true;
-
-#if 0 // This attempts to find user data, but may not be cert-worthy even though it's a bit nicer for the user
-		// Attempt to automatically find a device
-		DWORD nFoundDevice = xboxsystem->DiscoverUserData( XBX_GetPrimaryUserId(), COM_GetModDirectory() );
-		if ( nFoundDevice != XBX_INVALID_STORAGE_ID )
-		{
-			// Take this device
-			XBX_SetStorageDeviceId( nFoundDevice );
-			OnDeviceAttached();
-			return true;
-		}
-#endif // 
-
-		// If the message is required first, then do that instead
-		if ( CommandRequiresStorageDevice( command ) )
-		{
-			ShowMessageDialog( MD_PROMPT_STORAGE_DEVICE_REQUIRED );
-			m_strPostPromptCommand = command;
-			return false;
-		}
-
-		// This is a misnomer of the first order!
-		OnChangeStorageDevice();
-		m_strPostPromptCommand = command;
-		m_bStorageBladeShown = true;
-		m_bUserRefusedStorageDevice = false;
-		return false;
-	}
-
 	return true;
 }
 
@@ -2177,37 +1910,7 @@ void CBasePanel::IssuePostPromptCommand( void )
 //-----------------------------------------------------------------------------
 void CBasePanel::OnCommand( const char *command )
 {
-	if ( GameUI().IsConsoleUI() )
-	{
-#if defined( _X360 )
-
-		// See if this is a command we need to intercept
-		if ( IsPromptableCommand( command ) )
-		{
-			// Handle the sign in case
-			if ( HandleSignInRequest( command ) == false )
-				return;
-			
-			// Handle storage
-			if ( HandleStorageDeviceRequest( command ) == false )
-				return;
-
-			// If we fall through, we'll need to track this again
-			m_bStorageBladeShown = false;
-
-			// Fall through
-		}
-#endif // _X360
-
-		RunAnimationWithCallback( this, command, new KeyValues( "RunMenuCommand", "command", command ) );
-	
-		// Clear our pending command if we just executed it
-		ClearPostPromptCommand( command );
-	}
-	else
-	{
-		RunMenuCommand( command );
-	}
+	RunMenuCommand( command );
 }
 
 //-----------------------------------------------------------------------------
@@ -2399,7 +2102,6 @@ void CBasePanel::OnOpenDisconnectConfirmationDialog()
 {
 	// THis is for disconnecting from a multiplayer server
 	Assert( m_bUseMatchmaking );
-	Assert( IsX360() );
 
 	if ( GameUI().IsConsoleUI() && GameUI().IsInLevel() )
 	{
@@ -2825,28 +2527,6 @@ void CBasePanel::OnChangeStorageDevice( void )
 
 void CBasePanel::OnCreditsFinished( void )
 {
-	if ( !IsX360() )
-	{
-		// valid for 360 only
-		Assert( 0 );
-		return;
-	}
-
-	bool bExitToAppChooser = false;
-	if ( bExitToAppChooser )
-	{
-		// unknown state from engine, force to a compliant exiting state
-		// causes an complete exit out of the game back to the app launcher
-		SetVisible( true );
-		m_pGameMenu->SetAlpha( 0 );
-		StartExitingProcess();
-	}
-	else
-	{
-		// expecting to transition from the credits back to the background map
-		// prevent any possibility of using the last transition image
-		m_bUseRenderTargetImage = false;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -3317,20 +2997,6 @@ void CFooterPanel::Paint( void )
 }	
 
 DECLARE_BUILD_FACTORY( CFooterPanel );
-
-#ifdef _X360
-//-----------------------------------------------------------------------------
-// Purpose: Reload the resource files on the Xbox 360
-//-----------------------------------------------------------------------------
-void CBasePanel::Reload_Resources( const CCommand &args )
-{
-	m_pConsoleControlSettings->Clear();
-	if ( m_pConsoleControlSettings->LoadFromFile( g_pFullFileSystem, "resource/UI/XboxDialogs.res" ) )
-	{
-		m_pConsoleControlSettings->ProcessResolutionKeys( surface()->GetResolutionKey() );
-	}
-}
-#endif
 
 
 // X360TBD: Move into a separate module when completed

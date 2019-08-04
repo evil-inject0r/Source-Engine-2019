@@ -47,11 +47,7 @@
 #define MdlCacheMsg		if ( !LogMdlCache() ) ; else Msg
 #define MdlCacheWarning if ( !LogMdlCache() ) ; else Warning
 
-#if defined( _X360 )
-#define AsyncMdlCache() 0	// Explicitly OFF for 360 (incompatible)
-#else
 #define AsyncMdlCache() 0
-#endif
 
 #define ERROR_MODEL		"models/error.mdl"
 #define IDSTUDIOHEADER	(('T'<<24)+('S'<<16)+('D'<<8)+'I')
@@ -158,10 +154,10 @@ static ConVar mod_test_not_available( "mod_test_not_available", "0" );
 static ConVar mod_test_mesh_not_available( "mod_test_mesh_not_available", "0" );
 static ConVar mod_test_verts_not_available( "mod_test_verts_not_available", "0" );
 static ConVar mod_load_mesh_async( "mod_load_mesh_async", ( AsyncMdlCache() ) ? "1" : "0" );
-static ConVar mod_load_anims_async( "mod_load_anims_async", ( IsX360() || AsyncMdlCache() ) ? "1" : "0" );
+static ConVar mod_load_anims_async( "mod_load_anims_async", ( AsyncMdlCache() ) ? "1" : "0" );
 static ConVar mod_load_vcollide_async( "mod_load_vcollide_async",  ( AsyncMdlCache() ) ? "1" : "0" );
 static ConVar mod_trace_load( "mod_trace_load", "0" );
-static ConVar mod_lock_mdls_on_load( "mod_lock_mdls_on_load", ( IsX360() ) ? "1" : "0" );
+static ConVar mod_lock_mdls_on_load( "mod_lock_mdls_on_load", "0" );
 static ConVar mod_load_fakestall( "mod_load_fakestall", "0", 0, "Forces all ANI file loading to stall for specified ms\n");
 
 //-----------------------------------------------------------------------------
@@ -469,7 +465,7 @@ private:
 	virtual bool SetAsyncLoad( MDLCacheDataType_t type, bool bAsync );
 
 	// Creates the 360 file if it doesn't exist or is out of date
-	int UpdateOrCreate( studiohdr_t *pHdr, const char *pFilename, char *pX360Filename, int maxLen, const char *pPathID, bool bForce = false );
+	int UpdateOrCreate( studiohdr_t *pHdr, const char *pFilename, char* pTargetName, int maxLen, const char *pPathID, bool bForce = false );
 
 	// Attempts to read the platform native file - on 360 it can read and swap Win32 file as a fallback
 	bool ReadFileNative( char *pFileName, const char *pPath, CUtlBuffer &buf, int nMaxBytes = 0 );
@@ -628,17 +624,11 @@ InitReturnVal_t CMDLCache::Init()
 	if ( !m_pAnimBlockCacheSection )
 	{
 		// 360 tuned to worst case, ep_outland_12a, less than 6 MB is not a viable working set
-		unsigned int animBlockLimit = IsX360() ? 6*1024*1024 : (unsigned)-1;
+		unsigned int animBlockLimit = (unsigned)-1;
 		DataCacheLimits_t limits( animBlockLimit, (unsigned)-1, 0, 0 );
 		m_pAnimBlockCacheSection = g_pDataCache->AddSection( this, MODEL_CACHE_ANIMBLOCK_SECTION_NAME, limits );
 	}
 
-	if ( IsX360() )
-	{
-		// By default, source data is assumed to be non-native to the 360.
-		StudioByteSwap::ActivateByteSwapping( true );
-		StudioByteSwap::SetCollisionInterface( g_pPhysicsCollision );
-	}
 	m_bLostVideoMemory = false;
 	m_bInitialized = true;
 	return INIT_OK;
@@ -930,13 +920,7 @@ void CMDLCache::UnserializeVCollide( MDLHandle_t handle, bool synchronousLoad )
 #ifdef _LINUX
 		Q_strlower( pFileName );
 #endif
-		if ( IsX360() )
-		{
-			char pX360Filename[MAX_PATH];
-			UpdateOrCreate( NULL, pFileName, pX360Filename, sizeof( pX360Filename ), "GAME" );
-			Q_strncpy( pFileName, pX360Filename, sizeof(pX360Filename) );
-		}
-
+		
 		bool bAsyncLoad = mod_load_vcollide_async.GetBool() && !synchronousLoad;
 
 		MdlCacheMsg( "MDLCache: %s load vcollide %s\n", bAsyncLoad ? "Async" : "Sync", GetModelName( handle ) );
@@ -1095,12 +1079,6 @@ unsigned char *CMDLCache::UnserializeAnimBlock( MDLHandle_t handle, int nBlock )
 {
 	VPROF( "CMDLCache::UnserializeAnimBlock" );
 
-	if ( IsX360() && g_pQueuedLoader->IsMapLoading() )
-	{
-		// anim block i/o is not allowed at this stage
-		return NULL;
-	}
-
 	// Block 0 is never used!!!
 	Assert( nBlock > 0 );
 
@@ -1128,13 +1106,7 @@ unsigned char *CMDLCache::UnserializeAnimBlock( MDLHandle_t handle, int nBlock )
 #ifdef _LINUX
 		Q_strlower( pFileName );
 #endif
-		if ( IsX360() )
-		{
-			char pX360Filename[MAX_PATH];
-			UpdateOrCreate( pStudioHdr, pFileName, pX360Filename, sizeof( pX360Filename ), "GAME" );
-			Q_strncpy( pFileName, pX360Filename, sizeof(pX360Filename) );
-		}
-
+		
 		MdlCacheMsg( "MDLCache: Begin load Anim Block %s (block %i)\n", GetModelName( handle ), nBlock );
 
 		AsyncInfo_t info;
@@ -1360,24 +1332,12 @@ void CMDLCache::UnserializeAllVirtualModelsAndAnimBlocks( MDLHandle_t handle )
 	// unfortunately, the virtualmodel does build data into the cacheable studiohdr
 	FreeVirtualModel( handle );
 
-	if ( IsX360() && g_pQueuedLoader->IsMapLoading() )
-	{
-		// queued loading has to do it
-		return;
-	}
-
 	// don't load the submodel data
 	if ( !mod_forcedata.GetBool() )
 		return;
 
 	// if not present, will instance and load the submodels
 	GetVirtualModel( handle );
-
-	if ( IsX360() )
-	{
-		// 360 does not drive the anims into its small cache section
-		return;
-	}
 
 	// Note that the animblocks start at 1!!!
 	studiohdr_t *pStudioHdr = GetStudioHdr( handle );
@@ -1445,12 +1405,6 @@ bool CMDLCache::LoadHardwareData( MDLHandle_t handle )
 		// use model name for correct path
 		char pFileName[MAX_PATH];
 		MakeFilename( pFileName, pStudioHdr, GetVTXExtension() );
-		if ( IsX360() )
-		{
-			char pX360Filename[MAX_PATH];
-			UpdateOrCreate( pStudioHdr, pFileName, pX360Filename, sizeof( pX360Filename ), "GAME" );
-			Q_strncpy( pFileName, pX360Filename, sizeof(pX360Filename) );
-		}
 
 		MdlCacheMsg("MDLCache: Begin load VTX %s\n", GetModelName( handle ) );
 
@@ -1541,26 +1495,7 @@ bool CMDLCache::BuildHardwareData( MDLHandle_t handle, studiodata_t *pStudioData
 	}
 
 	CTempAllocHelper pOriginalData;
-	if ( IsX360() )
-	{
-		CLZMA lzma;
-		unsigned char *pInputData = (unsigned char *)pVtxHdr + sizeof( OptimizedModel::FileHeader_t );
-		if ( lzma.IsCompressed( pInputData ) )
-		{
-			// vtx arrives compressed, decode and cache the results
-			unsigned int nOriginalSize = lzma.GetActualSize( pInputData );
-			pOriginalData.Alloc( sizeof( OptimizedModel::FileHeader_t ) + nOriginalSize );
-			V_memcpy( pOriginalData.Get(), pVtxHdr, sizeof( OptimizedModel::FileHeader_t ) );
-			unsigned int nOutputSize = lzma.Uncompress( pInputData, sizeof( OptimizedModel::FileHeader_t ) + (unsigned char *)pOriginalData.Get() );
-			if ( nOutputSize != nOriginalSize )
-			{
-				// decoder failure
-				return false;
-			}
-
-			pVtxHdr = (OptimizedModel::FileHeader_t *)pOriginalData.Get();
-		}
-	}
+	
 
 	MdlCacheMsg( "MDLCache: Load studiomdl %s\n", pStudioHdr->pszName() );
 
@@ -1791,21 +1726,7 @@ int CMDLCache::UpdateOrCreate( studiohdr_t *pHdr, const char *pSourceName, char 
 //-----------------------------------------------------------------------------
 bool CMDLCache::ReadFileNative( char *pFileName, const char *pPath, CUtlBuffer &buf, int nMaxBytes )
 {
-	bool bOk = false;
-
-	if ( IsX360() )
-	{
-		// Read the 360 version
-		char pX360Filename[ MAX_PATH ];
-		UpdateOrCreate( NULL, pFileName, pX360Filename, sizeof( pX360Filename ), pPath );
-		bOk = g_pFullFileSystem->ReadFile( pX360Filename, pPath, buf, nMaxBytes );
-	}
-	else
-	{
-		// Read the PC version
-		bOk = g_pFullFileSystem->ReadFile( pFileName, pPath, buf, nMaxBytes );
-	}
-
+	bool bOk = g_pFullFileSystem->ReadFile( pFileName, pPath, buf, nMaxBytes );
 	return bOk;
 }
 
@@ -1815,25 +1736,6 @@ bool CMDLCache::ReadFileNative( char *pFileName, const char *pPath, CUtlBuffer &
 studiohdr_t *CMDLCache::UnserializeMDL( MDLHandle_t handle, void *pData, int nDataSize, bool bDataValid )
 {
 	CTempAllocHelper pOriginalData;
-	if ( IsX360() )
-	{
-		CLZMA lzma;
-		if ( lzma.IsCompressed( (unsigned char *)pData ) )
-		{
-			// mdl arrives compressed, decode and cache the results
-			unsigned int nOriginalSize = lzma.GetActualSize( (unsigned char *)pData );
-			pOriginalData.Alloc( nOriginalSize );
-			unsigned int nOutputSize = lzma.Uncompress( (unsigned char *)pData, (unsigned char *)pOriginalData.Get() );
-			if ( nOutputSize != nOriginalSize )
-			{
-				// decoder failure
-				return NULL;
-			}
-
-			pData = pOriginalData.Get();
-			nDataSize = nOriginalSize;
-		}
-	}
 
 	studiohdr_t	*pStudioHdrIn = (studiohdr_t *)pData;
 
@@ -1910,29 +1812,6 @@ bool CMDLCache::ReadMDLFile( MDLHandle_t handle, const char *pMDLFileName, CUtlB
 	{
 		DevWarning( "Failed to load %s!\n", pMDLFileName );
 		return false;
-	}
-
-	if ( IsX360() )
-	{
-		CLZMA lzma;
-		if ( lzma.IsCompressed( (unsigned char *)buf.PeekGet() ) )
-		{
-			// mdl arrives compressed, decode and cache the results
-			unsigned int nOriginalSize = lzma.GetActualSize( (unsigned char *)buf.PeekGet() );
-			void *pOriginalData = malloc( nOriginalSize );
-			unsigned int nOutputSize = lzma.Uncompress( (unsigned char *)buf.PeekGet(), (unsigned char *)pOriginalData );
-			if ( nOutputSize != nOriginalSize )
-			{
-				// decoder failure
-				free( pOriginalData );
-				return false;
-			}
-
-			// replace caller's buffer
-			buf.Purge();
-			buf.Put( pOriginalData, nOriginalSize );
-			free( pOriginalData );
-		}
 	}
 
 	studiohdr_t *pStudioHdr = (studiohdr_t*)buf.PeekGet();
@@ -2110,16 +1989,13 @@ void CMDLCache::TouchAllData( MDLHandle_t handle )
 		}
 	}
 
-	if ( !IsX360() )
+	// cache the anims
+	// Note that the animblocks start at 1!!!
+	for ( int i=1; i< (int)pStudioHdr->numanimblocks; ++i )
 	{
-		// cache the anims
-		// Note that the animblocks start at 1!!!
-		for ( int i=1; i< (int)pStudioHdr->numanimblocks; ++i )
-		{
-			pStudioHdr->GetAnimBlock( i );
-		}
+		pStudioHdr->GetAnimBlock( i );
 	}
-
+	
 	// cache the vertexes
 	if ( pStudioHdr->numbodyparts )
 	{
@@ -2511,11 +2387,6 @@ FSAsyncStatus_t CMDLCache::LoadData( const char *pszFilename, const char *pszPat
 {
 	if ( !*pControl )
 	{
-		if ( IsX360() && g_pQueuedLoader->IsMapLoading() )
-		{
-			DevWarning( "CMDLCache: Non-Optimal loading path for %s\n", pszFilename );
-		}
-
 		FileAsyncRequest_t asyncRequest;
 		asyncRequest.pszFilename = pszFilename;
 		asyncRequest.pszPathID = pszPathID;
@@ -2737,33 +2608,6 @@ bool CMDLCache::ProcessDataIntoCache( MDLHandle_t handle, MDLCacheDataType_t typ
 
 			m_pMeshCacheSection->Unlock( pStudioDataCurrent->m_VertexCache );
 			m_pMeshCacheSection->Age( pStudioDataCurrent->m_VertexCache );
-
-			// FIXME: thin VVD data on PC too (have to address alt-tab, various DX8/DX7/debug software paths in studiorender, tools, etc)
-			static bool bCompressedVVDs = CommandLine()->CheckParm( "-no_compressed_vvds" ) == NULL;
-			if ( IsX360() && !( pStudioDataCurrent->m_nFlags & STUDIODATA_FLAGS_NO_STUDIOMESH ) && bCompressedVVDs )
-			{
-				// Replace the cached vertex data with a thin version (used for model decals).
-				// Flexed meshes require the fat data to remain, for CPU mesh anim.
-				if ( pStudioHdrCurrent->numflexdesc == 0 )
-				{
-					vertexFileHeader_t *originalVertexData = GetVertexData( handle );
-					Assert( originalVertexData );
-					if ( originalVertexData )
-					{
-						int thinVertexDataSize = 0;
-						vertexFileHeader_t *thinVertexData = CreateThinVertexes( originalVertexData, pStudioHdrCurrent, &thinVertexDataSize );
-						Assert( thinVertexData && ( thinVertexDataSize > 0 ) );
-						if ( thinVertexData && ( thinVertexDataSize > 0 ) )
-						{
-							// Remove the original cache entry (and free it)
-							Flush( handle, MDLCACHE_FLUSH_VERTEXES | MDLCACHE_FLUSH_IGNORELOCK );
-							// Add the new one
-							CacheData( &pStudioDataCurrent->m_VertexCache, thinVertexData, thinVertexDataSize, pStudioHdrCurrent->pszName(), MDLCACHE_VERTEXES, MakeCacheID( handle, MDLCACHE_VERTEXES) );
-						}
-					}
-				}
-			}
-
 			break;
 		}
 
@@ -2829,26 +2673,7 @@ bool CMDLCache::ProcessDataIntoCache( MDLHandle_t handle, MDLCacheDataType_t typ
 				MdlCacheMsg( "MDLCache: Finish load vcollide for %s\n", pStudioHdrCurrent->pszName() );
 
 				CTempAllocHelper pOriginalData;
-				if ( IsX360() )
-				{
-					CLZMA lzma;
-					if ( lzma.IsCompressed( (unsigned char *)pData ) )
-					{
-						// phy arrives compressed, decode and cache the results
-						unsigned int nOriginalSize = lzma.GetActualSize( (unsigned char *)pData );
-						pOriginalData.Alloc( nOriginalSize );
-						unsigned int nOutputSize = lzma.Uncompress( (unsigned char *)pData, (unsigned char *)pOriginalData.Get() );
-						if ( nOutputSize != nOriginalSize )
-						{
-							// decoder failure
-							return NULL;
-						}
-
-						pData = pOriginalData.Get();
-						nDataSize = nOriginalSize;
-					}
-				}
-
+				
 				CUtlBuffer buf( pData, nDataSize, CUtlBuffer::READ_ONLY );
 				buf.SeekPut( CUtlBuffer::SEEK_HEAD, nDataSize );
 
@@ -3123,27 +2948,7 @@ vertexFileHeader_t *CMDLCache::BuildAndCacheVertexData( studiohdr_t *pStudioHdr,
 	}
 
 	CTempAllocHelper pOriginalData;
-	if ( IsX360() )
-	{
-		CLZMA lzma;
-		unsigned char *pInput = (unsigned char *)pRawVvdHdr + sizeof( vertexFileHeader_t );
-		if ( lzma.IsCompressed( pInput ) )
-		{
-			// vvd arrives compressed, decode and cache the results
-			unsigned int nOriginalSize = lzma.GetActualSize( pInput );
-			pOriginalData.Alloc( sizeof( vertexFileHeader_t ) + nOriginalSize );
-			V_memcpy( pOriginalData.Get(), pRawVvdHdr, sizeof( vertexFileHeader_t ) );
-			unsigned int nOutputSize = lzma.Uncompress( pInput, sizeof( vertexFileHeader_t ) + (unsigned char *)pOriginalData.Get() );
-			if ( nOutputSize != nOriginalSize )
-			{
-				// decoder failure
-				return NULL;
-			}
-
-			pRawVvdHdr = (vertexFileHeader_t *)pOriginalData.Get();
-		}
-	}
-
+	
 	int rootLOD = min( pStudioHdr->rootLOD, pRawVvdHdr->numLODs - 1 );
 
 	// determine final cache footprint, possibly truncated due to lod
@@ -3197,13 +3002,7 @@ vertexFileHeader_t *CMDLCache::LoadVertexData( studiohdr_t *pStudioHdr )
 		// load the VVD file
 		// use model name for correct path
 		MakeFilename( pFileName, pStudioHdr, ".vvd" );
-		if ( IsX360() )
-		{
-			char pX360Filename[MAX_PATH];
-			UpdateOrCreate( pStudioHdr, pFileName, pX360Filename, sizeof( pX360Filename ), "GAME" );
-			Q_strncpy( pFileName, pX360Filename, sizeof(pX360Filename) );
-		}
-
+		
 		MdlCacheMsg( "MDLCache: Begin load VVD %s\n", pFileName );
 
 		AsyncInfo_t info;

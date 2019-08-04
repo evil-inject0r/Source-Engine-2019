@@ -313,9 +313,7 @@ private:
 	virtual void OnCommand(const char *command);
 	virtual void PerformLayout();
 	MESSAGE_FUNC_INT( OnActivateModule, "ActivateModule", moduleIndex);
-
-	void UpdateRichPresenceInfo();
-
+	
 	// menu logo
 	CMainMenuGameLogo *m_pGameLogo;
 	
