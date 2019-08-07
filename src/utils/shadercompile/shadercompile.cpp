@@ -135,10 +135,9 @@ FILE *g_WorkerDebugFp = NULL;
 bool g_bGotStartWorkPacket = false;
 double g_flStartTime;
 bool g_bVerbose = false;
-bool g_bIsX360 = false;
 bool g_bSuppressWarnings = false;
 
-FORCEINLINE long AsTargetLong( long x ) { return ( ( g_bIsX360 ) ? ( BigLong( x ) ) : ( x ) ); }
+FORCEINLINE long AsTargetLong( long x ) { return x; }
 
 
 struct ShaderInfo_t
@@ -759,11 +758,6 @@ void GetVCSFilenames( char *pszMainOutFileName, ShaderInfo_t const &si )
 	strcat( pszMainOutFileName, "\\" );
 	strcat( pszMainOutFileName, si.m_pShaderName );
 
-	if ( g_bIsX360 )
-	{
-		strcat( pszMainOutFileName, ".360" );
-	}
-
 	strcat( pszMainOutFileName, ".vcs" );					// Different extensions for main output file
 
 	// Check status of vcs file...
@@ -960,7 +954,6 @@ static void WriteShaderFiles( const char *pShaderName )
 	// Shader file stream buffer
 	//
 	CUtlStreamBuffer ShaderFile( szVCSfilename, NULL );			// Streaming buffer for vcs file (since this can blow memory)
-	ShaderFile.SetBigEndian( g_bIsX360 );						// Swap the header bytes to X360 format
 
 	// ------ Header --------------
 	ShaderFile.PutInt( SHADER_VCS_VERSION_NUMBER );				// Version
@@ -1003,12 +996,6 @@ static void WriteShaderFiles( const char *pShaderName )
 				ShaderFile.Put( pStatic->m_abPackedCode.GetData(), nPackedLen );
 
 			ShaderFile.PutInt( 0xffffffff );				// end of dynamic combos
-		}
-
-		if ( g_bIsX360 )
-		{
-			SRec.m_nFileOffset = BigLong( SRec.m_nFileOffset );
-			SRec.m_nStaticComboID = BigLong( SRec.m_nStaticComboID );
 		}
 	}
 	ShaderFile.Close();
@@ -1218,7 +1205,6 @@ size_t AssembleWorkerReplyPackage( CfgProcessor::CfgEntryInfo const *pEntry, uin
 	if ( pStComboRec && pStComboRec->m_DynamicCombos.Count() )
 	{
 		CUtlBuffer ubDynamicComboBuffer;
-		ubDynamicComboBuffer.SetBigEndian( g_bIsX360 );
 
 		pStComboRec->SortDynamicCombos();
 		// iterate over all dynamic combos. 
@@ -2453,9 +2439,6 @@ int ShaderCompile_Main( int argc, char* argv[] )
 
 	// This needs to get called before VMPI is setup because in SDK mode, VMPI will change the args around.
 	SetupExeDir( argc, argv );
-
-	g_bIsX360 = false; //CommandLine()->FindParm( "-x360" ) != 0;
-	// g_bSuppressWarnings = g_bIsX360;
 
 	bool bShouldUseVMPI = !( CommandLine()->FindParm( "-mpi" ) == 0 );
 	if ( bShouldUseVMPI )

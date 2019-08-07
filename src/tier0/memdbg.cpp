@@ -661,11 +661,6 @@ CDbgMemAlloc::CDbgMemAlloc() : m_sMemoryAllocFailed( (size_t)0 )
 
 	m_OutputFunc = DefaultHeapReportFunc;
 	m_bInitialized = true;
-
-	if ( !IsDebug() && !IsX360() )
-	{
-		Plat_DebugString( "USE_MEM_DEBUG is enabled in a release build. Don't check this in!\n" );
-	}
 }
 
 CDbgMemAlloc::~CDbgMemAlloc()
@@ -1291,26 +1286,11 @@ void CDbgMemAlloc::DumpStatsFileBase( char const *pchFileBase )
 
 	DumpMemInfo( "Totals", 0, m_GlobalInfo );
 
-	if ( IsX360() )
-	{
-		// add a line that has free memory
-		MEMORYSTATUS stat;
-//		GlobalMemoryStatus( &stat );
-		MemInfo_t info;
-		// OS takes 32 MB, report our internal allocations only
-		info.m_nCurrentSize = ( stat.dwTotalPhys - stat.dwAvailPhys ) - 32*1024*1024;
-		DumpMemInfo( "Used Memory", 0, info );
-	}
-
 	DumpFileStats();
 
 	if (m_OutputFunc == DefaultHeapReportFunc)
 	{
 		fclose(s_DbgFile);
-
-#if defined( _X360 ) && !defined( _RETAIL )
-		XBX_rMemDump( szFileName );
-#endif
 	}
 }
 

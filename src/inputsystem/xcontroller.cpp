@@ -129,16 +129,10 @@ void CInputSystem::OpenXDevice( xdevice_t* pXDevice, int userId )
 	if ( result == ERROR_SUCCESS )
 	{
 		bool bIsSupported = false;
-		if ( IsX360() )
-		{
-			// TCR says that we cannot restrict input based on subtype, so don't check it
-			bIsSupported = ( capabilities.Type == XINPUT_DEVTYPE_GAMEPAD );
-		}
-		else
-		{
-			// Current version of XInput mistakenly returns 0 as the Type. Ignore it and ensure the subtype is a gamepad.
-			bIsSupported = ( capabilities.SubType == XINPUT_DEVSUBTYPE_GAMEPAD );
-		}
+		
+		// Current version of XInput mistakenly returns 0 as the Type. Ignore it and ensure the subtype is a gamepad.
+		bIsSupported = ( capabilities.SubType == XINPUT_DEVSUBTYPE_GAMEPAD );
+		
 		if ( !bIsSupported )
 		{
 			// TBD: This may not be sufficient to not crash us later

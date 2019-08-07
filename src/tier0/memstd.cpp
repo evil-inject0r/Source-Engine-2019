@@ -14,10 +14,6 @@
 #include <windows.h>
 #define VA_COMMIT_FLAGS MEM_COMMIT
 #define VA_RESERVE_FLAGS MEM_RESERVE
-#elif defined( _X360 )
-#undef Verify
-#define VA_COMMIT_FLAGS (MEM_COMMIT|MEM_NOZERO|MEM_LARGE_PAGES)
-#define VA_RESERVE_FLAGS (MEM_RESERVE|MEM_LARGE_PAGES)
 #endif
 
 #include <malloc.h>

@@ -2622,33 +2622,6 @@ bool CMDLCache::ProcessDataIntoCache( MDLHandle_t handle, MDLCacheDataType_t typ
 				char pCacheName[MAX_PATH];
 				Q_snprintf( pCacheName, MAX_PATH, "%s (block %i)", pStudioHdrCurrent->pszName(), iAnimBlock );
 
-				if ( IsX360() )
-				{
-					CLZMA lzma;
-					if ( lzma.IsCompressed( (unsigned char *)pData ) )
-					{
-						// anim block arrives compressed, decode and cache the results
-						unsigned int nOriginalSize = lzma.GetActualSize( (unsigned char *)pData );
-
-						// get a "fake" (not really aligned) optimal read buffer, as expected by the free logic
-						void *pOriginalData = g_pFullFileSystem->AllocOptimalReadBuffer( FILESYSTEM_INVALID_HANDLE, nOriginalSize, 0 );
-						unsigned int nOutputSize = lzma.Uncompress( (unsigned char *)pData, (unsigned char *)pOriginalData );
-						if ( nOutputSize != nOriginalSize )
-						{
-							// decoder failure
-							g_pFullFileSystem->FreeOptimalReadBuffer( pOriginalData );
-							return false;
-						}
-
-						// input i/o buffer is now unused
-						g_pFullFileSystem->FreeOptimalReadBuffer( pData );
-
-						// datacache will now own the data
-						pData = pOriginalData;
-						nDataSize = nOriginalSize;
-					}
-				}
-
 				CacheData( &pStudioDataCurrent->m_pAnimBlock[iAnimBlock], pData, nDataSize, pCacheName, MDLCACHE_ANIMBLOCK, MakeCacheID( handle, MDLCACHE_ANIMBLOCK) );
 			}
 			else
@@ -3236,98 +3209,7 @@ void CMDLCache::QueuedLoaderCallback_MDL( void *pContext, void *pContext2, const
 //-----------------------------------------------------------------------------
 bool CMDLCache::PreloadModel( MDLHandle_t handle )
 {
-	if ( !IsX360() )
-	{
-		return false;
-	}
-
-	if ( !g_pQueuedLoader->IsMapLoading() || handle == MDLHANDLE_INVALID )
-	{
-		return false;
-	}
-
-	if ( !g_pQueuedLoader->IsBatching() )
-	{
-		// batching must be active, following code depends on its behavior
-		DevWarning( "CMDLCache:: Late preload of model '%s'\n", GetModelName( handle ) );
-		return false;
-	}
-
-	// determine existing presence
-	// actual necessity is not established here, allowable absent files need their i/o error to occur
-	bool bNeedsMDL = !IsDataLoaded( handle, MDLCACHE_STUDIOHDR );
-	bool bNeedsVTX = !IsDataLoaded( handle, MDLCACHE_STUDIOHWDATA );
-	bool bNeedsVVD = !IsDataLoaded( handle, MDLCACHE_VERTEXES );
-	bool bNeedsPHY = !IsDataLoaded( handle, MDLCACHE_VCOLLIDE );
-	if ( !bNeedsMDL && !bNeedsVTX && !bNeedsVVD && !bNeedsPHY )
-	{
-		// nothing to do
-		return true;
-	}
-
-	char szFilename[MAX_PATH];
-	char szNameOnDisk[MAX_PATH];
-	V_strncpy( szFilename, GetActualModelName( handle ), sizeof( szFilename ) );
-	V_StripExtension( szFilename, szFilename, sizeof( szFilename ) );
-
-	// need to gather all model parts (mdl, vtx, vvd, phy, ani)
-	ModelParts_t *pModelParts = new ModelParts_t;
-	pModelParts->hMDL = handle;
-
-	// create multiple loader jobs to perform gathering i/o operations
-	LoaderJob_t loaderJob;
-	loaderJob.m_pPathID = "GAME";
-	loaderJob.m_pCallback = QueuedLoaderCallback_MDL;
-	loaderJob.m_pContext = (void *)pModelParts;
-	loaderJob.m_Priority = LOADERPRIORITY_DURINGPRELOAD;
-	loaderJob.m_bPersistTargetData = true;
-
-	if ( bNeedsMDL )
-	{
-		V_snprintf( szNameOnDisk, sizeof( szNameOnDisk ), "%s.mdl", szFilename );
-		loaderJob.m_pFilename = szNameOnDisk;
-		loaderJob.m_pContext2 = (void *)ModelParts_t::BUFFER_MDL;
-		g_pQueuedLoader->AddJob( &loaderJob );
-		pModelParts->nExpectedParts |= 1 << ModelParts_t::BUFFER_MDL;
-	}
-
-	if ( bNeedsVTX )
-	{
-		// vtx extensions are .xxx.vtx, need to re-form as, ???.xxx.yyy.vtx
-		char szTempName[MAX_PATH];
-		V_snprintf( szNameOnDisk, sizeof( szNameOnDisk ), "%s%s", szFilename, GetVTXExtension() );
-		V_StripExtension( szNameOnDisk, szTempName, sizeof( szTempName ) );
-		V_snprintf( szNameOnDisk, sizeof( szNameOnDisk ), "%s.vtx", szTempName );
-		loaderJob.m_pFilename = szNameOnDisk;
-		loaderJob.m_pContext2 = (void *)ModelParts_t::BUFFER_VTX;
-		g_pQueuedLoader->AddJob( &loaderJob );
-		pModelParts->nExpectedParts |= 1 << ModelParts_t::BUFFER_VTX;
-	}
-
-	if ( bNeedsVVD )
-	{
-		V_snprintf( szNameOnDisk, sizeof( szNameOnDisk ), "%s.vvd", szFilename );
-		loaderJob.m_pFilename = szNameOnDisk;
-		loaderJob.m_pContext2 = (void *)ModelParts_t::BUFFER_VVD;
-		g_pQueuedLoader->AddJob( &loaderJob );
-		pModelParts->nExpectedParts |= 1 << ModelParts_t::BUFFER_VVD;
-	}
-
-	if ( bNeedsPHY )
-	{
-		V_snprintf( szNameOnDisk, sizeof( szNameOnDisk ), "%s.phy", szFilename );
-		loaderJob.m_pFilename = szNameOnDisk;
-		loaderJob.m_pContext2 = (void *)ModelParts_t::BUFFER_PHY;
-		g_pQueuedLoader->AddJob( &loaderJob );
-		pModelParts->nExpectedParts |= 1 << ModelParts_t::BUFFER_PHY;
-	}
-
-	if ( !pModelParts->nExpectedParts )
-	{
-		delete pModelParts;
-	}
-
-	return true;
+	return false;
 }
 
 //-----------------------------------------------------------------------------
