@@ -184,11 +184,6 @@ $Project "filesystem_stdio"
     "filesystem\filesystem_stdio.vpc" [$WINDOWS||$POSIX]
 }
 
-$Project "filesystem_steam"
-{
-    "filesystem\filesystem_steam.vpc" [$WINDOWS]
-}
-
 $Project "finddbgdll"
 {
 	"utils\finddbgdll\finddbgdll.vpc" [$WINDOWS]
