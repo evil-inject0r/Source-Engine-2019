@@ -140,7 +140,7 @@ $Configuration
 	{
 		$AdditionalIncludeDirectories	"$BASE;.\;audio;audio\private;audio\public;$SRCDIR\vgui2\include;$SRCDIR\vgui2\controls"
 		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\thirdparty\dx9sdk\include" [$WINDOWS]
-		$PreprocessorDefinitions		"$BASE;USE_CONVARS;VOICE_OVER_IP;BUMPMAP;__USEA3D;_ADD_EAX_;ENGINE_DLL;PROTECTED_THINGS_ENABLE;fopen=dont_use_fopen"
+		$PreprocessorDefinitions		"$BASE;USE_CONVARS;VOICE_OVER_IP;ENGINE_DLL;PROTECTED_THINGS_ENABLE;fopen=dont_use_fopen"
 	}
 
 	$Compiler [$WIN32]
