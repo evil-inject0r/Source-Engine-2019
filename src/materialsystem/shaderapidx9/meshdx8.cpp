@@ -1394,7 +1394,7 @@ void CIndexBufferDx8::Unlock( int nWrittenIndexCount, IndexDesc_t &desc )
 // globals
 //-----------------------------------------------------------------------------
 #ifdef _DEBUG
-int CVertexBufferDx8::s_nBufferCount = 0;
+int CVertexBufferDx9::s_nBufferCount = 0;
 #endif
 
 
@@ -3107,7 +3107,7 @@ void CMeshDX9::DrawInternal( CPrimList *pLists, int nLists )
 
 
 #ifdef CHECK_INDICES
-void CMeshDX8::CheckIndices( CPrimList *pPrim, int numPrimitives )
+void CMeshDX9::CheckIndices( CPrimList *pPrim, int numPrimitives )
 {
 	// g_pLastVertex - this is the current vertex buffer
 	// g_pLastColorMesh - this is the current color mesh, if there is one.
