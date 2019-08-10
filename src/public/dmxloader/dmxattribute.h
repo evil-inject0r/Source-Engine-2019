@@ -85,7 +85,7 @@ public:
 	bool SerializesOnMultipleLines() const;
 
 	// Returns the size of the variables storing the various attribute types
-	static int AttributeDataSize( DmAttributeType_t type );
+	static size_t AttributeDataSize( DmAttributeType_t type );
 
 private:
 	CDmxAttribute( const char *pAttributeName );

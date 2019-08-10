@@ -787,7 +787,7 @@ void CLightingPreviewThread::SendVectorMatrixAsRendering( CSIMDVectorMatrix cons
 
 
 // master side of lighting preview
-unsigned LightingPreviewThreadFN( void *thread_start_arg )
+uintp LightingPreviewThreadFN( void *thread_start_arg )
 {
 	CLightingPreviewThread LPreviewObject;
 	ThreadSetPriority( -2 );								// low

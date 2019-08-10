@@ -75,7 +75,7 @@ struct CSizeTest
 		COMPILE_TIME_ASSERT( sizeof( VMatrix )		== 64 );
 	//	COMPILE_TIME_ASSERT( sizeof( CUtlString )	== 16 ); // FIX ME: CUtlString differs from 2007, will this break support for old dmxs?
 #if !defined( PLATFORM_64BITS )
-		COMPILE_TIME_ASSERT( sizeof( CUtlBinaryBlock ) == 16 );
+		COMPILE_TIME_ASSERT( sizeof( CUtlBinaryBlock ) == 24 );
 #endif // PLATFORM_64BITS
 		COMPILE_TIME_ASSERT( sizeof( DmObjectId_t )	== 16 );
 	};
@@ -146,7 +146,7 @@ CDmxAttribute::~CDmxAttribute()
 //-----------------------------------------------------------------------------
 // Returns the size of the variables storing the various attribute types
 //-----------------------------------------------------------------------------
-int CDmxAttribute::AttributeDataSize( DmAttributeType_t type )
+size_t CDmxAttribute::AttributeDataSize( DmAttributeType_t type )
 {
 	return s_pAttributeSize[type];
 }

@@ -919,7 +919,7 @@ CExpressionSample *CFlexAnimationTrack::AddSample( float time, float value, int 
 	sample.value = value;
 	sample.selected = false;
 
-	int idx = m_Samples[ type ].AddToTail( sample );
+	const size_t idx = m_Samples[ type ].AddToTail( sample );
 	
 	// Resort( type );
 	return &m_Samples[ type ][ idx ];

@@ -255,7 +255,7 @@ void CCommandLine::CreateCmdLine( const char *commandline )
 
 	*pDst = '\0';
 
-	int len = strlen( szFull ) + 1;
+	const size_t len = strlen( szFull ) + 1;
 	m_pszCmdLine = new char[len];
 	memcpy( m_pszCmdLine, szFull, len );
 
@@ -323,7 +323,7 @@ void CCommandLine::RemoveParm( const char *pszParm )
 	char *p, *found;
 	char *pnextparam;
 	int n;
-	int curlen;
+	size_t curlen;
 
 	p = m_pszCmdLine;
 	while ( *p )
@@ -647,7 +647,7 @@ void CCommandLine::SetParm( int nIndex, char const *pNewParm )
 	if ( nIndex >= MAX_PARAMETERS )
 		Error( "CCommandLine::SetParm: invalid parameter index %d", nIndex );
 
-	int nLen = strlen( pNewParm );
+	const size_t nLen = strlen( pNewParm );
 	m_ppParms[nIndex] = new char[nLen];
 	memcpy( m_ppParms[nIndex], pNewParm, nLen - 1 );
 	m_ppParms[nIndex][nLen - 1] = 0;

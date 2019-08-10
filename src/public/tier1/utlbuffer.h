@@ -309,7 +309,7 @@ public:
 
 	// memory allocation size, does *not* reflect size written or read,
 	//	use TellPut or TellGet for that
-	int Size() const;
+	size_t Size() const;
 
 	// Am I a text buffer?
 	bool IsText() const;
@@ -403,9 +403,6 @@ protected:
 	unsigned char m_Error;
 	unsigned char m_Flags;
 	unsigned char m_Reserved;
-#if defined( _X360 )
-	unsigned char pad;
-#endif
 
 	int m_nTab;
 	int m_nMaxPut;
@@ -1031,7 +1028,7 @@ inline const char *CUtlBuffer::String() const
 	return reinterpret_cast<const char*>( m_Memory.Base() );
 }
 
-inline int CUtlBuffer::Size() const			
+inline size_t CUtlBuffer::Size() const
 { 
 	return m_Memory.NumAllocated(); 
 }

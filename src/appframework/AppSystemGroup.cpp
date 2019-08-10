@@ -73,7 +73,7 @@ AppModule_t CAppSystemGroup::LoadModule( const char *pDLLName )
 		return APP_MODULE_INVALID;
 	}
 
-	int nIndex = m_Modules.AddToTail();
+	const size_t nIndex = m_Modules.AddToTail();
 	m_Modules[nIndex].m_pModule = pSysModule;
 	m_Modules[nIndex].m_Factory = 0;
 	m_Modules[nIndex].m_pModuleName = (char*)malloc( nLen );

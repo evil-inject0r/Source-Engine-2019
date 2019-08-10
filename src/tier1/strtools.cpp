@@ -98,7 +98,7 @@ void _V_memset (const char* file, int line, void *dest, int fill, int count)
 	memset(dest,fill,count);
 }
 
-void _V_memcpy (const char* file, int line, void *dest, const void *src, int count)
+void _V_memcpy (const char* file, int line, void *dest, const void *src, size_t count)
 {
 	Assert( count >= 0 );
 	AssertValidReadPtr( src, count );
@@ -107,7 +107,7 @@ void _V_memcpy (const char* file, int line, void *dest, const void *src, int cou
 	memcpy( dest, src, count );
 }
 
-void _V_memmove(const char* file, int line, void *dest, const void *src, int count)
+void _V_memmove(const char* file, int line, void *dest, const void *src, size_t count)
 {
 	Assert( count >= 0 );
 	AssertValidReadPtr( src, count );
@@ -116,7 +116,7 @@ void _V_memmove(const char* file, int line, void *dest, const void *src, int cou
 	memmove( dest, src, count );
 }
 
-int _V_memcmp (const char* file, int line, const void *m1, const void *m2, int count)
+int _V_memcmp (const char* file, int line, const void *m1, const void *m2, size_t count)
 {
 	Assert( count >= 0 );
 	AssertValidReadPtr( m1, count );
@@ -125,7 +125,7 @@ int _V_memcmp (const char* file, int line, const void *m1, const void *m2, int c
 	return memcmp( m1, m2, count );
 }
 
-int	_V_strlen(const char* file, int line, const char *str)
+size_t	_V_strlen(const char* file, int line, const char *str)
 {
 	AssertValidStringPtr(str);
 	return strlen( str );
@@ -139,7 +139,7 @@ void _V_strcpy (const char* file, int line, char *dest, const char *src)
 	strcpy( dest, src );
 }
 
-int	_V_wcslen(const char* file, int line, const wchar_t *pwch)
+size_t	_V_wcslen(const char* file, int line, const wchar_t *pwch)
 {
 	return wcslen( pwch );
 }
@@ -727,7 +727,7 @@ const char* V_strnchr( const char* pStr, char c, int n )
 	return NULL;
 }
 
-void V_strncpy( char *pDest, char const *pSrc, int maxLen )
+void V_strncpy( char *pDest, char const *pSrc, size_t maxLen )
 {
 	Assert( maxLen >= sizeof( *pDest ) );
 	AssertValidWritePtr( pDest, maxLen );
@@ -1392,7 +1392,7 @@ int _V_UCS2ToUnicode( const ucs2 *pUCS2, wchar_t *pUnicode, int cubDestSizeInByt
 	
 	pUnicode[0] = 0;
 #ifdef _WIN32
-	int cchResult = V_wcslen( pUCS2 );
+	size_t cchResult = V_wcslen( pUCS2 );
 	V_memcpy( pUnicode, pUCS2, cubDestSizeInBytes );
 #else
 	iconv_t conv_t = iconv_open( "UCS-4LE", "UCS-2LE" );
