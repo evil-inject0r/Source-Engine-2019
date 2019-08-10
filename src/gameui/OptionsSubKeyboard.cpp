@@ -508,10 +508,10 @@ void COptionsSubKeyboard::UnbindKey( const char *key )
 void COptionsSubKeyboard::ApplyAllBindings( void )
 {
 	// unbind everything that the user unbound
-	{for (int i = 0; i < m_KeysToUnbind.Count(); i++)
+	for (int i = 0; i < m_KeysToUnbind.Count(); i++)
 	{
 		UnbindKey(m_KeysToUnbind[i].String());
-	}}
+	}
 	m_KeysToUnbind.RemoveAll();
 
 	// free binding memory
